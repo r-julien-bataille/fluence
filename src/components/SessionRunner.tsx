@@ -1,14 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { ExerciseText, FluencyAttempt } from '@/db/db';
 import { StudentProfile } from './StudentSelector';
 import { StepSelection } from './StepSelection';
-import { Step1Reading } from './Step1Reading';
-import { Step2Remediation } from './Step2Remediation';
-import { Step3Challenge } from './Step3Challenge';
-import { StepSummary } from './StepSummary';
-import { StoryGeneratorModal } from './StoryGeneratorModal';
-import { AlignmentResult } from '@/lib/alignment';
 import { ArrowLeft, Clock, Sparkles, Trophy, CheckCircle2 } from 'lucide-react';
+
+const Step1Reading = lazy(() =>
+  import('./Step1Reading').then((m) => ({ default: m.Step1Reading }))
+);
+const Step2Remediation = lazy(() =>
+  import('./Step2Remediation').then((m) => ({ default: m.Step2Remediation }))
+);
+const Step3Challenge = lazy(() =>
+  import('./Step3Challenge').then((m) => ({ default: m.Step3Challenge }))
+);
+const StepSummary = lazy(() =>
+  import('./StepSummary').then((m) => ({ default: m.StepSummary }))
+);
+const StoryGeneratorModal = lazy(() =>
+  import('./StoryGeneratorModal').then((m) => ({ default: m.StoryGeneratorModal }))
+);
 
 export type SessionStep = 'selection' | 'step1' | 'step2' | 'step3' | 'summary';
 
@@ -160,61 +170,65 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
         />
       )}
 
-      {/* Vue 2 : Étape 1 - Première lecture chronométrée (60 secondes) */}
-      {currentStep === 'step1' && selectedText && (
-        <Step1Reading
-          text={selectedText}
-          studentName={currentStudent.name}
-          onCompleteStep1={handleCompleteStep1}
-          onOpenSettings={onOpenSettings}
-          dyslexicMode={dyslexicMode}
-        />
-      )}
+      <Suspense fallback={null}>
+        {/* Vue 2 : Étape 1 - Première lecture chronométrée (60 secondes) */}
+        {currentStep === 'step1' && selectedText && (
+          <Step1Reading
+            text={selectedText}
+            studentName={currentStudent.name}
+            onCompleteStep1={handleCompleteStep1}
+            onOpenSettings={onOpenSettings}
+            dyslexicMode={dyslexicMode}
+          />
+        )}
 
-      {/* Vue 3 : Étape 2 - Remédiation & Répétition (Sans chronomètre) */}
-      {currentStep === 'step2' && selectedText && step1Attempt && (
-        <Step2Remediation
-          text={selectedText}
-          attempt1={step1Attempt}
-          onReadyForStep3={handleReadyForStep3}
-          dyslexicMode={dyslexicMode}
-        />
-      )}
+        {/* Vue 3 : Étape 2 - Remédiation & Répétition (Sans chronomètre) */}
+        {currentStep === 'step2' && selectedText && step1Attempt && (
+          <Step2Remediation
+            text={selectedText}
+            attempt1={step1Attempt}
+            onReadyForStep3={handleReadyForStep3}
+            dyslexicMode={dyslexicMode}
+          />
+        )}
 
-      {/* Vue 4 : Étape 3 - Défi Record (60 secondes) */}
-      {currentStep === 'step3' && selectedText && step1Attempt && (
-        <Step3Challenge
-          text={selectedText}
-          attempt1={step1Attempt}
-          studentName={currentStudent.name}
-          onCompleteStep3={handleCompleteStep3}
-          onOpenSettings={onOpenSettings}
-          dyslexicMode={dyslexicMode}
-        />
-      )}
+        {/* Vue 4 : Étape 3 - Défi Record (60 secondes) */}
+        {currentStep === 'step3' && selectedText && step1Attempt && (
+          <Step3Challenge
+            text={selectedText}
+            attempt1={step1Attempt}
+            studentName={currentStudent.name}
+            onCompleteStep3={handleCompleteStep3}
+            onOpenSettings={onOpenSettings}
+            dyslexicMode={dyslexicMode}
+          />
+        )}
 
-      {/* Vue 5 : Écran Bilan & Victoire */}
-      {currentStep === 'summary' && selectedText && step1Attempt && step3Attempt && (
-        <StepSummary
-          text={selectedText}
-          studentName={currentStudent.name}
-          step1={step1Attempt}
-          step3={step3Attempt}
-          onNewSession={handleResetToSelection}
-          onRestartSameText={handleRestartSameText}
-          onOpenHistory={onOpenHistory}
-        />
-      )}
+        {/* Vue 5 : Écran Bilan & Victoire */}
+        {currentStep === 'summary' && selectedText && step1Attempt && step3Attempt && (
+          <StepSummary
+            text={selectedText}
+            studentName={currentStudent.name}
+            step1={step1Attempt}
+            step3={step3Attempt}
+            onNewSession={handleResetToSelection}
+            onRestartSameText={handleRestartSameText}
+            onOpenHistory={onOpenHistory}
+          />
+        )}
 
-      {/* Modal Générateur d'histoires sur mesure */}
-      <StoryGeneratorModal
-        isOpen={isGeneratorOpen}
-        onClose={() => setIsGeneratorOpen(false)}
-        onStoryCreated={handleSelectText}
-        defaultLevel={currentStudent.level}
-        studentName={currentStudent.name}
-        onOpenSettings={onOpenSettings}
-      />
+        {/* Modal Générateur d'histoires sur mesure */}
+        {isGeneratorOpen && (
+          <StoryGeneratorModal
+            isOpen={isGeneratorOpen}
+            onClose={() => setIsGeneratorOpen(false)}
+            onStoryCreated={handleSelectText}
+            defaultLevel={currentStudent.level}
+            studentName={currentStudent.name}
+            onOpenSettings={onOpenSettings}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

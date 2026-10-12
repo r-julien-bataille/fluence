@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { seedDatabaseIfEmpty } from './db/seeds';
 import { Header } from './components/Header';
 import { SessionRunner } from './components/SessionRunner';
-import { SettingsModal } from './components/SettingsModal';
-import { HistoryDrawer } from './components/HistoryDrawer';
 import { StudentProfile } from './components/StudentSelector';
 import { hasStoredApiKey } from './lib/gemini/client';
 import { Key, X } from 'lucide-react';
+
+const SettingsModal = lazy(() =>
+  import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal }))
+);
+const HistoryDrawer = lazy(() =>
+  import('./components/HistoryDrawer').then((m) => ({ default: m.HistoryDrawer }))
+);
 
 const DEFAULT_STUDENTS: StudentProfile[] = [
   { name: 'Hugo', level: 'CM2' },
@@ -120,18 +125,26 @@ export function App() {
       </main>
 
       {/* Modal Réglages Clé API */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onKeySaved={handleKeySaved}
-      />
+      {isSettingsOpen && (
+        <Suspense fallback={null}>
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            onKeySaved={handleKeySaved}
+          />
+        </Suspense>
+      )}
 
       {/* Tiroir Historique des séances */}
-      <HistoryDrawer
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        selectedStudent={currentStudent.name}
-      />
+      {isHistoryOpen && (
+        <Suspense fallback={null}>
+          <HistoryDrawer
+            isOpen={isHistoryOpen}
+            onClose={() => setIsHistoryOpen(false)}
+            selectedStudent={currentStudent.name}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

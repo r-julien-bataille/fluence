@@ -79,7 +79,7 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
           ))}
         </div>
 
-        <div className="text-xs text-slate-500 font-medium">
+        <div className="text-xs text-slate-600 font-medium">
           {filteredTexts?.length || 0} texte{(filteredTexts?.length || 0) > 1 ? 's' : ''} disponible{(filteredTexts?.length || 0) > 1 ? 's' : ''}
         </div>
       </div>
@@ -99,7 +99,7 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
                       {text.level}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-slate-600 font-medium">
                       {text.theme}
                     </span>
                   </div>
@@ -120,9 +120,9 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
               </div>
 
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-500 py-3 border-t border-slate-100 mb-4">
+                <div className="flex items-center justify-between text-xs text-slate-600 py-3 border-t border-slate-100 mb-4">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-slate-400" />
+                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
                     <span>{text.wordCount} mots</span>
                   </span>
                   <span className="flex items-center gap-1">

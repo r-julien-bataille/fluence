@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Protocole ELFE / Éduscol
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-sans hidden sm:block">
+            <p className="text-[11px] text-slate-600 font-sans hidden sm:block">
               Évaluation et entraînement de lecture du CE1 au CM2
             </p>
           </div>
@@ -68,6 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'
             }`}
             title="Activer la police adaptée à la dyslexie et espacement renforcé"
+            aria-label="Activer le mode confort de lecture"
+            aria-pressed={dyslexicMode}
           >
             <Type className="w-4 h-4" />
             <span className="hidden md:inline">Dys-confort</span>
@@ -78,6 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenHistory}
             className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
             title="Historique des séances"
+            aria-label="Historique des séances"
           >
             <History className="w-4 h-4" />
           </button>
@@ -91,6 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
             }`}
             title="Paramètres de la clé API Google"
+            aria-label="Paramètres de la clé API Google"
           >
             <Settings className="w-4 h-4" />
             {!hasKey && (

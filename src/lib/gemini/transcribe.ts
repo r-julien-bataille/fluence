@@ -69,7 +69,7 @@ export async function transcribeAudioWithGemini(
   audioBlob: Blob,
   expectedTokens: string[] = []
 ): Promise<TranscriptionResult> {
-  const client = getGenAIClient();
+  const client = await getGenAIClient();
   const base64Audio = await blobToBase64(audioBlob);
   const mimeType = sanitizeAudioMimeType(audioBlob.type);
 
@@ -200,7 +200,7 @@ async function fallbackTranscribeWithGeminiFlash(
   mimeType: string,
   customVocabulary: string[]
 ): Promise<TranscriptionResult> {
-  const client = getGenAIClient();
+  const client = await getGenAIClient();
   const vocabSample = customVocabulary.slice(0, 150);
 
   const prompt = `Tu es un transcripteur phonétique rigoureux pour l'évaluation de lecture d'enfants (protocole de fluence ELFE).

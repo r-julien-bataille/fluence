@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import type { GoogleGenAI } from '@google/genai';
 
 const API_KEY_STORAGE_KEY = 'GOOGLE_AI_KEY';
 
@@ -22,37 +22,36 @@ export function hasStoredApiKey(): boolean {
 }
 
 /**
- * Crée ou réutilise une instance du client SDK Google GenAI
+ * Crée une instance du client SDK Google GenAI (chargé dynamiquement à la demande)
  */
-export function getGenAIClient(overrideKey?: string): GoogleGenAI {
+export async function getGenAIClient(overrideKey?: string): Promise<GoogleGenAI> {
   const apiKey = overrideKey?.trim() || getStoredApiKey();
   if (!apiKey) {
     throw new Error("Clé API Google AI Studio manquante. Veuillez configurer votre clé dans les paramètres (icône ⚙️).");
   }
-  return new GoogleGenAI({ apiKey });
+  const { GoogleGenAI: GenAIConstructor } = await import('@google/genai');
+  return new GenAIConstructor({ apiKey });
 }
 
 /**
  * Teste la validité de la clé API avec un appel ultra-léger vers gemini-3.8-flash
  */
-export function testApiKey(key: string): Promise<{ success: boolean; message: string }> {
-  return (async () => {
-    try {
-      const client = new GoogleGenAI({ apiKey: key.trim() });
-      const response = await client.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: 'Réponds uniquement par: OK',
-      });
-      if (response && response.text) {
-        return { success: true, message: 'Clé API validée avec succès !' };
-      }
-      return { success: false, message: "Réponse inattendue de l'API Google." };
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,
-        message: `Erreur d'authentification : ${errorMsg}`,
-      };
+export async function testApiKey(key: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const client = await getGenAIClient(key.trim());
+    const response = await client.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: 'Réponds uniquement par: OK',
+    });
+    if (response && response.text) {
+      return { success: true, message: 'Clé API validée avec succès !' };
     }
-  })();
+    return { success: false, message: "Réponse inattendue de l'API Google." };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    return {
+      success: false,
+      message: `Erreur d'authentification : ${errorMsg}`,
+    };
+  }
 }

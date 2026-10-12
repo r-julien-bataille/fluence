@@ -41,7 +41,7 @@ const LEVEL_WORD_CONSTRAINTS: Record<FluencyLevel, { min: number; max: number; g
 };
 
 export async function generateStoryWithGemini(params: GenerateStoryParams): Promise<ExerciseText> {
-  const client = getGenAIClient();
+  const client = await getGenAIClient();
   const constraints = LEVEL_WORD_CONSTRAINTS[params.level];
   const targetMclm = FLUENCY_NORMS[params.level].target;
 

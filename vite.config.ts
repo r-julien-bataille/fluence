@@ -21,7 +21,6 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           dexie: ['dexie', 'dexie-react-hooks'],
-          genai: ['@google/genai'],
         },
       },
     },
