@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { ExerciseText, FluencyAttempt, FluencySession, db } from '@/db/db';
 import { FLUENCY_NORMS } from '@/lib/utils';
@@ -33,12 +33,13 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
   onOpenHistory,
 }) => {
   const [isSaved, setIsSaved] = useState(false);
+  const hasSavedRef = useRef(false);
 
   const delta = step3.mclm - step1.mclm;
   const norm = FLUENCY_NORMS[text.level];
   const target = norm.target;
 
-  // Lance les confettis et enregistre dans Dexie.js
+  // Lance les confettis et enregistre dans Dexie.js (idempotent, garanti une seule fois)
   useEffect(() => {
     // Confetti explosion
     try {
@@ -63,19 +64,25 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
       }, 400);
     } catch (_) {}
 
-    // Sauvegarde automatique dans Dexie
+    // Protection stricte contre l'exécution multiple (ex: React StrictMode)
+    if (hasSavedRef.current) return;
+    hasSavedRef.current = true;
+
+    // Sauvegarde automatique et idempotente dans Dexie
     const saveSession = async () => {
       try {
+        // ID déterministe basé sur l'horodatage initial de l'étape 1
+        const sessionId = `session-${step1.timestamp || Date.now()}-${studentName}-${text.id}`;
         const session: FluencySession = {
-          id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          id: sessionId,
           studentName,
           textId: text.id,
-          date: Date.now(),
+          date: step3.timestamp || Date.now(),
           step1,
           step3,
           progressionDelta: delta,
         };
-        await db.sessions.add(session);
+        await db.sessions.put(session);
         setIsSaved(true);
       } catch (err) {
         console.error("Erreur lors de la sauvegarde de la séance :", err);
@@ -83,7 +90,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
     };
 
     saveSession();
-  }, []);
+  }, [delta, step1, step3, studentName, text.id]);
 
   // Déterminer la hauteur relative des barres de l'histogramme comparatif
   const maxBarValue = Math.max(step1.mclm, step3.mclm, target, 50) * 1.15;
