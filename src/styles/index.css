@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-reading: 'Lexend', system-ui, -apple-system, sans-serif;
+    --font-title: 'Fredoka', cursive, system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-reading);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, .font-fun {
+    font-family: var(--font-title);
+  }
+}
+
+/* Animations d'encouragement et pulsations */
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
+
+/* Style de texte de lecture adapté aux enfants */
+.reading-text-flow {
+  line-height: 2.2;
+  letter-spacing: 0.03em;
+  word-spacing: 0.15em;
+}
+
+.dys-mode .reading-text-flow {
+  font-family: 'Open Dyslexic', 'Lexend', sans-serif;
+  letter-spacing: 0.08em;
+  word-spacing: 0.25em;
+  line-height: 2.5;
+}
+
+@media print {
+  body {
+    background-color: white !important;
+  }
+  header, nav, button, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
