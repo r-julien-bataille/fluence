@@ -223,7 +223,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
   // Permet à l'enseignant de corriger un mot (ex: vrai positif pris pour une erreur ou inversement)
   const handleOverrideWordStatus = (
-    expectedIndex: number,
+    expectedIndexes: number[],
     newStatus: "correct" | "error"
   ) => {
     if (!alignmentResult) {
@@ -231,7 +231,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
     }
 
     const updatedTokens = alignmentResult.alignedTokens.map((t) => {
-      if (t.expectedIndex === expectedIndex) {
+      if (expectedIndexes.includes(t.expectedIndex)) {
         return {
           ...t,
           errorType:

@@ -211,7 +211,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
   };
 
   const handleOverrideWordStatus = (
-    expectedIndex: number,
+    expectedIndexes: number[],
     newStatus: "correct" | "error"
   ) => {
     if (!alignmentResult) {
@@ -219,7 +219,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     }
 
     const updatedTokens = alignmentResult.alignedTokens.map((t) => {
-      if (t.expectedIndex === expectedIndex) {
+      if (expectedIndexes.includes(t.expectedIndex)) {
         return {
           ...t,
           errorType:

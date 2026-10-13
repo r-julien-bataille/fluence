@@ -24,7 +24,7 @@ interface FluencyTextDisplayProps {
   content: string;
   dyslexicMode?: boolean;
   onOverrideWordStatus?: (
-    expectedIndex: number,
+    expectedIndexes: number[],
     newStatus: "correct" | "error"
   ) => void;
   onSeekAudioMs?: (timestampMs: number) => void;
@@ -41,8 +41,47 @@ interface LineChunk {
     clean: string;
     tokenIndex: number;
     annotated?: AlignedToken;
+    parts: AlignedToken[];
   }[];
 }
+
+const STATUS_PRIORITY: AlignedToken["status"][] = [
+  "error",
+  "hesitation",
+  "unreached",
+  "correct",
+];
+
+/**
+ * Fusionne les tokens alignés d'un mot graphique (ex. « l'intérieur » = « l' » + « intérieur »)
+ * en un seul token représentant le mot affiché.
+ */
+const mergeWordTokens = (
+  word: string,
+  parts: AlignedToken[]
+): AlignedToken | undefined => {
+  const [first] = parts;
+  if (!first) {
+    return undefined;
+  }
+  if (parts.length === 1) {
+    return first;
+  }
+  const status =
+    STATUS_PRIORITY.find((st) => parts.some((p) => p.status === st)) ??
+    first.status;
+  const spoken = parts
+    .map((p) => p.spokenWord)
+    .filter((w): w is string => Boolean(w));
+  return {
+    errorType: parts.find((p) => p.status === status)?.errorType,
+    expectedIndex: first.expectedIndex,
+    expectedWord: word.match(WORD_BOUNDARY_REGEX)?.[2] || word,
+    spokenWord: spoken.length > 0 ? spoken.join(" ") : undefined,
+    status,
+    timestampMs: parts.find((p) => p.timestampMs !== undefined)?.timestampMs,
+  };
+};
 
 interface PopoverPosition {
   caretLeft: number;
@@ -285,7 +324,10 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       }
 
       const wordTokenIndex = tokenCounter;
-      const matchedToken = tokenMap.get(wordTokenIndex);
+      const parts = subTokens
+        .map((_, k) => tokenMap.get(wordTokenIndex + k))
+        .filter((t): t is AlignedToken => t !== undefined);
+      const matchedToken = mergeWordTokens(word, parts);
       tokenCounter += subTokens.length;
       cumulative += subTokens.length;
 
@@ -293,6 +335,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
         annotated: matchedToken,
         clean: subTokens.map((st) => st.clean).join(" "),
         original: word,
+        parts,
         tokenIndex: wordTokenIndex,
       });
 
@@ -308,6 +351,20 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
     return chunks;
   }, [content, annotatedTokens]);
+
+  // Applique la correction à tous les tokens du mot (ex. « l' » et « intérieur »)
+  const overrideInspectedWord = (newStatus: "correct" | "error") => {
+    if (!(inspectedWord && onOverrideWordStatus)) {
+      return;
+    }
+    const word = lines
+      .flatMap((line) => line.words)
+      .find((w) => w.annotated?.expectedIndex === inspectedWord.expectedIndex);
+    const indexes = word?.parts.map((p) => p.expectedIndex) ?? [
+      inspectedWord.expectedIndex,
+    ];
+    onOverrideWordStatus(indexes, newStatus);
+  };
 
   const handleWordClick = (
     item: LineChunk["words"][0],
@@ -623,7 +680,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 <button
                   className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 font-bold text-white text-xs shadow-sm transition-all hover:bg-rose-500"
                   onClick={() => {
-                    onOverrideWordStatus(inspectedWord.expectedIndex, "error");
+                    overrideInspectedWord("error");
                     setInspectedWord({
                       ...inspectedWord,
                       errorType: "substitution",
@@ -640,10 +697,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 <button
                   className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 font-bold text-white text-xs shadow-sm transition-all hover:bg-emerald-500"
                   onClick={() => {
-                    onOverrideWordStatus(
-                      inspectedWord.expectedIndex,
-                      "correct"
-                    );
+                    overrideInspectedWord("correct");
                     setInspectedWord({ ...inspectedWord, status: "correct" });
                   }}
                   title="Valider comme mot lu correctement"
