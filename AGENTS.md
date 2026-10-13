@@ -59,7 +59,6 @@ pnpm preview     # Serves the production build from dist/
 4. **Workspace Skills (`.agents/skills/`)**:
    - Consult `.agents/skills/pnpm/SKILL.md` for package management, strict peer dependency, and allowBuilds rules.
    - Consult `.agents/skills/vite/SKILL.md` for Vite 8 / Rolldown configuration changes.
-   - Consult `.agents/skills/typescript-migration/SKILL.md` for TypeScript 7 compiler rules and diagnostics.
    - Consult `.agents/skills/tsdown/SKILL.md` if extracting or bundling standalone TypeScript libraries.
 
 # Ultracite Code Standards
