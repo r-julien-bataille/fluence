@@ -3,7 +3,7 @@
 Per-tool status under TypeScript 7.0 (released 2026-07-08). The root cause for most breakage: **TS 7.0 does not ship a programmatic Compiler API** (`ts.createProgram`, `ts.createSourceFile`, etc. are gone). TS 7.1 will ship a new, different API. Until then, use the official `@typescript/typescript6` side-by-side pattern.
 
 | Tool | Status | Why | Fix |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **typescript-eslint** | Works via alias | Imports `typescript` for the API | Use `@typescript/typescript6` npm alias pattern; or wait for TS 7.1 + typescript-eslint update |
 | **ts-morph** | Broken on TS 7 | Wraps the Compiler API | Stay on TS 6 until TS 7.1 ships new API; or run side-by-side |
 | **ts-node** (type-check mode) | Broken on TS 7 | Delegates compilation to `tsc` | Replace with **`tsx`** (esbuild-powered, type-strips without type-checking); run `tsc --noEmit` (or `tsgo`) in CI separately. Alt: Node 22.6+ `--experimental-strip-types` |

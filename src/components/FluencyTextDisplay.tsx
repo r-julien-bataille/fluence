@@ -1,38 +1,39 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { AlignedToken } from '@/lib/alignment';
-import { tokenizeFrenchText } from '@/lib/utils';
-import { speakFrenchText, syllabifyFrenchWord } from '@/lib/audio/speech';
-import {
-  Volume2,
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-  Headphones,
-  RotateCcw,
-  Sparkles,
-} from 'lucide-react';
+import { CheckCircle2, Headphones, XCircle } from "lucide-react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import type { AlignedToken } from "@/lib/alignment";
+import { speakFrenchText, syllabifyFrenchWord } from "@/lib/audio/speech";
+import { tokenizeFrenchText } from "@/lib/utils";
+
+const WHITESPACE_REGEX = /\s+/u;
+const WORD_BOUNDARY_REGEX =
+  /^([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)(.*?)([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)$/u;
 
 interface FluencyTextDisplayProps {
-  content: string;
-  annotatedTokens?: AlignedToken[];
-  showResults?: boolean;
   activeWordIndex?: number;
-  onWordClick?: (token: AlignedToken | { word: string; index: number }) => void;
+  annotatedTokens?: AlignedToken[];
+  content: string;
   dyslexicMode?: boolean;
+  onOverrideWordStatus?: (
+    expectedIndex: number,
+    newStatus: "correct" | "error"
+  ) => void;
+  onSeekAudioMs?: (timestampMs: number) => void;
+  onWordClick?: (token: AlignedToken | { word: string; index: number }) => void;
   // Nouvelles fonctionnalités de synchronisation audio
   playbackTimeMs?: number;
-  onSeekAudioMs?: (timestampMs: number) => void;
-  onOverrideWordStatus?: (expectedIndex: number, newStatus: 'correct' | 'error') => void;
+  showResults?: boolean;
 }
 
 interface LineChunk {
+  cumulativeCount: number;
   words: {
     original: string;
     clean: string;
     tokenIndex: number;
     annotated?: AlignedToken;
   }[];
-  cumulativeCount: number;
 }
 
 export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
@@ -53,23 +54,36 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
     setBicolorSyllables(dyslexicMode);
   }, [dyslexicMode]);
 
-  const renderWordContent = (word: string, isBicolor: boolean): React.ReactNode => {
-    if (!isBicolor) return word;
-    const match = word.match(/^([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)(.*?)([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)$/);
-    if (!match) return word;
-    const prefix = match[1];
-    const core = match[2];
-    const suffix = match[3];
-    if (core.length <= 3) return word;
+  const renderWordContent = (
+    word: string,
+    isBicolor: boolean
+  ): React.ReactNode => {
+    if (!isBicolor) {
+      return word;
+    }
+    const match = word.match(WORD_BOUNDARY_REGEX);
+    if (!match) {
+      return word;
+    }
+    const [, prefix = "", core = "", suffix = ""] = match;
+    if (core.length <= 3) {
+      return word;
+    }
     const syllables = syllabifyFrenchWord(core);
-    if (syllables.length <= 1) return word;
+    if (syllables.length <= 1) {
+      return word;
+    }
     return (
       <span className="inline-flex items-baseline">
         {prefix}
         {syllables.map((s, idx) => (
           <span
+            className={
+              idx % 2 === 0
+                ? "font-semibold text-indigo-900"
+                : "font-bold text-rose-600"
+            }
             key={idx}
-            className={idx % 2 === 0 ? 'text-indigo-900 font-semibold' : 'text-rose-600 font-bold'}
           >
             {s}
           </span>
@@ -81,21 +95,22 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
   // Découper le texte en lignes logiques d'environ 10 à 12 mots pour simuler la feuille de fluence officielle
   const lines = useMemo<LineChunk[]>(() => {
-    const rawWords = content.trim().split(/\s+/);
+    const rawWords = content.trim().split(WHITESPACE_REGEX);
     const tokenMap = new Map<number, AlignedToken>();
 
     if (annotatedTokens) {
-      annotatedTokens.forEach((t) => tokenMap.set(t.expectedIndex, t));
+      for (const t of annotatedTokens) {
+        tokenMap.set(t.expectedIndex, t);
+      }
     }
 
     const chunks: LineChunk[] = [];
     const WORDS_PER_LINE = 10;
-    let currentWords: LineChunk['words'] = [];
+    let currentWords: LineChunk["words"] = [];
     let cumulative = 0;
     let tokenCounter = 0;
 
-    for (let i = 0; i < rawWords.length; i++) {
-      const word = rawWords[i];
+    for (const [i, word] of rawWords.entries()) {
       const subTokens = tokenizeFrenchText(word);
       tokenCounter += subTokens.length;
       cumulative += subTokens.length;
@@ -103,16 +118,16 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       const matchedToken = tokenMap.get(tokenCounter - subTokens.length);
 
       currentWords.push({
-        original: word,
-        clean: subTokens.map((st) => st.clean).join(' '),
-        tokenIndex: tokenCounter - subTokens.length,
         annotated: matchedToken,
+        clean: subTokens.map((st) => st.clean).join(" "),
+        original: word,
+        tokenIndex: tokenCounter - subTokens.length,
       });
 
       if (currentWords.length >= WORDS_PER_LINE || i === rawWords.length - 1) {
         chunks.push({
-          words: currentWords,
           cumulativeCount: cumulative,
+          words: currentWords,
         });
         currentWords = [];
       }
@@ -121,7 +136,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
     return chunks;
   }, [content, annotatedTokens]);
 
-  const handleWordClick = (item: LineChunk['words'][0]) => {
+  const handleWordClick = (item: LineChunk["words"][0]) => {
     const ann = item.annotated;
     if (showResults && ann) {
       setInspectedWord(ann);
@@ -138,24 +153,28 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200/80 transition-all ${
-        dyslexicMode ? 'dys-mode' : ''
+      className={`rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all sm:p-10 ${
+        dyslexicMode ? "dys-mode" : ""
       }`}
     >
       {/* Panneau d'inspection détaillée du mot sélectionné */}
       {showResults && inspectedWord && (
-        <div className="mb-6 p-4 sm:p-5 bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-md animate-in fade-in duration-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="fade-in mb-6 flex animate-in flex-col items-start justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-white shadow-md duration-200 sm:p-5 md:flex-row md:items-center">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg ${
-                inspectedWord.status === 'correct'
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                  : inspectedWord.status === 'error'
-                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                  : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+              className={`flex h-10 w-10 items-center justify-center rounded-xl font-bold text-lg ${
+                inspectedWord.status === "correct"
+                  ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-400"
+                  : inspectedWord.status === "error"
+                    ? "border border-rose-500/40 bg-rose-500/20 text-rose-400"
+                    : "border border-amber-500/40 bg-amber-500/20 text-amber-400"
               }`}
             >
-              {inspectedWord.status === 'correct' ? '✓' : inspectedWord.status === 'error' ? '✕' : '⋯'}
+              {inspectedWord.status === "correct"
+                ? "✓"
+                : inspectedWord.status === "error"
+                  ? "✕"
+                  : "⋯"}
             </div>
 
             <div>
@@ -164,33 +183,37 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                   Mot : « {inspectedWord.expectedWord} »
                 </span>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                    inspectedWord.status === 'correct'
-                      ? 'bg-emerald-500/20 text-emerald-300'
-                      : inspectedWord.status === 'error'
-                      ? 'bg-rose-500/20 text-rose-300'
-                      : 'bg-amber-500/20 text-amber-300'
+                  className={`rounded-full px-2 py-0.5 font-semibold text-xs ${
+                    inspectedWord.status === "correct"
+                      ? "bg-emerald-500/20 text-emerald-300"
+                      : inspectedWord.status === "error"
+                        ? "bg-rose-500/20 text-rose-300"
+                        : "bg-amber-500/20 text-amber-300"
                   }`}
                 >
-                  {inspectedWord.status === 'correct'
-                    ? 'Validé (positif)'
-                    : inspectedWord.errorType === 'omission'
-                    ? 'Omission (mot sauté)'
-                    : inspectedWord.errorType === 'inversion'
-                    ? 'Inversion'
-                    : 'Erreur / substitution'}
+                  {inspectedWord.status === "correct"
+                    ? "Validé (positif)"
+                    : inspectedWord.errorType === "omission"
+                      ? "Omission (mot sauté)"
+                      : inspectedWord.errorType === "inversion"
+                        ? "Inversion"
+                        : "Erreur / substitution"}
                 </span>
               </div>
 
-              <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-300 text-xs">
                 {inspectedWord.spokenWord && (
                   <span>
-                    Transcription IA : <strong className="text-amber-300">« {inspectedWord.spokenWord} »</strong>
+                    Transcription IA :{" "}
+                    <strong className="text-amber-300">
+                      « {inspectedWord.spokenWord} »
+                    </strong>
                   </span>
                 )}
                 {inspectedWord.timestampMs !== undefined && (
-                  <span className="text-slate-400 font-mono">
-                    Position audio : {(inspectedWord.timestampMs / 1000).toFixed(1)}s
+                  <span className="font-mono text-slate-400">
+                    Position audio :{" "}
+                    {(inspectedWord.timestampMs / 1000).toFixed(1)}s
                   </span>
                 )}
               </div>
@@ -198,51 +221,63 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           </div>
 
           {/* Actions enseignant / vérification */}
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+          <div className="flex w-full items-center justify-end gap-2 md:w-auto">
             {inspectedWord.timestampMs !== undefined && onSeekAudioMs && (
               <button
-                onClick={() => onSeekAudioMs(inspectedWord.timestampMs!)}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-slate-800 px-3 py-1.5 font-semibold text-indigo-300 text-xs transition-colors hover:bg-slate-700"
+                onClick={() => {
+                  if (inspectedWord.timestampMs !== undefined) {
+                    onSeekAudioMs(inspectedWord.timestampMs);
+                  }
+                }}
                 title="Écouter le mot dans l'enregistrement de l'enfant"
+                type="button"
               >
-                <Headphones className="w-3.5 h-3.5" />
+                <Headphones className="h-3.5 w-3.5" />
                 <span>Réécouter</span>
               </button>
             )}
 
-            {onOverrideWordStatus && (
-              <>
-                {inspectedWord.status !== 'correct' ? (
-                  <button
-                    onClick={() => {
-                      onOverrideWordStatus(inspectedWord.expectedIndex, 'correct');
-                      setInspectedWord({ ...inspectedWord, status: 'correct' });
-                    }}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm"
-                    title="L'enfant a bien lu ce mot : corriger l'IA"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Valider comme juste</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      onOverrideWordStatus(inspectedWord.expectedIndex, 'error');
-                      setInspectedWord({ ...inspectedWord, status: 'error', errorType: 'substitution' });
-                    }}
-                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm"
-                    title="L'enfant a fait une erreur non détectée : corriger l'IA"
-                  >
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Compter en erreur</span>
-                  </button>
-                )}
-              </>
-            )}
+            {onOverrideWordStatus &&
+              (inspectedWord.status === "correct" ? (
+                <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-rose-600 px-3 py-1.5 font-bold text-white text-xs shadow-sm transition-all hover:bg-rose-500"
+                  onClick={() => {
+                    onOverrideWordStatus(inspectedWord.expectedIndex, "error");
+                    setInspectedWord({
+                      ...inspectedWord,
+                      errorType: "substitution",
+                      status: "error",
+                    });
+                  }}
+                  title="L'enfant a fait une erreur non détectée : corriger l'IA"
+                  type="button"
+                >
+                  <XCircle className="h-3.5 w-3.5" />
+                  <span>Compter en erreur</span>
+                </button>
+              ) : (
+                <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 font-bold text-white text-xs shadow-sm transition-all hover:bg-emerald-500"
+                  onClick={() => {
+                    onOverrideWordStatus(
+                      inspectedWord.expectedIndex,
+                      "correct"
+                    );
+                    setInspectedWord({ ...inspectedWord, status: "correct" });
+                  }}
+                  title="L'enfant a bien lu ce mot : corriger l'IA"
+                  type="button"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Valider comme juste</span>
+                </button>
+              ))}
 
             <button
+              className="px-2 py-1 text-slate-400 text-xs hover:text-white"
               onClick={() => setInspectedWord(null)}
-              className="text-xs text-slate-400 hover:text-white px-2 py-1"
+              type="button"
             >
               Fermer
             </button>
@@ -252,23 +287,26 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
       {/* Barre d'outils d'accessibilité de lecture */}
       {!showResults && (
-        <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 text-xs">
-          <span className="text-slate-400 font-medium hidden sm:inline">
+        <div className="mb-4 flex items-center justify-between border-slate-100 border-b pb-3 text-xs">
+          <span className="hidden font-medium text-slate-400 sm:inline">
             Repères de mots cumulés en marge droite (protocole ELFE)
           </span>
           <button
-            onClick={() => setBicolorSyllables(!bicolorSyllables)}
-            className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-2 transition-all cursor-pointer ${
+            className={`flex cursor-pointer items-center gap-2 rounded-xl px-3 py-1.5 font-bold transition-all ${
               bicolorSyllables
-                ? 'bg-indigo-100 text-indigo-900 border border-indigo-200 shadow-2xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? "border border-indigo-200 bg-indigo-100 text-indigo-900 shadow-2xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
+            onClick={() => setBicolorSyllables(!bicolorSyllables)}
             title="Affiche les syllabes en couleurs alternées pour faciliter le décodage dyslexique"
+            type="button"
           >
             <span>🎨 Syllabes bicolores (Dys)</span>
             <span
-              className={`w-2 h-2 rounded-full transition-colors ${
-                bicolorSyllables ? 'bg-indigo-600 ring-2 ring-indigo-300' : 'bg-slate-300'
+              className={`h-2 w-2 rounded-full transition-colors ${
+                bicolorSyllables
+                  ? "bg-indigo-600 ring-2 ring-indigo-300"
+                  : "bg-slate-300"
               }`}
             />
           </button>
@@ -279,11 +317,11 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       <div className="space-y-4">
         {lines.map((line, lineIdx) => (
           <div
+            className="flex items-start justify-between gap-4 rounded-xl border-slate-100/60 border-b px-2 pb-2 transition-colors last:border-b-0 hover:bg-slate-50/50"
             key={lineIdx}
-            className="flex items-start justify-between gap-4 pb-2 border-b border-slate-100/60 last:border-b-0 hover:bg-slate-50/50 rounded-xl px-2 transition-colors"
           >
             {/* Ligne de texte avec mots */}
-            <div className="flex-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-2 reading-text-flow text-lg sm:text-2xl text-slate-800 font-medium">
+            <div className="reading-text-flow flex flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-2 font-medium text-lg text-slate-800 sm:text-2xl">
               {line.words.map((item, wIdx) => {
                 const ann = item.annotated;
 
@@ -297,49 +335,52 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                   playbackTimeMs < ann.timestampMs + 650;
 
                 const isInspected =
-                  showResults && inspectedWord && inspectedWord.expectedIndex === ann?.expectedIndex;
+                  showResults &&
+                  inspectedWord &&
+                  inspectedWord.expectedIndex === ann?.expectedIndex;
 
                 if (showResults && ann) {
-                  let styleClass = '';
-                  let tooltip = '';
+                  let styleClass = "";
+                  let tooltip = "";
 
-                  if (ann.status === 'correct') {
+                  if (ann.status === "correct") {
                     styleClass =
-                      'bg-emerald-100/90 text-emerald-950 border-b-2 border-emerald-500 px-1.5 py-0.5 rounded-lg';
-                    tooltip = `Correctement lu (${ann.timestampMs ? `${(ann.timestampMs / 1000).toFixed(1)}s` : ''}) - Cliquer pour écouter`;
-                  } else if (ann.status === 'hesitation') {
+                      "bg-emerald-100/90 text-emerald-950 border-b-2 border-emerald-500 px-1.5 py-0.5 rounded-lg";
+                    tooltip = `Correctement lu (${ann.timestampMs ? `${(ann.timestampMs / 1000).toFixed(1)}s` : ""}) - Cliquer pour écouter`;
+                  } else if (ann.status === "hesitation") {
                     styleClass =
-                      'bg-amber-100 text-amber-950 border-b-2 border-amber-500 px-1.5 py-0.5 rounded-lg';
-                    tooltip = `Hésitation > 3s ${ann.spokenWord ? `(dit: "${ann.spokenWord}")` : ''} - Cliquer pour écouter`;
-                  } else if (ann.status === 'error') {
+                      "bg-amber-100 text-amber-950 border-b-2 border-amber-500 px-1.5 py-0.5 rounded-lg";
+                    tooltip = `Hésitation > 3s ${ann.spokenWord ? `(dit: "${ann.spokenWord}")` : ""} - Cliquer pour écouter`;
+                  } else if (ann.status === "error") {
                     styleClass =
-                      'bg-rose-100 text-rose-950 border-b-2 border-rose-500 px-1.5 py-0.5 rounded-lg';
+                      "bg-rose-100 text-rose-950 border-b-2 border-rose-500 px-1.5 py-0.5 rounded-lg";
                     tooltip =
-                      ann.errorType === 'omission'
-                        ? 'Omission (mot sauté) - Cliquer pour écouter'
-                        : ann.errorType === 'inversion'
-                        ? 'Inversion de mots - Cliquer pour écouter'
-                        : `Substitution ${ann.spokenWord ? `(lu: "${ann.spokenWord}")` : ''} - Cliquer pour écouter`;
-                  } else if (ann.status === 'unreached') {
-                    styleClass = 'text-slate-400 opacity-50';
-                    tooltip = 'Non atteint dans les 60s';
+                      ann.errorType === "omission"
+                        ? "Omission (mot sauté) - Cliquer pour écouter"
+                        : ann.errorType === "inversion"
+                          ? "Inversion de mots - Cliquer pour écouter"
+                          : `Substitution ${ann.spokenWord ? `(lu: "${ann.spokenWord}")` : ""} - Cliquer pour écouter`;
+                  } else if (ann.status === "unreached") {
+                    styleClass = "text-slate-400 opacity-50";
+                    tooltip = "Non atteint dans les 60s";
                   }
 
                   return (
-                    <span
-                      key={wIdx}
-                      title={tooltip}
-                      onClick={() => handleWordClick(item)}
-                      className={`inline-block cursor-pointer transition-all duration-150 relative ${styleClass} ${
+                    <button
+                      className={`relative inline-block cursor-pointer border-none bg-transparent p-0 font-inherit text-inherit transition-all duration-150 ${styleClass} ${
                         isCurrentlyPlayingAudio
-                          ? 'ring-4 ring-indigo-500 ring-offset-2 scale-110 font-black shadow-md z-10'
+                          ? "z-10 scale-110 font-black shadow-md ring-4 ring-indigo-500 ring-offset-2"
                           : isInspected
-                          ? 'ring-2 ring-slate-900 ring-offset-1'
-                          : 'hover:scale-105'
+                            ? "ring-2 ring-slate-900 ring-offset-1"
+                            : "hover:scale-105"
                       }`}
+                      key={wIdx}
+                      onClick={() => handleWordClick(item)}
+                      title={tooltip}
+                      type="button"
                     >
                       {item.original}
-                    </span>
+                    </button>
                   );
                 }
 
@@ -347,24 +388,25 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 const isCurrent = activeWordIndex === item.tokenIndex;
 
                 return (
-                  <span
+                  <button
+                    className={`inline-block cursor-pointer border-none bg-transparent p-0 font-inherit text-inherit transition-colors hover:text-indigo-600 ${
+                      isCurrent
+                        ? "rounded-sm bg-amber-200 px-1 text-amber-950 shadow-xs"
+                        : ""
+                    }`}
                     key={wIdx}
                     onClick={() => handleWordClick(item)}
-                    className={`inline-block cursor-pointer transition-colors hover:text-indigo-600 ${
-                      isCurrent
-                        ? 'bg-amber-200 text-amber-950 px-1 rounded-sm shadow-xs'
-                        : ''
-                    }`}
+                    type="button"
                   >
                     {renderWordContent(item.original, bicolorSyllables)}
-                  </span>
+                  </button>
                 );
               })}
             </div>
 
             {/* Repère de mots cumulés en marge droite (norme ELFE) */}
-            <div className="shrink-0 w-12 sm:w-16 text-right select-none pt-1">
-              <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-xs sm:text-sm font-mono font-bold">
+            <div className="w-12 shrink-0 select-none pt-1 text-right sm:w-16">
+              <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 font-bold font-mono text-slate-500 text-xs sm:text-sm">
                 {line.cumulativeCount}
               </span>
             </div>
@@ -373,26 +415,29 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       </div>
 
       {showResults && (
-        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs sm:text-sm text-slate-600">
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-slate-100 border-t pt-6 text-slate-600 text-xs sm:flex-row sm:items-center sm:text-sm">
           <div className="flex flex-wrap items-center gap-3">
             <span className="font-semibold text-slate-700">Légende :</span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3.5 h-3.5 rounded bg-emerald-200 border border-emerald-500 inline-block" />
+              <span className="inline-block h-3.5 w-3.5 rounded border border-emerald-500 bg-emerald-200" />
               <span>Vert : Mot bien lu (vrai positif)</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3.5 h-3.5 rounded bg-rose-200 border border-rose-500 inline-block" />
+              <span className="inline-block h-3.5 w-3.5 rounded border border-rose-500 bg-rose-200" />
               <span>Rouge : Erreur / Omission (négatif)</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3.5 h-3.5 rounded bg-amber-200 border border-amber-500 inline-block" />
+              <span className="inline-block h-3.5 w-3.5 rounded border border-amber-500 bg-amber-200" />
               <span>Orange : Hésitation &gt; 3s</span>
             </span>
           </div>
 
-          <div className="text-xs text-indigo-600 font-medium flex items-center gap-1">
-            <Headphones className="w-4 h-4" />
-            <span>Clique sur n'importe quel mot pour réécouter et vérifier la décision de l'IA</span>
+          <div className="flex items-center gap-1 font-medium text-indigo-600 text-xs">
+            <Headphones className="h-4 w-4" />
+            <span>
+              Clique sur n'importe quel mot pour réécouter et vérifier la
+              décision de l'IA
+            </span>
           </div>
         </div>
       )}

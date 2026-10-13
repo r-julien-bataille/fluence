@@ -20,7 +20,7 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "lib": ["dom", "es2025"],
+    "lib": ["dom", "es2025"]
 
     // === TS 7 notes ===
     // "stableTypeOrdering": true,    // always-on in TS 7 — do NOT set (it's not a valid option anymore)

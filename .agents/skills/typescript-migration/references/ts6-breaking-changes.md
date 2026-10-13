@@ -9,7 +9,7 @@ Sourced from Microsoft's official TS 6.0 beta announcement (2026-02-11) and the 
 ### Default Changes Table
 
 | # | Option | Old Default | New Default | PR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | 1 | `strict` | `false` | **`true`** | https://github.com/microsoft/TypeScript/pull/63087 |
 | 2 | `module` | `CommonJS` | **`esnext`** | https://github.com/microsoft/TypeScript/pull/62669 |
 | 3 | `target` | `ES3` | **`es2025`** (floating — "current stable ECMAScript version immediately preceding esnext") | https://github.com/microsoft/TypeScript/pull/63067 |
@@ -37,10 +37,12 @@ Sourced from Microsoft's official TS 6.0 beta announcement (2026-02-11) and the 
   ```json
   {
     "compilerOptions": {
-+     "rootDir": "./src"
-    },
-    "include": ["./src"]
-  }
+  ```
+
+*     "rootDir": "./src"
+  }, "include": ["./src"] }
+  ```
+
   ```
 
 ### types deep-dive
@@ -61,9 +63,12 @@ Sourced from Microsoft's official TS 6.0 beta announcement (2026-02-11) and the 
   ```json
   {
     "compilerOptions": {
-+     "types": ["node"]
-    }
-  }
+  ```
+
+*     "types": ["node"]
+  } }
+  ```
+
   ```
 
 ---
@@ -73,7 +78,7 @@ Sourced from Microsoft's official TS 6.0 beta announcement (2026-02-11) and the 
 These options emit deprecation warnings in 6.0. Setting `"ignoreDeprecations": "6.0"` silences warnings in 6.0 but **DOES NOT work in 7.0** — every option below becomes a hard error in TS 7.0 regardless.
 
 | Option | Replacement | PR |
-|---|---|---|
+| --- | --- | --- |
 | `target: es5` / `es3` | use `es2015`+ or external transpiler (swc, esbuild) | https://github.com/microsoft/TypeScript/pull/63067 |
 | `downlevelIteration` (any value, even `false`) | remove entirely | https://github.com/microsoft/TypeScript/pull/63071 |
 | `moduleResolution: node` / `node10` | `nodenext` or `bundler` | https://github.com/microsoft/TypeScript/pull/62338 |
@@ -99,16 +104,20 @@ These options emit deprecation warnings in 6.0. Setting `"ignoreDeprecations": "
   ```json
   {
     "compilerOptions": {
+  ```
 -     "baseUrl": "./src",
       "paths": {
 -       "@app/*": ["app/*"],
 -       "@lib/*": ["lib/*"]
-+       "@app/*": ["./src/app/*"],
-+       "@lib/*": ["./src/lib/*"]
+
+*       "@app/*": ["./src/app/*"],
+*       "@lib/*": ["./src/lib/*"]
       }
-    }
-  }
+  } }
   ```
+
+  ```
+
 - **If `baseUrl` was actually used as a look-up root** (bare non-aliased imports resolved against it), add an explicit catch-all: `"*": ["./src/*"]`.
 - **`extends` does NOT merge `paths`** — paths are always fully overridden by the child config. Shared base configs may need `paths` defined in more places after this migration.
 - **Use the official `ts5to6` codemod**:
@@ -159,7 +168,7 @@ Set `"ignoreDeprecations": "6.0"` in tsconfig to silence all 6.0 deprecation war
 ## 4. New Diagnostic Codes Quick Table
 
 | Code | Message |
-|---|---|
+| --- | --- |
 | 5011 | `rootDir` must be explicitly set |
 | 5101 | Option deprecated, stops in {ver}; use `ignoreDeprecations` |
 | 5102 | Option removed; remove from config |

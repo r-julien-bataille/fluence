@@ -70,6 +70,7 @@ For enabling a stricter `compilerOption` (e.g. `noUncheckedIndexedAccess`, `eras
 ## Rollback Plan Template
 
 For any playbook, before starting:
+
 ```bash
 git tag pre-ts-migration
 git checkout -b migrate-ts-X

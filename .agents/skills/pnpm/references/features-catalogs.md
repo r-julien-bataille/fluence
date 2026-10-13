@@ -13,7 +13,7 @@ Define a catalog in `pnpm-workspace.yaml`:
 
 ```yaml
 packages:
-  - 'packages/*'
+  - "packages/*"
 
 catalog:
   react: ^18.2.0
@@ -45,7 +45,7 @@ Create multiple catalogs for different scenarios:
 
 ```yaml
 packages:
-  - 'packages/*'
+  - "packages/*"
 
 # Default catalog
 catalog:
@@ -56,11 +56,11 @@ catalogs:
   react17:
     react: ^17.0.2
     react-dom: ^17.0.2
-  
+
   react18:
     react: ^18.2.0
     react-dom: ^18.2.0
-  
+
   testing:
     vitest: ^1.0.0
     "@testing-library/react": ^14.0.0
@@ -86,8 +86,8 @@ A catalog entry may hold a `workspace:` range (v12.2.0), so the version a worksp
 
 ```yaml title="pnpm-workspace.yaml"
 catalog:
-  '@example/utils': workspace:^
-  my-lib: link:./packages/my-lib     # v12.6.0; path measured from pnpm-workspace.yaml
+  "@example/utils": workspace:^
+  my-lib: link:./packages/my-lib # v12.6.0; path measured from pnpm-workspace.yaml
   my-tarball: file:./tarballs/foo.tgz
 ```
 
@@ -100,16 +100,16 @@ catalog:
   foo: ^1.0.0
 
 overrides:
-  foo: 'catalog:'          # or catalog:<name>
+  foo: "catalog:" # or catalog:<name>
 ```
 
 ## Settings
 
 ```yaml title="pnpm-workspace.yaml"
 # How `pnpm add` interacts with the default catalog (v10.12+)
-catalogMode: manual        # manual (default) | prefer | strict
+catalogMode: manual # manual (default) | prefer | strict
 # strict: only catalog versions allowed; prefer: fall back if no match
-catalogPrune: true         # remove unused catalog entries on install (v11.22+; was cleanupUnusedCatalogs)
+catalogPrune: true # remove unused catalog entries on install (v11.22+; was cleanupUnusedCatalogs)
 ```
 
 ## Benefits
@@ -122,7 +122,7 @@ catalogPrune: true         # remove unused catalog entries on install (v11.22+; 
 ## Catalog vs Overrides
 
 | Feature | Catalogs | Overrides |
-|---------|----------|-----------|
+| --- | --- | --- |
 | Purpose | Define versions for direct dependencies | Force versions for any dependency |
 | Scope | Direct dependencies only | All dependencies (including transitive) |
 | Usage | `"pkg": "catalog:"` | Applied automatically |
@@ -191,7 +191,7 @@ catalog:
 # "dependencies": { "@myorg/utils": "workspace:^" }
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/catalogs
 -->

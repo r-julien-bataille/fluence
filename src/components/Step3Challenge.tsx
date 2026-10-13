@@ -1,35 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ExerciseText, FluencyAttempt } from '@/db/db';
-import { FluencyTextDisplay } from './FluencyTextDisplay';
-import { AudioRecorder } from '@/lib/audio/recorder';
-import { AudioVisualizer } from './AudioVisualizer';
-import { AttemptAudioPlayer } from './AttemptAudioPlayer';
-import { transcribeAudioWithGemini, TranscribedWord } from '@/lib/gemini/transcribe';
-import { alignFluencyReading, AlignmentResult } from '@/lib/alignment';
-import { MclmGauge } from './MclmGauge';
-import { CircularTimer } from './CircularTimer';
-import { hasStoredApiKey } from '@/lib/gemini/client';
-import { playChimeSound } from '@/lib/audio/speech';
 import {
-  Mic,
-  Square,
-  Trophy,
-  RotateCcw,
-  ArrowRight,
   AlertCircle,
-  Loader2,
-  TrendingUp,
+  ArrowRight,
   Clock,
   Headphones,
-} from 'lucide-react';
+  Loader2,
+  Mic,
+  RotateCcw,
+  Square,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+
+import type { ExerciseText, FluencyAttempt } from "@/db/db";
+import type { AlignmentResult } from "@/lib/alignment";
+import { alignFluencyReading } from "@/lib/alignment";
+import { AudioRecorder } from "@/lib/audio/recorder";
+import { playChimeSound } from "@/lib/audio/speech";
+import { hasStoredApiKey } from "@/lib/gemini/client";
+import type { TranscribedWord } from "@/lib/gemini/transcribe";
+import { transcribeAudioWithGemini } from "@/lib/gemini/transcribe";
+
+import { AttemptAudioPlayer } from "./AttemptAudioPlayer";
+import { AudioVisualizer } from "./AudioVisualizer";
+import { CircularTimer } from "./CircularTimer";
+import { FluencyTextDisplay } from "./FluencyTextDisplay";
+import { MclmGauge } from "./MclmGauge";
 
 interface Step3ChallengeProps {
-  text: ExerciseText;
   attempt1: FluencyAttempt;
-  studentName: string;
-  onCompleteStep3: (attempt3: FluencyAttempt, alignment: AlignmentResult) => void;
-  onOpenSettings: () => void;
   dyslexicMode: boolean;
+  onCompleteStep3: (
+    attempt3: FluencyAttempt,
+    alignment: AlignmentResult
+  ) => void;
+  onOpenSettings: () => void;
+  studentName: string;
+  text: ExerciseText;
 }
 
 export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
@@ -46,7 +54,8 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isAutoStopped, setIsAutoStopped] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [alignmentResult, setAlignmentResult] = useState<AlignmentResult | null>(null);
+  const [alignmentResult, setAlignmentResult] =
+    useState<AlignmentResult | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [playbackTimeMs, setPlaybackTimeMs] = useState<number>(0);
   const [seekToTimeMs, setSeekToTimeMs] = useState<number | null>(null);
@@ -54,7 +63,9 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
   const recorderRef = useRef<AudioRecorder | null>(null);
   const timerRef = useRef<number | null>(null);
   const isRecordingRef = useRef<boolean>(false);
-  const stopReadingRef = useRef<(autoExpired?: boolean) => Promise<void>>(() => Promise.resolve());
+  const stopReadingRef = useRef<(autoExpired?: boolean) => Promise<void>>(() =>
+    Promise.resolve()
+  );
 
   useEffect(() => {
     recorderRef.current = new AudioRecorder((level) => {
@@ -62,13 +73,19 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     });
 
     return () => {
-      if (recorderRef.current) recorderRef.current.abort();
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (recorderRef.current) {
+        recorderRef.current.abort();
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, []);
 
-  const stopReading = async (autoExpired: boolean = false) => {
-    if (!isRecordingRef.current) return;
+  const stopReading = async (autoExpired = false) => {
+    if (!isRecordingRef.current) {
+      return;
+    }
     isRecordingRef.current = false;
 
     if (timerRef.current) {
@@ -91,9 +108,12 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
         const audioUrl = URL.createObjectURL(audioBlob);
         setRecordedAudioUrl(audioUrl);
 
-        const transcription = await transcribeAudioWithGemini(audioBlob, text.tokens);
+        const transcription = await transcribeAudioWithGemini(
+          audioBlob,
+          text.tokens
+        );
         const result = alignFluencyReading(text.tokens, transcription.words, {
-          maxDurationMs: 60000,
+          maxDurationMs: 60_000,
         });
 
         result.attempt.audioBlob = audioBlob;
@@ -101,14 +121,15 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
 
         setAlignmentResult(result);
       }
-    } catch (err: unknown) {
-      console.error(err);
+    } catch (error: unknown) {
+      console.error(error);
       setAnalysisError(
-        err instanceof Error ? err.message : "Erreur de transcription audio."
+        error instanceof Error
+          ? error.message
+          : "Erreur de transcription audio."
       );
-    } finally {
-      setIsAnalyzing(false);
     }
+    setIsAnalyzing(false);
   };
 
   useEffect(() => {
@@ -147,8 +168,8 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           });
         }, 1000);
       }
-    } catch (err: unknown) {
-      console.error(err);
+    } catch (error: unknown) {
+      console.error(error);
       setAnalysisError("Impossible d'accéder au microphone.");
       isRecordingRef.current = false;
       setIsRecording(false);
@@ -169,19 +190,19 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       );
 
       let currentMs = 1000;
-      for (let i = 0; i < reachedCount; i++) {
+      for (let i = 0; i < reachedCount; i += 1) {
         const token = text.tokens[i];
         simulatedWords.push({
-          text: token,
           cleanText: token,
-          startMs: currentMs,
           endMs: currentMs + 380,
+          startMs: currentMs,
+          text: token,
         });
         currentMs += 420;
       }
 
       const result = alignFluencyReading(text.tokens, simulatedWords, {
-        maxDurationMs: 60000,
+        maxDurationMs: 60_000,
       });
 
       setAlignmentResult(result);
@@ -189,15 +210,21 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     }, 1200);
   };
 
-  const handleOverrideWordStatus = (expectedIndex: number, newStatus: 'correct' | 'error') => {
-    if (!alignmentResult) return;
+  const handleOverrideWordStatus = (
+    expectedIndex: number,
+    newStatus: "correct" | "error"
+  ) => {
+    if (!alignmentResult) {
+      return;
+    }
 
     const updatedTokens = alignmentResult.alignedTokens.map((t) => {
       if (t.expectedIndex === expectedIndex) {
         return {
           ...t,
+          errorType:
+            newStatus === "error" ? ("substitution" as const) : undefined,
           status: newStatus,
-          errorType: newStatus === 'error' ? ('substitution' as const) : undefined,
         };
       }
       return t;
@@ -205,29 +232,30 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
 
     let errorsCount = 0;
     for (const t of updatedTokens) {
-      if (t.status === 'error' || t.status === 'hesitation') {
-        errorsCount++;
+      if (t.status === "error" || t.status === "hesitation") {
+        errorsCount += 1;
       }
     }
+
     const mclm = Math.max(0, alignmentResult.wordsAttempted - errorsCount);
 
     const updatedResult: AlignmentResult = {
       ...alignmentResult,
       alignedTokens: updatedTokens,
-      errorsCount,
-      mclm,
       attempt: {
         ...alignmentResult.attempt,
-        errorsCount,
-        mclm,
         annotatedWords: updatedTokens.map((t) => ({
           expectedIndex: t.expectedIndex,
-          word: t.expectedWord,
-          status: t.status,
           spoken: t.spokenWord,
+          status: t.status,
           timestampMs: t.timestampMs,
+          word: t.expectedWord,
         })),
+        errorsCount,
+        mclm,
       },
+      errorsCount,
+      mclm,
     };
 
     setAlignmentResult(updatedResult);
@@ -242,123 +270,137 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
   const delta = alignmentResult ? alignmentResult.mclm - attempt1.mclm : null;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="fade-in animate-in space-y-6 duration-300">
       {/* Alerte si les 60 secondes sont écoulées */}
       {isAutoStopped && (
-        <div className="bg-amber-500 text-slate-950 font-bold px-5 py-3.5 rounded-2xl flex items-center justify-between gap-3 shadow-lg animate-in zoom-in-95 duration-200">
+        <div className="zoom-in-95 flex animate-in items-center justify-between gap-3 rounded-2xl bg-amber-500 px-5 py-3.5 font-bold text-slate-950 shadow-lg duration-200">
           <div className="flex items-center gap-2.5">
-            <Clock className="w-5 h-5 text-slate-950 shrink-0" />
+            <Clock className="h-5 w-5 shrink-0 text-slate-950" />
             <span className="text-sm">
-              ⏳ <strong>60 secondes écoulées !</strong> Défi Record terminé, calcul du nouveau score en cours...
+              ⏳ <strong>60 secondes écoulées !</strong> Défi Record terminé,
+              calcul du nouveau score en cours...
             </span>
           </div>
-          <span className="text-xs bg-slate-950 text-white px-2.5 py-1 rounded-xl shrink-0 font-mono">
+          <span className="shrink-0 rounded-xl bg-slate-950 px-2.5 py-1 font-mono text-white text-xs">
             T = 60s
           </span>
         </div>
       )}
 
       {/* En-tête de l'étape 3 */}
-      <div className="bg-linear-to-r from-purple-700 via-indigo-700 to-indigo-800 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+      <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-purple-700 via-indigo-700 to-indigo-800 p-6 text-white shadow-xl sm:p-8 md:flex-row">
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-900 font-extrabold text-xs flex items-center gap-1">
-              <Trophy className="w-3.5 h-3.5" /> Étape 3 sur 3 : Défi Record
+          <div className="mb-2 flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 font-extrabold text-slate-900 text-xs">
+              <Trophy className="h-3.5 w-3.5" /> Étape 3 sur 3 : Défi Record
             </span>
-            <span className="text-xs text-indigo-200 font-semibold">
+            <span className="font-semibold text-indigo-200 text-xs">
               Battre son premier score ({attempt1.mclm} MCLM)
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-fun">
+          <h2 className="font-extrabold font-fun text-2xl sm:text-3xl">
             À toi de jouer pour le record !
           </h2>
-          <p className="text-xs sm:text-sm text-indigo-100 mt-1 max-w-lg">
-            Applique ce que tu as appris sur les mots difficiles. Lis vite et avec précision ! L'enregistrement s'arrête automatiquement à 60s.
+          <p className="mt-1 max-w-lg text-indigo-100 text-xs sm:text-sm">
+            Applique ce que tu as appris sur les mots difficiles. Lis vite et
+            avec précision ! L’enregistrement s’arrête automatiquement à 60s.
           </p>
         </div>
 
         {/* Compteur chrono visuel avec anneau SVG */}
-        <div className="relative z-10 flex items-center gap-4 bg-white/10 backdrop-blur-md p-3 sm:p-4 rounded-3xl border border-white/20">
+        <div className="relative z-10 flex items-center gap-4 rounded-3xl border border-white/20 bg-white/10 p-3 backdrop-blur-md sm:p-4">
           <CircularTimer
-            timeLeft={timeLeft}
-            totalTime={60}
             isRecording={isRecording}
             size={76}
+            timeLeft={timeLeft}
+            totalTime={60}
           />
 
-          <div className="w-px h-12 bg-white/20 mx-1" />
+          <div className="mx-1 h-12 w-px bg-white/20" />
 
-          {!alignmentResult ? (
-            !isRecording ? (
-              <button
-                onClick={startReading}
-                disabled={isAnalyzing}
-                className="py-4 px-6 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-2xl font-black text-base shadow-lg shadow-amber-950/20 flex items-center gap-2.5 transition-all hover:scale-105 cursor-pointer disabled:opacity-50"
-              >
-                <Mic className="w-6 h-6 animate-pulse-subtle" />
-                <span>Top Départ !</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => stopReading(false)}
-                className="py-4 px-6 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl font-black text-base shadow-lg flex items-center gap-2.5 transition-all hover:scale-105 cursor-pointer"
-                title="Arrêter avant les 60s"
-              >
-                <Square className="w-6 h-6 fill-white" />
-                <span>Terminer</span>
-              </button>
-            )
-          ) : (
+          {alignmentResult && (
             <button
+              className="flex cursor-pointer items-center gap-1.5 rounded-2xl bg-white/20 px-4 py-3 font-semibold text-white text-xs transition-colors hover:bg-white/30"
               onClick={() => {
                 setAlignmentResult(null);
                 setRecordedAudioUrl(null);
                 setIsAutoStopped(false);
                 setTimeLeft(60);
               }}
-              className="py-3 px-4 bg-white/20 hover:bg-white/30 text-white rounded-2xl font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              type="button"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="h-4 w-4" />
               <span>Recommencer</span>
+            </button>
+          )}
+          {!alignmentResult && isRecording && (
+            <button
+              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-rose-500 px-6 py-4 font-black text-base text-white shadow-lg transition-all hover:scale-105 hover:bg-rose-600"
+              onClick={() => stopReading(false)}
+              title="Arrêter avant les 60s"
+              type="button"
+            >
+              <Square className="h-6 w-6 fill-white" />
+              <span>Terminer</span>
+            </button>
+          )}
+          {!(alignmentResult || isRecording) && (
+            <button
+              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-amber-400 px-6 py-4 font-black text-base text-slate-950 shadow-amber-950/20 shadow-lg transition-all hover:scale-105 hover:bg-amber-300 disabled:opacity-50"
+              disabled={isAnalyzing}
+              onClick={startReading}
+              type="button"
+            >
+              <Mic className="h-6 w-6 animate-pulse-subtle" />
+              <span>Top Départ !</span>
             </button>
           )}
         </div>
       </div>
 
       {isRecording && (
-        <div className="text-center py-2 animate-in fade-in">
-          <p className="text-xs font-semibold text-indigo-600 mb-2">Enregistrement en direct · Donne tout !</p>
-          <AudioVisualizer isRecording={isRecording} audioLevel={audioLevel} />
+        <div className="fade-in animate-in py-2 text-center">
+          <p className="mb-2 font-semibold text-indigo-600 text-xs">
+            Enregistrement en direct · Donne tout !
+          </p>
+          <AudioVisualizer audioLevel={audioLevel} isRecording={isRecording} />
         </div>
       )}
 
       {isAnalyzing && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-3xl p-8 text-center animate-in fade-in space-y-3">
-          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
-          <h3 className="text-lg font-bold text-indigo-950 font-fun">
-            {isAutoStopped ? "60 secondes écoulées ! Calcul de ton nouveau record..." : "Calcul de ton nouveau record de fluence..."}
+        <div className="fade-in animate-in space-y-3 rounded-3xl border border-indigo-200 bg-indigo-50 p-8 text-center">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600" />
+          <h3 className="font-bold font-fun text-indigo-950 text-lg">
+            {isAutoStopped
+              ? "60 secondes écoulées ! Calcul de ton nouveau record..."
+              : "Calcul de ton nouveau record de fluence..."}
           </h3>
-          <p className="text-xs text-indigo-700">
+          <p className="text-indigo-700 text-xs">
             Comparaison entre la 1ère lecture et ton nouveau score.
           </p>
         </div>
       )}
 
       {analysisError && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800 text-xs">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{analysisError}</span>
           </div>
           <div className="flex items-center gap-2">
             {!hasStoredApiKey() && (
-              <button onClick={onOpenSettings} className="underline font-bold text-rose-900">
+              <button
+                className="font-bold text-rose-900 underline"
+                onClick={onOpenSettings}
+                type="button"
+              >
                 Régler la clé
               </button>
             )}
             <button
+              className="cursor-pointer rounded-lg border border-rose-200 bg-white px-3 py-1 font-bold text-rose-900 transition-colors hover:bg-rose-100"
               onClick={handleSimulateChallenge}
-              className="px-3 py-1 bg-white rounded-lg border border-rose-200 text-rose-900 font-bold hover:bg-rose-100 transition-colors cursor-pointer"
+              type="button"
             >
               Tester le record en mode démo
             </button>
@@ -368,37 +410,41 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
 
       {/* Résultat du Défi Record */}
       {alignmentResult && (
-        <div className="space-y-6 animate-in slide-in-from-bottom duration-300">
+        <div className="slide-in-from-bottom animate-in space-y-6 duration-300">
           <MclmGauge
-            mclm={alignmentResult.mclm}
             level={text.level}
+            mclm={alignmentResult.mclm}
             previousMclm={attempt1.mclm}
             showComparison={true}
           />
 
-          <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-3xl p-6">
+          <div className="flex items-center justify-between rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xl shadow-md">
-                <TrendingUp className="w-6 h-6" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 font-bold text-white text-xl shadow-md">
+                <TrendingUp className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="text-lg font-extrabold text-emerald-950 font-fun">
-                  Progression : {delta !== null && delta > 0 ? `+${delta} mots par minute ! 🚀` : `${delta} MCLM`}
+                <h4 className="font-extrabold font-fun text-emerald-950 text-lg">
+                  Progression :{" "}
+                  {delta !== null && delta > 0
+                    ? `+${delta} mots par minute ! 🚀`
+                    : `${delta} MCLM`}
                 </h4>
-                <p className="text-xs text-emerald-700">
+                <p className="text-emerald-700 text-xs">
                   {delta !== null && delta > 0
                     ? `Bravo ${studentName}, le travail sur les mots difficiles a payé !`
-                    : "Bel effort ! La régularité de l'entraînement fait la différence."}
+                    : "Bel effort ! La régularité de l’entraînement fait la différence."}
                 </p>
               </div>
             </div>
 
             <button
+              className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3.5 font-bold text-sm text-white shadow-emerald-200 shadow-lg transition-all hover:scale-105 hover:bg-emerald-700"
               onClick={handleNext}
-              className="py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-emerald-200 flex items-center gap-2 transition-all hover:scale-105 cursor-pointer shrink-0"
+              type="button"
             >
               <span>Voir le Bilan & Victoire</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 
@@ -406,36 +452,40 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           {recordedAudioUrl && (
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
+              onSeekHandled={() => setSeekToTimeMs(null)}
               onTimeUpdate={(timeMs) => setPlaybackTimeMs(timeMs)}
               seekToTimeMs={seekToTimeMs}
-              onSeekHandled={() => setSeekToTimeMs(null)}
             />
           )}
 
           <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="text-xs text-slate-500 flex items-center gap-1.5">
-              <Headphones className="w-4 h-4 text-indigo-600" />
-              <span>Clique sur un mot ci-dessous pour sauter à son horodatage et vérifier la prononciation</span>
+            <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+              <Headphones className="h-4 w-4 text-indigo-600" />
+              <span>
+                Clique sur un mot ci-dessous pour sauter à son horodatage et
+                vérifier la prononciation
+              </span>
             </div>
           </div>
         </div>
       )}
 
       <FluencyTextDisplay
-        content={text.content}
         annotatedTokens={alignmentResult?.alignedTokens}
-        showResults={Boolean(alignmentResult)}
+        content={text.content}
         dyslexicMode={dyslexicMode}
-        playbackTimeMs={playbackTimeMs}
-        onSeekAudioMs={(ms) => setSeekToTimeMs(ms)}
         onOverrideWordStatus={handleOverrideWordStatus}
+        onSeekAudioMs={(ms) => setSeekToTimeMs(ms)}
+        playbackTimeMs={playbackTimeMs}
+        showResults={Boolean(alignmentResult)}
       />
 
-      {!alignmentResult && !isRecording && (
-        <div className="text-center pt-2">
+      {!(alignmentResult || isRecording) && (
+        <div className="pt-2 text-center">
           <button
+            className="cursor-pointer font-medium text-slate-400 text-xs underline transition-colors hover:text-indigo-600"
             onClick={handleSimulateChallenge}
-            className="text-xs text-slate-400 hover:text-indigo-600 underline font-medium transition-colors cursor-pointer"
+            type="button"
           >
             Tester rapidement le record sans micro (simulation)
           </button>

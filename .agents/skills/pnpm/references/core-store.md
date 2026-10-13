@@ -68,8 +68,8 @@ The virtual store (`.pnpm` in `node_modules`) contains hard links to the global 
 
 ```yaml title="pnpm-workspace.yaml"
 virtualStoreDir: node_modules/.pnpm
-virtualStoreDirMaxLength: 60   # lower this for long-path issues on Windows
-nodeLinker: hoisted            # alternative flat layout
+virtualStoreDirMaxLength: 60 # lower this for long-path issues on Windows
+nodeLinker: hoisted # alternative flat layout
 ```
 
 ## Disk Space Benefits
@@ -93,7 +93,7 @@ du -sh --apparent-size node_modules  # With hard links counted
 With `virtualStoreType: global`, projects skip the per-project `node_modules/.pnpm` directory entirely; their `node_modules` contains only symlinks into one shared virtual store at `<store-path>/links/`, keyed by dependency-graph hash. It is the default for `pnpm dlx`/`pnx` and global installs; for project installs it is still opt-in. See `features-global-virtual-store` for details and the git-worktrees multi-agent workflow.
 
 ```yaml title="pnpm-workspace.yaml"
-virtualStoreType: global    # canonical spelling since v11.23.0
+virtualStoreType: global # canonical spelling since v11.23.0
 # enableGlobalVirtualStore: true   # older spelling, still works
 ```
 
@@ -102,7 +102,7 @@ virtualStoreType: global    # canonical spelling since v11.23.0
 Configure how `node_modules` is structured (`nodeLinker` in `pnpm-workspace.yaml`):
 
 ```yaml title="pnpm-workspace.yaml"
-nodeLinker: isolated   # default: symlinked virtual store (strict, no phantom deps)
+nodeLinker: isolated # default: symlinked virtual store (strict, no phantom deps)
 # nodeLinker: hoisted  # flat node_modules (npm-like) for tools that dislike symlinks
 # nodeLinker: pnp      # Plug'n'Play, no node_modules (set `symlink: false` too)
 ```
@@ -125,7 +125,7 @@ Cache build outputs for native modules (enabled by default):
 
 ```yaml title="pnpm-workspace.yaml"
 sideEffectsCache: true
-sideEffectsCacheReadonly: false   # only read the cache, don't create it
+sideEffectsCacheReadonly: false # only read the cache, don't create it
 ```
 
 ## Read-only / Frozen Store
@@ -159,6 +159,7 @@ For CI/CD, you can share the store:
 ## Troubleshooting
 
 ### Store corruption
+
 ```bash
 # Verify and fix store
 pnpm store status
@@ -166,14 +167,16 @@ pnpm store prune
 ```
 
 ### Hard link issues (network drives, Docker)
+
 ```yaml title="pnpm-workspace.yaml"
 # auto (default): on Linux (v12) tries hardlink -> clone -> copy; macOS is clone-first (APFS)
-packageImportMethod: copy       # copy | clone | clone-or-copy | hardlink
+packageImportMethod: copy # copy | clone | clone-or-copy | hardlink
 ```
 
-> v12 change: on Linux `packageImportMethod: auto` hardlinks before reflinking (roughly halves materialize time on btrfs). Use `clone` (or `clone-or-copy`) if you edit files inside `node_modules`, since a hardlinked file *is* the store's file.
+> v12 change: on Linux `packageImportMethod: auto` hardlinks before reflinking (roughly halves materialize time on btrfs). Use `clone` (or `clone-or-copy`) if you edit files inside `node_modules`, since a hardlinked file _is_ the store's file.
 
 ### Permission issues
+
 ```bash
 # Fix store permissions (find the path with `pnpm store path`)
 chmod -R u+w "$(pnpm store path)"

@@ -1,27 +1,28 @@
-import { FluencyAttempt } from '@/db/db';
-import { TranscribedWord } from './gemini/transcribe';
-import { normalizeWord } from './utils';
+import type { FluencyAttempt } from "@/db/db";
+
+import type { TranscribedWord } from "./gemini/transcribe";
+import { normalizeWord } from "./utils";
 
 export interface AlignmentOptions {
-  maxDurationMs?: number; // 60 000 ms par défaut
   hesitationThresholdMs?: number; // 3 000 ms par défaut
+  maxDurationMs?: number; // 60 000 ms par défaut
 }
 
 export interface AlignedToken {
+  errorType?: "substitution" | "omission" | "inversion" | "hesitation";
   expectedIndex: number;
   expectedWord: string;
   spokenWord?: string;
-  status: 'correct' | 'error' | 'hesitation' | 'unreached';
-  errorType?: 'substitution' | 'omission' | 'inversion' | 'hesitation';
+  status: "correct" | "error" | "hesitation" | "unreached";
   timestampMs?: number;
 }
 
 export interface AlignmentResult {
-  attempt: FluencyAttempt;
   alignedTokens: AlignedToken[];
-  wordsAttempted: number;
+  attempt: FluencyAttempt;
   errorsCount: number;
   mclm: number;
+  wordsAttempted: number;
 }
 
 /**
@@ -30,13 +31,23 @@ export interface AlignmentResult {
 function levenshteinDistance(a: string, b: string): number {
   const m = a.length;
   const n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
+  if (m === 0) {
+    return n;
+  }
+  if (n === 0) {
+    return m;
+  }
 
-  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0)
+  );
 
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 0; i <= m; i++) {
+    dp[i][0] = i;
+  }
+  for (let j = 0; j <= n; j++) {
+    dp[0][j] = j;
+  }
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
@@ -58,9 +69,13 @@ function levenshteinDistance(a: string, b: string): number {
 function wordSimilarity(w1: string, w2: string): number {
   const s1 = normalizeWord(w1);
   const s2 = normalizeWord(w2);
-  if (s1 === s2) return 1;
+  if (s1 === s2) {
+    return 1;
+  }
   const maxLen = Math.max(s1.length, s2.length);
-  if (maxLen === 0) return 1;
+  if (maxLen === 0) {
+    return 1;
+  }
   const dist = levenshteinDistance(s1, s2);
   return 1 - dist / maxLen;
 }
@@ -73,25 +88,23 @@ export function alignFluencyReading(
   spokenWords: TranscribedWord[],
   options: AlignmentOptions = {}
 ): AlignmentResult {
-  const maxDurationMs = options.maxDurationMs ?? 60000;
+  const maxDurationMs = options.maxDurationMs ?? 60_000;
   const hesitationThresholdMs = options.hesitationThresholdMs ?? 3000;
 
   // 1. Filtrer les mots prononcés dans les 60 secondes (T <= 60 000 ms)
-  const validSpoken = spokenWords.filter((w) => (w.startMs || 0) <= maxDurationMs);
+  const validSpoken = spokenWords.filter(
+    (w) => (w.startMs || 0) <= maxDurationMs
+  );
 
   // Traiter les autocorrelations et répétitions consécutives dans les mots prononcés
   // Exemple : "le... le vieux" -> répétition tolérée
   // Exemple : "somm... sommet" -> autocorrection tolérée
   const cleanedSpoken: TranscribedWord[] = [];
-  for (let j = 0; j < validSpoken.length; j++) {
-    const current = validSpoken[j];
-    const prev = cleanedSpoken[cleanedSpoken.length - 1];
+  for (const current of validSpoken) {
+    const prev = cleanedSpoken.at(-1);
 
-    if (prev) {
-      // Répétition identique du mot précédent
-      if (normalizeWord(current.text) === normalizeWord(prev.text)) {
-        continue; // tolérance ELFE : répéter ne pénalise pas
-      }
+    if (prev && normalizeWord(current.text) === normalizeWord(prev.text)) {
+      continue; // tolérance ELFE : répéter ne pénalise pas
     }
     cleanedSpoken.push(current);
   }
@@ -101,20 +114,20 @@ export function alignFluencyReading(
 
   if (M === 0) {
     return {
-      attempt: {
-        timestamp: Date.now(),
-        durationSeconds: 0,
-        wordsAttempted: 0,
-        errorsCount: 0,
-        mclm: 0,
-        lastWordReachedIndex: 0,
-        stumbledWords: [],
-        errorDetails: [],
-      },
       alignedTokens: [],
-      wordsAttempted: 0,
+      attempt: {
+        durationSeconds: 0,
+        errorDetails: [],
+        errorsCount: 0,
+        lastWordReachedIndex: 0,
+        mclm: 0,
+        stumbledWords: [],
+        timestamp: Date.now(),
+        wordsAttempted: 0,
+      },
       errorsCount: 0,
       mclm: 0,
+      wordsAttempted: 0,
     };
   }
 
@@ -125,10 +138,16 @@ export function alignFluencyReading(
   const GAP_EXPECTED = -2; // Omission
   const GAP_SPOKEN = -1; // Mot rajouté / hésitation
 
-  const dp: number[][] = Array.from({ length: M + 1 }, () => Array(N + 1).fill(0));
+  const dp: number[][] = Array.from({ length: M + 1 }, () =>
+    new Array(N + 1).fill(0)
+  );
 
-  for (let i = 0; i <= M; i++) dp[i][0] = i * GAP_EXPECTED;
-  for (let j = 0; j <= N; j++) dp[0][j] = j * GAP_SPOKEN;
+  for (let i = 0; i <= M; i++) {
+    dp[i][0] = i * GAP_EXPECTED;
+  }
+  for (let j = 0; j <= N; j++) {
+    dp[0][j] = j * GAP_SPOKEN;
+  }
 
   for (let i = 1; i <= M; i++) {
     const exp = expectedTokens[i - 1];
@@ -187,12 +206,13 @@ export function alignFluencyReading(
 
   // 5. Analyse des erreurs ELFE selon la taxonomie officielle
   const alignedTokens: AlignedToken[] = [];
-  const errorDetails: FluencyAttempt['errorDetails'] = [];
+  const errorDetails: FluencyAttempt["errorDetails"] = [];
   const stumbledWordsSet = new Set<string>();
 
   // Détecter aussi les hésitations (pauses > 3s)
   for (let k = 1; k < cleanedSpoken.length; k++) {
-    const pause = (cleanedSpoken[k].startMs || 0) - (cleanedSpoken[k - 1].endMs || 0);
+    const pause =
+      (cleanedSpoken[k].startMs || 0) - (cleanedSpoken[k - 1].endMs || 0);
     if (pause >= hesitationThresholdMs) {
       // Hésitation avant cleanedSpoken[k]
       const matchingPair = rawPairs.find((p) => p.spkIdx === k);
@@ -214,14 +234,17 @@ export function alignFluencyReading(
       const spk1 = cleanedSpoken[curr.spkIdx].cleanText;
       const spk2 = cleanedSpoken[next.spkIdx].cleanText;
 
-      if (wordSimilarity(exp1, spk2) >= 0.85 && wordSimilarity(exp2, spk1) >= 0.85) {
+      if (
+        wordSimilarity(exp1, spk2) >= 0.85 &&
+        wordSimilarity(exp2, spk1) >= 0.85
+      ) {
         invertedIndices.add(curr.expIdx);
         invertedIndices.add(next.expIdx);
         errorDetails.push({
           expectedWord: `${exp1} ${exp2}`,
           spokenWord: `${spk1} ${spk2}`,
-          type: 'inversion',
           timestampOffsetMs: cleanedSpoken[curr.spkIdx].startMs,
+          type: "inversion",
         });
         stumbledWordsSet.add(exp1);
         stumbledWordsSet.add(exp2);
@@ -239,7 +262,7 @@ export function alignFluencyReading(
       alignedTokens.push({
         expectedIndex: expIdx,
         expectedWord,
-        status: 'unreached',
+        status: "unreached",
       });
       continue;
     }
@@ -247,10 +270,10 @@ export function alignFluencyReading(
     // Mot déjà compté dans une inversion
     if (invertedIndices.has(expIdx)) {
       alignedTokens.push({
+        errorType: "inversion",
         expectedIndex: expIdx,
         expectedWord,
-        status: 'error',
-        errorType: 'inversion',
+        status: "error",
       });
       continue;
     }
@@ -261,14 +284,14 @@ export function alignFluencyReading(
       // Omission : mot sauté dans l'intervalle atteint
       errorsCount++;
       alignedTokens.push({
+        errorType: "omission",
         expectedIndex: expIdx,
         expectedWord,
-        status: 'error',
-        errorType: 'omission',
+        status: "error",
       });
       errorDetails.push({
         expectedWord,
-        type: 'omission',
+        type: "omission",
       });
       stumbledWordsSet.add(expectedWord);
       continue;
@@ -288,18 +311,18 @@ export function alignFluencyReading(
         // Blocage / hésitation > 3s comptabilisée en erreur ELFE
         errorsCount++;
         alignedTokens.push({
+          errorType: "hesitation",
           expectedIndex: expIdx,
           expectedWord,
           spokenWord: spokenObj.text,
-          status: 'hesitation',
-          errorType: 'hesitation',
+          status: "hesitation",
           timestampMs: spokenObj.startMs,
         });
         errorDetails.push({
           expectedWord,
           spokenWord: spokenObj.text,
-          type: 'hesitation',
           timestampOffsetMs: spokenObj.startMs,
+          type: "hesitation",
         });
         stumbledWordsSet.add(expectedWord);
       } else {
@@ -307,7 +330,7 @@ export function alignFluencyReading(
           expectedIndex: expIdx,
           expectedWord,
           spokenWord: spokenObj.text,
-          status: 'correct',
+          status: "correct",
           timestampMs: spokenObj.startMs,
         });
       }
@@ -315,18 +338,18 @@ export function alignFluencyReading(
       // Substitution : mot mal décodé ou remplacé
       errorsCount++;
       alignedTokens.push({
+        errorType: "substitution",
         expectedIndex: expIdx,
         expectedWord,
         spokenWord: spokenObj.text,
-        status: 'error',
-        errorType: 'substitution',
+        status: "error",
         timestampMs: spokenObj.startMs,
       });
       errorDetails.push({
         expectedWord,
         spokenWord: spokenObj.text,
-        type: 'substitution',
         timestampOffsetMs: spokenObj.startMs,
+        type: "substitution",
       });
       stumbledWordsSet.add(expectedWord);
     }
@@ -339,42 +362,45 @@ export function alignFluencyReading(
   const mclm = Math.max(0, wordsAttempted - errorsCount);
 
   // Isoler entre 3 et 5 mots-clés problématiques pour la remédiation (sans les mots trop courts comme "de", "le")
-  const meaningfulStumbled = Array.from(stumbledWordsSet)
+  const meaningfulStumbled = [...stumbledWordsSet]
     .filter((w) => w.length >= 3)
     .slice(0, 5);
 
   // Si moins de 3 mots, compléter si besoin avec d'autres mots butés
-  const stumbledWords = meaningfulStumbled.length >= 3 
-    ? meaningfulStumbled 
-    : Array.from(stumbledWordsSet).slice(0, 5);
+  const stumbledWords =
+    meaningfulStumbled.length >= 3
+      ? meaningfulStumbled
+      : [...stumbledWordsSet].slice(0, 5);
 
   const durationSeconds = Math.min(
     60,
-    cleanedSpoken.length > 0 ? Math.round((cleanedSpoken[cleanedSpoken.length - 1].endMs || 60000) / 1000) : 60
+    cleanedSpoken.length > 0
+      ? Math.round((cleanedSpoken.at(-1)?.endMs || 60_000) / 1000)
+      : 60
   );
 
   const attempt: FluencyAttempt = {
-    timestamp: Date.now(),
-    durationSeconds: Math.max(1, durationSeconds),
-    wordsAttempted,
-    errorsCount,
-    mclm,
-    lastWordReachedIndex: lastReachedExpIdx,
-    stumbledWords,
-    errorDetails,
     annotatedWords: alignedTokens.map((t) => ({
       expectedIndex: t.expectedIndex,
-      word: t.expectedWord,
-      status: t.status,
       spoken: t.spokenWord,
+      status: t.status,
+      word: t.expectedWord,
     })),
+    durationSeconds: Math.max(1, durationSeconds),
+    errorDetails,
+    errorsCount,
+    lastWordReachedIndex: lastReachedExpIdx,
+    mclm,
+    stumbledWords,
+    timestamp: Date.now(),
+    wordsAttempted,
   };
 
   return {
-    attempt,
     alignedTokens,
-    wordsAttempted,
+    attempt,
     errorsCount,
     mclm,
+    wordsAttempted,
   };
 }

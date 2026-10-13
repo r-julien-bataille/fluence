@@ -28,7 +28,7 @@ Checks that `package.json` fields (`exports`, `main`, `module`, `types`) match y
 ```ts
 export default defineConfig({
   publint: true,
-})
+});
 ```
 
 ### Configuration
@@ -36,9 +36,9 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   publint: {
-    level: 'error', // 'warning' | 'error' | 'suggestion'
+    level: "error", // 'warning' | 'error' | 'suggestion'
   },
-})
+});
 ```
 
 ### CLI
@@ -56,7 +56,7 @@ Verifies TypeScript declarations are correct across different module resolution 
 ```ts
 export default defineConfig({
   attw: true,
-})
+});
 ```
 
 ### Configuration
@@ -64,19 +64,19 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   attw: {
-    profile: 'node16',   // 'strict' | 'node16' | 'esm-only'
-    level: 'error',       // 'warn' | 'error'
-    ignoreRules: ['false-cjs', 'cjs-resolves-to-esm'],
+    profile: "node16", // 'strict' | 'node16' | 'esm-only'
+    level: "error", // 'warn' | 'error'
+    ignoreRules: ["false-cjs", "cjs-resolves-to-esm"],
   },
-})
+});
 ```
 
 ### Profiles
 
-| Profile | Description |
-|---------|-------------|
-| `strict` | Requires all resolutions to pass (default) |
-| `node16` | Ignores `node10` resolution failures |
+| Profile    | Description                                           |
+| ---------- | ----------------------------------------------------- |
+| `strict`   | Requires all resolutions to pass (default)            |
+| `node16`   | Ignores `node10` resolution failures                  |
 | `esm-only` | Ignores `node10` and `node16-cjs` resolution failures |
 
 ### Ignore Rules
@@ -84,7 +84,7 @@ export default defineConfig({
 Suppress specific problem types with `ignoreRules`:
 
 | Rule | Description |
-|------|-------------|
+| --- | --- |
 | `no-resolution` | Module could not be resolved |
 | `untyped-resolution` | Resolution succeeded but has no types |
 | `false-cjs` | Types indicate CJS but implementation is ESM |
@@ -110,13 +110,13 @@ Both tools support CI-aware options:
 
 ```ts
 export default defineConfig({
-  publint: 'ci-only',
+  publint: "ci-only",
   attw: {
-    enabled: 'ci-only',
-    profile: 'node16',
-    level: 'error',
+    enabled: "ci-only",
+    profile: "node16",
+    level: "error",
   },
-})
+});
 ```
 
 Both tools require a `package.json` in your project directory.

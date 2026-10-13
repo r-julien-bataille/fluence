@@ -3,19 +3,42 @@
  */
 export function syllabifyFrenchWord(word: string): string[] {
   const clean = word.toLowerCase().trim();
-  if (clean.length <= 3) return [clean];
+  if (clean.length <= 3) {
+    return [clean];
+  }
 
-  const vowels = '[aeiouyàâäéèêëîïôöùûü]';
-  const consonants = '[bcçdfghjklmnpqrstvwxz]';
+  const vowels = "[aeiouyàâäéèêëîïôöùûü]";
+  const consonants = "[bcçdfghjklmnpqrstvwxz]";
 
   // Séparer les doubles consonnes identiques (ex: ap-pel, vil-le)
-  let syll = clean.replace(/([bcdfghjklmnpqrstvwxz])\1/gi, '$1-$1');
+  let syll = clean.replaceAll(/([bcdfghjklmnpqrstvwxz])\1/gi, "$1-$1");
 
   // Séparer consonne + consonne sauf liquides
-  const regexCC = new RegExp(`(${vowels})(${consonants})(${consonants})(${vowels})`, 'gi');
+  const regexCC = new RegExp(
+    `(${vowels})(${consonants})(${consonants})(${vowels})`,
+    "gi"
+  );
   syll = syll.replace(regexCC, (_match, v1, c1, c2, v2) => {
     const pair = (c1 + c2).toLowerCase();
-    const indivisible = ['bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr', 'gl', 'gr', 'pl', 'pr', 'tr', 'vr', 'ch', 'ph', 'th', 'gn'];
+    const indivisible = [
+      "bl",
+      "br",
+      "cl",
+      "cr",
+      "dr",
+      "fl",
+      "fr",
+      "gl",
+      "gr",
+      "pl",
+      "pr",
+      "tr",
+      "vr",
+      "ch",
+      "ph",
+      "th",
+      "gn",
+    ];
     if (indivisible.includes(pair)) {
       return `${v1}-${c1}${c2}${v2}`;
     }
@@ -23,75 +46,89 @@ export function syllabifyFrenchWord(word: string): string[] {
   });
 
   // Séparer V-CV
-  const regexVCV = new RegExp(`(${vowels})(${consonants})(${vowels})`, 'gi');
-  syll = syll.replace(regexVCV, '$1-$2$3');
+  const regexVCV = new RegExp(`(${vowels})(${consonants})(${vowels})`, "gi");
+  syll = syll.replace(regexVCV, "$1-$2$3");
 
-  const parts = syll.split('-').filter(Boolean);
+  const parts = syll.split("-").filter(Boolean);
   return parts.length > 0 ? parts : [clean];
 }
 
 // Référence globale pour éviter le garbage collection sous Chrome/macOS
-let activeUtterance: SpeechSynthesisUtterance | null = null;
+let _activeUtterance: SpeechSynthesisUtterance | null = null;
 let keepAliveTimer: number | null = null;
 let cachedFrenchVoice: SpeechSynthesisVoice | null = null;
 
 /**
  * Recherche et garantit la sélection d'une voix FRANÇAISE stricte
  */
-export async function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
+export function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
   if (cachedFrenchVoice) {
-    return cachedFrenchVoice;
+    return Promise.resolve(cachedFrenchVoice);
   }
 
-  if (!('speechSynthesis' in window)) return null;
+  if (!("speechSynthesis" in window)) {
+    return Promise.resolve(null);
+  }
 
   const findVoice = (): SpeechSynthesisVoice | null => {
     const voices = window.speechSynthesis.getVoices();
-    if (!voices || voices.length === 0) return null;
+    if (!voices || voices.length === 0) {
+      return null;
+    }
 
     // 1. Filtrer strictement toutes les voix françaises
     const frenchVoices = voices.filter((v) => {
-      const l = (v.lang || '').toLowerCase().replace('_', '-');
-      const n = (v.name || '').toLowerCase();
+      const l = (v.lang || "").toLowerCase().replace("_", "-");
+      const n = (v.name || "").toLowerCase();
       return (
-        l.startsWith('fr') ||
-        l === 'fra' ||
-        l === 'fre' ||
-        n.includes('french') ||
-        n.includes('français')
+        l.startsWith("fr") ||
+        l === "fra" ||
+        l === "fre" ||
+        n.includes("french") ||
+        n.includes("français")
       );
     });
 
-    if (frenchVoices.length === 0) return null;
+    if (frenchVoices.length === 0) {
+      return null;
+    }
 
     // 2. Préférer une voix naturelle de haute qualité (Thomas, Amélie, Audrey, Google Français, etc.)
     const preferredNames = [
-      'natural',
-      'google français',
-      'google francais',
-      'amélie',
-      'amelie',
-      'thomas',
-      'audrey',
-      'aurélie',
-      'aurelie',
-      'virginie',
-      'sébastien',
-      'sebastien',
-      'nicolas',
-      'julie',
-      'hortense',
-      'fr-fr',
+      "natural",
+      "google français",
+      "google francais",
+      "amélie",
+      "amelie",
+      "thomas",
+      "audrey",
+      "aurélie",
+      "aurelie",
+      "virginie",
+      "sébastien",
+      "sebastien",
+      "nicolas",
+      "julie",
+      "hortense",
+      "fr-fr",
     ];
 
     for (const pref of preferredNames) {
-      const match = frenchVoices.find((v) => v.name.toLowerCase().includes(pref));
-      if (match) return match;
+      const match = frenchVoices.find((v) =>
+        v.name.toLowerCase().includes(pref)
+      );
+      if (match) {
+        return match;
+      }
     }
 
     // 3. À défaut, toute voix française de France (fr-FR)
-    const frFR = frenchVoices.find((v) => v.lang.toLowerCase().replace('_', '-') === 'fr-fr');
-    if (frFR) return frFR;
+    const frFR = frenchVoices.find(
+      (v) => v.lang.toLowerCase().replace("_", "-") === "fr-fr"
+    );
+    if (frFR) {
+      return frFR;
+    }
 
     // 4. À défaut, n'importe quelle voix française
     return frenchVoices[0];
@@ -100,7 +137,7 @@ export async function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
   const immediate = findVoice();
   if (immediate) {
     cachedFrenchVoice = immediate;
-    return immediate;
+    return Promise.resolve(immediate);
   }
 
   // Si getVoices() est encore vide (chargement asynchrone dans Chromium/Safari), attendre onvoiceschanged
@@ -108,23 +145,31 @@ export async function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
     let resolved = false;
 
     const onVoicesChanged = () => {
-      if (resolved) return;
+      if (resolved) {
+        return;
+      }
       const v = findVoice();
       if (v) {
         resolved = true;
         cachedFrenchVoice = v;
-        window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+        window.speechSynthesis.removeEventListener(
+          "voiceschanged",
+          onVoicesChanged
+        );
         resolve(v);
       }
     };
 
-    window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
+    window.speechSynthesis.addEventListener("voiceschanged", onVoicesChanged);
 
     // Timeout de sécurité 600ms
     setTimeout(() => {
       if (!resolved) {
         resolved = true;
-        window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+        window.speechSynthesis.removeEventListener(
+          "voiceschanged",
+          onVoicesChanged
+        );
         const fallback = findVoice();
         cachedFrenchVoice = fallback;
         resolve(fallback);
@@ -134,44 +179,48 @@ export async function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
 }
 
 // Initialisation dès le chargement du module
-if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
   window.speechSynthesis.onvoiceschanged = () => {
-    getFrenchVoice().catch(() => {});
+    getFrenchVoice().catch(console.debug);
   };
 }
 
 export interface SpeakOptions {
-  rate?: number;
-  pitch?: number;
   onBoundary?: (charIndex: number) => void;
   onEnd?: () => void;
   onError?: () => void;
+  pitch?: number;
+  rate?: number;
 }
 
 /**
  * Prononce un texte avec garantie absolue d'une voix française
  */
-export async function speakFrenchText(text: string, options: SpeakOptions | number = {}): Promise<void> {
-  const opts: SpeakOptions = typeof options === 'number' ? { rate: options } : options;
+export async function speakFrenchText(
+  text: string,
+  options: SpeakOptions | number = {}
+): Promise<void> {
+  const opts: SpeakOptions =
+    typeof options === "number" ? { rate: options } : options;
   const rate = opts.rate ?? 0.85;
-  const pitch = opts.pitch ?? 1.0;
+  const pitch = opts.pitch ?? 1;
 
-  return new Promise(async (resolve) => {
-    if (!('speechSynthesis' in window)) {
-      console.warn("Web Speech API non supportée sur ce navigateur.");
-      return resolve();
-    }
+  if (!("speechSynthesis" in window)) {
+    console.warn("Web Speech API non supportée sur ce navigateur.");
+    return;
+  }
 
-    // Arrêter toute lecture précédente
-    stopFrenchSpeech();
+  // Arrêter toute lecture précédente
+  stopFrenchSpeech();
 
-    const frenchVoice = await getFrenchVoice();
+  const frenchVoice = await getFrenchVoice();
 
+  return new Promise((resolve) => {
     const utterance = new SpeechSynthesisUtterance(text);
-    activeUtterance = utterance;
+    _activeUtterance = utterance;
 
     // Forcer la langue et la voix française pour éviter la voix système par défaut
-    utterance.lang = 'fr-FR';
+    utterance.lang = "fr-FR";
     if (frenchVoice) {
       utterance.voice = frenchVoice;
     }
@@ -181,7 +230,9 @@ export async function speakFrenchText(text: string, options: SpeakOptions | numb
 
     if (opts.onBoundary) {
       utterance.onboundary = (e) => {
-        if (opts.onBoundary) opts.onBoundary(e.charIndex);
+        if (opts.onBoundary) {
+          opts.onBoundary(e.charIndex);
+        }
       };
     }
 
@@ -190,18 +241,22 @@ export async function speakFrenchText(text: string, options: SpeakOptions | numb
         clearInterval(keepAliveTimer);
         keepAliveTimer = null;
       }
-      activeUtterance = null;
+      _activeUtterance = null;
     };
 
     utterance.onend = () => {
       cleanup();
-      if (opts.onEnd) opts.onEnd();
+      if (opts.onEnd) {
+        opts.onEnd();
+      }
       resolve();
     };
 
     utterance.onerror = () => {
       cleanup();
-      if (opts.onError) opts.onError();
+      if (opts.onError) {
+        opts.onError();
+      }
       resolve();
     };
 
@@ -213,7 +268,7 @@ export async function speakFrenchText(text: string, options: SpeakOptions | numb
         window.speechSynthesis.pause();
         window.speechSynthesis.resume();
       }
-    }, 10000);
+    }, 10_000);
 
     window.speechSynthesis.speak(utterance);
   });
@@ -223,7 +278,11 @@ export async function speakFrenchText(text: string, options: SpeakOptions | numb
  * Met en pause la synthèse vocale en cours
  */
 export function pauseFrenchSpeech(): void {
-  if ('speechSynthesis' in window && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+  if (
+    "speechSynthesis" in window &&
+    window.speechSynthesis.speaking &&
+    !window.speechSynthesis.paused
+  ) {
     window.speechSynthesis.pause();
   }
 }
@@ -232,7 +291,7 @@ export function pauseFrenchSpeech(): void {
  * Reprend la synthèse vocale mise en pause
  */
 export function resumeFrenchSpeech(): void {
-  if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+  if ("speechSynthesis" in window && window.speechSynthesis.paused) {
     window.speechSynthesis.resume();
   }
 }
@@ -241,12 +300,12 @@ export function resumeFrenchSpeech(): void {
  * Arrête immédiatement la synthèse vocale en cours
  */
 export function stopFrenchSpeech(): void {
-  if ('speechSynthesis' in window) {
+  if ("speechSynthesis" in window) {
     if (keepAliveTimer !== null) {
       clearInterval(keepAliveTimer);
       keepAliveTimer = null;
     }
-    activeUtterance = null;
+    _activeUtterance = null;
     window.speechSynthesis.cancel();
   }
 }
@@ -256,8 +315,13 @@ export function stopFrenchSpeech(): void {
  */
 export function playChimeSound(): void {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!AudioCtx) {
+      return;
+    }
     const ctx = new AudioCtx();
 
     const now = ctx.currentTime;
@@ -266,11 +330,11 @@ export function playChimeSound(): void {
     const osc2 = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc1.type = 'sine';
+    osc1.type = "sine";
     osc1.frequency.setValueAtTime(523.25, now); // Do
     osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.15); // Mi
 
-    osc2.type = 'triangle';
+    osc2.type = "triangle";
     osc2.frequency.setValueAtTime(659.25, now + 0.15);
     osc2.frequency.exponentialRampToValueAtTime(783.99, now + 0.35); // Sol
 
@@ -287,7 +351,9 @@ export function playChimeSound(): void {
     osc2.stop(now + 0.6);
 
     setTimeout(() => {
-      ctx.close().catch(() => {});
+      ctx.close().catch(console.debug);
     }, 700);
-  } catch (_) {}
+  } catch (error) {
+    console.debug("Chime sound error", error);
+  }
 }

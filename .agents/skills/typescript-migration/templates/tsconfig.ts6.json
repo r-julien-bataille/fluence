@@ -17,12 +17,12 @@
 
     // === Recommended modern settings ===
     "noUncheckedSideEffectImports": true,
-    "esModuleInterop": true,           // default true in TS 6
-    "skipLibCheck": true,              // optional but common
-    "isolatedModules": true,           // required by most bundlers
-    "verbatimModuleSyntax": true,      // for safe import/export of types
-    "noEmit": true,                    // when using an external bundler
-    "lib": ["dom", "es2025"],          // dom now absorbs dom.iterable
+    "esModuleInterop": true, // default true in TS 6
+    "skipLibCheck": true, // optional but common
+    "isolatedModules": true, // required by most bundlers
+    "verbatimModuleSyntax": true, // for safe import/export of types
+    "noEmit": true, // when using an external bundler
+    "lib": ["dom", "es2025"] // dom now absorbs dom.iterable
 
     // === Output (when not using a bundler) ===
     // "outDir": "./dist",

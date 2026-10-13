@@ -1,32 +1,40 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { ExerciseText, FluencyAttempt } from '@/db/db';
-import { StudentProfile } from './StudentSelector';
-import { StepSelection } from './StepSelection';
-import { ArrowLeft, Clock, Sparkles, Trophy, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, Sparkles, Trophy } from "lucide-react";
+import type React from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
-const Step1Reading = lazy(() =>
-  import('./Step1Reading').then((m) => ({ default: m.Step1Reading }))
-);
-const Step2Remediation = lazy(() =>
-  import('./Step2Remediation').then((m) => ({ default: m.Step2Remediation }))
-);
-const Step3Challenge = lazy(() =>
-  import('./Step3Challenge').then((m) => ({ default: m.Step3Challenge }))
-);
-const StepSummary = lazy(() =>
-  import('./StepSummary').then((m) => ({ default: m.StepSummary }))
-);
-const StoryGeneratorModal = lazy(() =>
-  import('./StoryGeneratorModal').then((m) => ({ default: m.StoryGeneratorModal }))
-);
+import type { ExerciseText, FluencyAttempt } from "@/db/db";
 
-export type SessionStep = 'selection' | 'step1' | 'step2' | 'step3' | 'summary';
+import { StepSelection } from "./StepSelection";
+import type { StudentProfile } from "./StudentSelector";
+
+const Step1Reading = lazy(async () => {
+  const m = await import("./Step1Reading");
+  return { default: m.Step1Reading };
+});
+const Step2Remediation = lazy(async () => {
+  const m = await import("./Step2Remediation");
+  return { default: m.Step2Remediation };
+});
+const Step3Challenge = lazy(async () => {
+  const m = await import("./Step3Challenge");
+  return { default: m.Step3Challenge };
+});
+const StepSummary = lazy(async () => {
+  const m = await import("./StepSummary");
+  return { default: m.StepSummary };
+});
+const StoryGeneratorModal = lazy(async () => {
+  const m = await import("./StoryGeneratorModal");
+  return { default: m.StoryGeneratorModal };
+});
+
+export type SessionStep = "selection" | "step1" | "step2" | "step3" | "summary";
 
 interface SessionRunnerProps {
   currentStudent: StudentProfile;
-  onOpenSettings: () => void;
-  onOpenHistory: () => void;
   dyslexicMode: boolean;
+  onOpenHistory: () => void;
+  onOpenSettings: () => void;
 }
 
 export const SessionRunner: React.FC<SessionRunnerProps> = ({
@@ -35,7 +43,7 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
   onOpenHistory,
   dyslexicMode,
 }) => {
-  const [currentStep, setCurrentStep] = useState<SessionStep>('selection');
+  const [currentStep, setCurrentStep] = useState<SessionStep>("selection");
   const [selectedText, setSelectedText] = useState<ExerciseText | null>(null);
   const [step1Attempt, setStep1Attempt] = useState<FluencyAttempt | null>(null);
   const [step3Attempt, setStep3Attempt] = useState<FluencyAttempt | null>(null);
@@ -43,7 +51,10 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
 
   // Remonter en haut de page à chaque changement d'étape
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    switch (currentStep) {
+      default:
+        window.scrollTo({ behavior: "instant", top: 0 });
+    }
   }, [currentStep]);
 
   // Lancement d'une séance avec un texte sélectionné
@@ -51,24 +62,24 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setSelectedText(text);
     setStep1Attempt(null);
     setStep3Attempt(null);
-    setCurrentStep('step1');
+    setCurrentStep("step1");
   };
 
   // Fin de l'étape 1 (Première lecture 60s)
   const handleCompleteStep1 = (attempt: FluencyAttempt) => {
     setStep1Attempt(attempt);
-    setCurrentStep('step2');
+    setCurrentStep("step2");
   };
 
   // Prêt pour l'étape 3 après la remédiation
   const handleReadyForStep3 = () => {
-    setCurrentStep('step3');
+    setCurrentStep("step3");
   };
 
   // Fin de l'étape 3 (Défi record 60s)
   const handleCompleteStep3 = (attempt: FluencyAttempt) => {
     setStep3Attempt(attempt);
-    setCurrentStep('summary');
+    setCurrentStep("summary");
   };
 
   // Réinitialiser vers le choix de texte
@@ -76,156 +87,171 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setSelectedText(null);
     setStep1Attempt(null);
     setStep3Attempt(null);
-    setCurrentStep('selection');
+    setCurrentStep("selection");
   };
 
   // Recommencer le même texte
   const handleRestartSameText = () => {
     setStep1Attempt(null);
     setStep3Attempt(null);
-    setCurrentStep('step1');
+    setCurrentStep("step1");
   };
 
+  let step1Class = "text-slate-400";
+  if (currentStep === "step1") {
+    step1Class = "bg-indigo-600 text-white shadow-xs";
+  } else if (step1Attempt) {
+    step1Class = "bg-emerald-50 text-emerald-800";
+  }
+
+  let step2Class = "text-slate-400";
+  if (currentStep === "step2") {
+    step2Class = "bg-indigo-600 text-white shadow-xs";
+  } else if (currentStep === "step3" || currentStep === "summary") {
+    step2Class = "bg-emerald-50 text-emerald-800";
+  }
+
+  let step3Class = "text-slate-400";
+  if (currentStep === "step3") {
+    step3Class = "bg-indigo-600 text-white shadow-xs";
+  } else if (step3Attempt) {
+    step3Class = "bg-emerald-50 text-emerald-800";
+  }
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
       {/* Barre de navigation d'étape si une séance est en cours */}
-      {currentStep !== 'selection' && selectedText && (
+      {currentStep !== "selection" && selectedText && (
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <button
+              className="inline-flex items-center gap-1.5 font-semibold text-slate-500 text-xs transition-colors hover:text-slate-800 sm:text-sm"
               onClick={handleResetToSelection}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+              type="button"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Changer d'histoire</span>
+              <ArrowLeft className="h-4 w-4" />
+              <span>Changer d’histoire</span>
             </button>
 
-            <div className="text-xs font-bold text-slate-500">
-              Texte : <span className="text-indigo-600 font-extrabold">{selectedText.title}</span> ({selectedText.level})
+            <div className="font-bold text-slate-500 text-xs">
+              Texte :{" "}
+              <span className="font-extrabold text-indigo-600">
+                {selectedText.title}
+              </span>{" "}
+              ({selectedText.level})
             </div>
           </div>
 
           {/* Stepper de progression */}
-          <div className="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs grid grid-cols-4 gap-2 text-center text-xs">
+          <div className="grid grid-cols-4 gap-2 rounded-2xl border border-slate-200/80 bg-white p-3 text-center text-xs shadow-2xs">
             <div
-              className={`p-2 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all ${
-                currentStep === 'step1'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : step1Attempt
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'text-slate-400'
-              }`}
+              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step1Class}`}
             >
-              <Clock className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">1.</span> <span>Lecture 60s</span>
+              <Clock className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">1.</span>{" "}
+              <span>Lecture 60s</span>
             </div>
 
             <div
-              className={`p-2 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all ${
-                currentStep === 'step2'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : currentStep === 'step3' || currentStep === 'summary'
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'text-slate-400'
-              }`}
+              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step2Class}`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">2.</span> <span>Remédiation</span>
+              <Sparkles className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">2.</span>{" "}
+              <span>Remédiation</span>
             </div>
 
             <div
-              className={`p-2 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all ${
-                currentStep === 'step3'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : step3Attempt
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'text-slate-400'
-              }`}
+              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step3Class}`}
             >
-              <Trophy className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">3.</span> <span>Défi Record</span>
+              <Trophy className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">3.</span>{" "}
+              <span>Défi Record</span>
             </div>
 
             <div
-              className={`p-2 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all ${
-                currentStep === 'summary'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-400'
+              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${
+                currentStep === "summary"
+                  ? "bg-indigo-600 text-white shadow-xs"
+                  : "text-slate-400"
               }`}
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">4.</span> <span>Bilan & Victoire</span>
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">4.</span>{" "}
+              <span>Bilan & Victoire</span>
             </div>
           </div>
         </div>
       )}
 
       {/* Vue 1 : Choix du texte & Génération */}
-      {currentStep === 'selection' && (
+      {currentStep === "selection" && (
         <StepSelection
-          studentName={currentStudent.name}
-          studentLevel={currentStudent.level}
-          onSelectText={handleSelectText}
           onOpenGenerator={() => setIsGeneratorOpen(true)}
+          onSelectText={handleSelectText}
+          studentLevel={currentStudent.level}
+          studentName={currentStudent.name}
         />
       )}
 
       <Suspense fallback={null}>
         {/* Vue 2 : Étape 1 - Première lecture chronométrée (60 secondes) */}
-        {currentStep === 'step1' && selectedText && (
+        {currentStep === "step1" && selectedText && (
           <Step1Reading
-            text={selectedText}
-            studentName={currentStudent.name}
+            dyslexicMode={dyslexicMode}
             onCompleteStep1={handleCompleteStep1}
             onOpenSettings={onOpenSettings}
-            dyslexicMode={dyslexicMode}
+            studentName={currentStudent.name}
+            text={selectedText}
           />
         )}
 
         {/* Vue 3 : Étape 2 - Remédiation & Répétition (Sans chronomètre) */}
-        {currentStep === 'step2' && selectedText && step1Attempt && (
+        {currentStep === "step2" && selectedText && step1Attempt && (
           <Step2Remediation
-            text={selectedText}
             attempt1={step1Attempt}
-            onReadyForStep3={handleReadyForStep3}
             dyslexicMode={dyslexicMode}
+            onReadyForStep3={handleReadyForStep3}
+            text={selectedText}
           />
         )}
 
         {/* Vue 4 : Étape 3 - Défi Record (60 secondes) */}
-        {currentStep === 'step3' && selectedText && step1Attempt && (
+        {currentStep === "step3" && selectedText && step1Attempt && (
           <Step3Challenge
-            text={selectedText}
             attempt1={step1Attempt}
-            studentName={currentStudent.name}
+            dyslexicMode={dyslexicMode}
             onCompleteStep3={handleCompleteStep3}
             onOpenSettings={onOpenSettings}
-            dyslexicMode={dyslexicMode}
+            studentName={currentStudent.name}
+            text={selectedText}
           />
         )}
 
         {/* Vue 5 : Écran Bilan & Victoire */}
-        {currentStep === 'summary' && selectedText && step1Attempt && step3Attempt && (
-          <StepSummary
-            text={selectedText}
-            studentName={currentStudent.name}
-            step1={step1Attempt}
-            step3={step3Attempt}
-            onNewSession={handleResetToSelection}
-            onRestartSameText={handleRestartSameText}
-            onOpenHistory={onOpenHistory}
-          />
-        )}
+        {currentStep === "summary" &&
+          selectedText &&
+          step1Attempt &&
+          step3Attempt && (
+            <StepSummary
+              onNewSession={handleResetToSelection}
+              onOpenHistory={onOpenHistory}
+              onRestartSameText={handleRestartSameText}
+              step1={step1Attempt}
+              step3={step3Attempt}
+              studentName={currentStudent.name}
+              text={selectedText}
+            />
+          )}
 
         {/* Modal Générateur d'histoires sur mesure */}
         {isGeneratorOpen && (
           <StoryGeneratorModal
+            defaultLevel={currentStudent.level}
             isOpen={isGeneratorOpen}
             onClose={() => setIsGeneratorOpen(false)}
-            onStoryCreated={handleSelectText}
-            defaultLevel={currentStudent.level}
-            studentName={currentStudent.name}
             onOpenSettings={onOpenSettings}
+            onStoryCreated={handleSelectText}
+            studentName={currentStudent.name}
           />
         )}
       </Suspense>

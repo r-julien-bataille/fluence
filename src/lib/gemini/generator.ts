@@ -1,46 +1,58 @@
-import { FluencyLevel, ExerciseText } from '@/db/db';
-import { getGenAIClient } from './client';
-import { tokenizeFrenchText, FLUENCY_NORMS } from '@/lib/utils';
+import type { ExerciseText, FluencyLevel } from "@/db/db";
+import { FLUENCY_NORMS, tokenizeFrenchText } from "@/lib/utils";
+
+import { getGenAIClient } from "./client";
+
+const JSON_BLOCK_REGEX = /\{[\s\S]*\}/u;
 
 export interface GenerateStoryParams {
   level: FluencyLevel;
-  theme: string;
   studentName?: string;
+  theme: string;
 }
 
 interface GeneratedStoryPayload {
-  title: string;
-  content: string;
   comprehensionQuestions: {
     question: string;
     answer: string;
   }[];
+  content: string;
+  title: string;
 }
 
-const LEVEL_WORD_CONSTRAINTS: Record<FluencyLevel, { min: number; max: number; guidance: string }> = {
+const LEVEL_WORD_CONSTRAINTS: Record<
+  FluencyLevel,
+  { min: number; max: number; guidance: string }
+> = {
   CE1: {
-    min: 65,
+    guidance:
+      "Vocabulaire courant et phonologie transparente. Phrases simples et courtes (sujet-verbe-complément). Éviter les structures complexes ou les mots rares.",
     max: 85,
-    guidance: "Vocabulaire courant et phonologie transparente. Phrases simples et courtes (sujet-verbe-complément). Éviter les structures complexes ou les mots rares."
+    min: 65,
   },
   CE2: {
-    min: 85,
+    guidance:
+      "Vocabulaire usuel avec quelques adjectifs descriptifs. Phrases coordonnées simples. Respecter une progression phonétique fluide.",
     max: 110,
-    guidance: "Vocabulaire usuel avec quelques adjectifs descriptifs. Phrases coordonnées simples. Respecter une progression phonétique fluide."
+    min: 85,
   },
   CM1: {
-    min: 110,
+    guidance:
+      "Récit structuré avec connecteurs logiques (soudain, alors, cependant). Richesse lexicale modérée et variété syntaxique.",
     max: 130,
-    guidance: "Récit structuré avec connecteurs logiques (soudain, alors, cependant). Richesse lexicale modérée et variété syntaxique."
+    min: 110,
   },
   CM2: {
-    min: 120,
+    guidance:
+      "Texte narratif ou documentaire complet (120 à 150 mots). Vocabulaire précis et évocateur, dialogues courts possibles, syntaxe fluide mais stimulante.",
     max: 150,
-    guidance: "Texte narratif ou documentaire complet (120 à 150 mots). Vocabulaire précis et évocateur, dialogues courts possibles, syntaxe fluide mais stimulante."
-  }
+    min: 120,
+  },
 };
 
-export async function generateStoryWithGemini(params: GenerateStoryParams): Promise<ExerciseText> {
+export const generateStoryWithGemini = async (
+  params: GenerateStoryParams
+): Promise<ExerciseText> => {
   const client = await getGenAIClient();
   const constraints = LEVEL_WORD_CONSTRAINTS[params.level];
   const targetMclm = FLUENCY_NORMS[params.level].target;
@@ -48,7 +60,7 @@ export async function generateStoryWithGemini(params: GenerateStoryParams): Prom
   const systemInstruction = `Tu es un expert pédagogique français spécialisé dans l'apprentissage de la lecture à l'école primaire (protocole ELFE, Cogni-Sciences, Éduscol).
 Ta mission est de rédiger un texte court destiné à l'entraînement et l'évaluation de la fluence de lecture pour un élève de ${params.level}.`;
 
-  const prompt = `Génère une histoire captivante pour un enfant de ${params.level} sur le thème "${params.theme}".${params.studentName ? ` Le héros ou l'héroïne peut s'appeler ${params.studentName}.` : ''}
+  const prompt = `Génère une histoire captivante pour un enfant de ${params.level} sur le thème "${params.theme}".${params.studentName ? ` Le héros ou l'héroïne peut s'appeler ${params.studentName}.` : ""}
 
 Contraintes pédagogiques strictes :
 1. Longueur : impérativement entre ${constraints.min} et ${constraints.max} mots (décompte strict).
@@ -68,13 +80,13 @@ Retourne UNIQUEMENT un objet JSON conforme au schéma suivant :
 }`;
 
   const response = await client.models.generateContent({
-    model: 'gemini-3.8-flash',
-    contents: prompt,
     config: {
+      responseMimeType: "application/json",
       systemInstruction,
-      responseMimeType: 'application/json',
       temperature: 0.7,
     },
+    contents: prompt,
+    model: "gemini-3.8-flash",
   });
 
   const responseText = response.text;
@@ -85,13 +97,17 @@ Retourne UNIQUEMENT un objet JSON conforme au schéma suivant :
   let payload: GeneratedStoryPayload;
   try {
     payload = JSON.parse(responseText.trim());
-  } catch (err) {
+  } catch (error) {
     // Tentative d'extraction si entouré de backticks markdown
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(JSON_BLOCK_REGEX);
     if (jsonMatch) {
-      payload = JSON.parse(jsonMatch[0]);
+      const [matchedJson = ""] = jsonMatch;
+      payload = JSON.parse(matchedJson);
     } else {
-      throw new Error(`Format de réponse invalide : ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(
+        `Format de réponse invalide : ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error }
+      );
     }
   }
 
@@ -99,18 +115,18 @@ Retourne UNIQUEMENT un objet JSON conforme au schéma suivant :
   const cleanTokens = tokenList.map((t) => t.clean);
 
   const exerciseText: ExerciseText = {
-    id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    title: payload.title || `Histoire : ${params.theme}`,
-    level: params.level,
-    theme: params.theme,
-    content: payload.content,
-    tokens: cleanTokens,
-    targetMclm,
-    wordCount: cleanTokens.length,
     comprehensionQuestions: payload.comprehensionQuestions || [],
-    isCustom: true,
+    content: payload.content,
     createdAt: Date.now(),
+    id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    isCustom: true,
+    level: params.level,
+    targetMclm,
+    theme: params.theme,
+    title: payload.title || `Histoire : ${params.theme}`,
+    tokens: cleanTokens,
+    wordCount: cleanTokens.length,
   };
 
   return exerciseText;
-}
+};

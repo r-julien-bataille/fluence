@@ -20,8 +20,10 @@ Import `.css` files from TypeScript/JavaScript — CSS is extracted into separat
 
 ```ts
 // src/index.ts
-import './style.css'
-export function greet() { return 'Hello' }
+import "./style.css";
+export function greet() {
+  return "Hello";
+}
 ```
 
 Output: `index.mjs` + `index.css`
@@ -35,8 +37,8 @@ CSS `@import` statements are resolved and inlined automatically. No separate out
 Append `?inline` to return processed CSS as a JS string instead of emitting a `.css` file:
 
 ```ts
-import './style.css'                   // → .css file
-import css from './theme.css?inline'   // → JS string
+import "./style.css"; // → .css file
+import css from "./theme.css?inline"; // → JS string
 ```
 
 Works with preprocessors too (`./foo.scss?inline`). Goes through full pipeline (preprocessors, @import inlining, lowering, minification). Tree-shakeable (`moduleSideEffects: false`).
@@ -60,9 +62,9 @@ npm install -D stylus
 Then import directly:
 
 ```ts
-import './style.scss'
-import './theme.less'
-import './global.styl'
+import "./style.scss";
+import "./theme.less";
+import "./global.styl";
 ```
 
 ### Preprocessor Options
@@ -75,14 +77,14 @@ export default defineConfig({
         additionalData: `$brand-color: #ff7e17;`,
       },
       less: {
-        math: 'always',
+        math: "always",
       },
       stylus: {
-        define: { '$brand-color': '#ff7e17' },
+        define: { "$brand-color": "#ff7e17" },
       },
     },
   },
-})
+});
 ```
 
 ### `additionalData`
@@ -111,7 +113,7 @@ export default defineConfig({
   css: {
     minify: true,
   },
-})
+});
 ```
 
 Powered by Lightning CSS.
@@ -122,11 +124,11 @@ Override the top-level `target` specifically for CSS:
 
 ```ts
 export default defineConfig({
-  target: 'node18',
+  target: "node18",
   css: {
-    target: 'chrome90', // CSS-specific target
+    target: "chrome90", // CSS-specific target
   },
-})
+});
 ```
 
 Set `css.target: false` to disable CSS syntax lowering entirely.
@@ -141,9 +143,9 @@ Set `css.target: false` to disable CSS syntax lowering entirely.
 ```ts
 export default defineConfig({
   css: {
-    transformer: 'postcss',
+    transformer: "postcss",
   },
-})
+});
 ```
 
 ### PostCSS Options
@@ -151,13 +153,13 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   css: {
-    transformer: 'postcss',
+    transformer: "postcss",
     postcss: {
-      plugins: [require('autoprefixer')],
+      plugins: [require("autoprefixer")],
     },
     // Or: postcss: './config' — path to search for postcss.config.js
   },
-})
+});
 ```
 
 Auto-detects PostCSS config from project root when `transformer` is `'postcss'` and `css.postcss` is omitted.
@@ -174,16 +176,22 @@ When `target` is set (e.g., `target: 'chrome108'`), modern CSS features are auto
 
 ```css
 /* Input */
-.foo { & .bar { color: red } }
+.foo {
+  & .bar {
+    color: red;
+  }
+}
 
 /* Output (chrome108) */
-.foo .bar { color: red }
+.foo .bar {
+  color: red;
+}
 ```
 
 ### Custom Lightning CSS Options
 
 ```ts
-import { Features } from 'lightningcss'
+import { Features } from "lightningcss";
 
 export default defineConfig({
   css: {
@@ -192,7 +200,7 @@ export default defineConfig({
       include: Features.Nesting,
     },
   },
-})
+});
 ```
 
 `css.lightningcss.targets` takes precedence over both `target` and `css.target` for CSS.
@@ -202,8 +210,8 @@ export default defineConfig({
 Files with `.module.css` (and `.module.scss`, `.module.less`, etc.) are treated as CSS modules — class names are scoped and exported as JS:
 
 ```ts
-import styles from './app.module.css'
-console.log(styles.title) // "scoped_title_hash"
+import styles from "./app.module.css";
+console.log(styles.title); // "scoped_title_hash"
 ```
 
 ### Configuration
@@ -212,35 +220,30 @@ console.log(styles.title) // "scoped_title_hash"
 export default defineConfig({
   css: {
     modules: {
-      scopeBehaviour: 'local',             // 'local' (default) | 'global'
-      generateScopedName: '[hash]_[local]', // Lightning CSS pattern string
-      localsConvention: 'camelCase',       // 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
+      scopeBehaviour: "local", // 'local' (default) | 'global'
+      generateScopedName: "[hash]_[local]", // Lightning CSS pattern string
+      localsConvention: "camelCase", // 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
     },
   },
-})
+});
 ```
 
 Set `css.modules: false` to disable. Function-form `generateScopedName` requires `transformer: 'postcss'`.
 
-`localsConvention` also accepts a function compatible with Vite and
-`postcss-modules`:
+`localsConvention` also accepts a function compatible with Vite and `postcss-modules`:
 
 ```ts
 export default defineConfig({
   css: {
     modules: {
-      localsConvention: (
-        originalClassName,
-        generatedClassName,
-        inputFile,
-      ) => originalClassName.replaceAll(/-([a-z0-9])/g, (_, c) => c.toUpperCase()),
+      localsConvention: (originalClassName, generatedClassName, inputFile) =>
+        originalClassName.replaceAll(/-([a-z0-9])/g, (_, c) => c.toUpperCase()),
     },
   },
-})
+});
 ```
 
-The function form works with both CSS transformers and returns the JavaScript
-export key.
+The function form works with both CSS transformers and returns the JavaScript export key.
 
 ### Optional Dependencies (PostCSS path)
 
@@ -257,9 +260,9 @@ All CSS merged into a single file (default: `style.css`).
 ```ts
 export default defineConfig({
   css: {
-    fileName: 'my-library.css', // Custom name (default: 'style.css')
+    fileName: "my-library.css", // Custom name (default: 'style.css')
   },
-})
+});
 ```
 
 ### Per-Chunk Splitting
@@ -269,7 +272,7 @@ export default defineConfig({
   css: {
     splitting: true, // Each JS chunk gets a corresponding .css file
   },
-})
+});
 ```
 
 ## Preserving CSS Imports (`css.inject`)
@@ -281,7 +284,7 @@ export default defineConfig({
   css: {
     inject: true,
   },
-})
+});
 ```
 
 ## PostCSS Optional Peer Dependencies
@@ -289,7 +292,7 @@ export default defineConfig({
 When using `transformer: 'postcss'`, install these as needed:
 
 | Package | Purpose | Required When |
-|---------|---------|---------------|
+| --- | --- | --- |
 | `postcss` | Core PostCSS engine | Always (with `transformer: 'postcss'`) |
 | `postcss-import` | Resolve/inline `@import` | CSS uses `@import` |
 | `postcss-modules` | CSS modules (scoped classes) | Using `.module.css` files |
@@ -303,7 +306,7 @@ All declared as optional peer dependencies of `@tsdown/css`.
 ## Options Reference
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+| --- | --- | --- | --- |
 | `css.transformer` | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS processing pipeline |
 | `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |

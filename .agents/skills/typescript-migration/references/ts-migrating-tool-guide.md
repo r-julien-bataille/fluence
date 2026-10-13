@@ -26,6 +26,7 @@ npm install -D ts-migrating
 ```
 
 Add to `tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -42,6 +43,7 @@ Add to `tsconfig.json`:
 ```
 
 Run:
+
 ```bash
 npx ts-migrating check      # report new errors in CI
 npx ts-migrating annotate   # bulk-insert // @ts-migrating markers (review before committing)

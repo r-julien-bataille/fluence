@@ -1,17 +1,20 @@
-import React from 'react';
-import { Settings, History, BookOpen, Type } from 'lucide-react';
-import { StudentSelector, StudentProfile } from './StudentSelector';
-import { hasStoredApiKey } from '@/lib/gemini/client';
+import { BookOpen, History, Settings, Type } from "lucide-react";
+import type React from "react";
+
+import { hasStoredApiKey } from "@/lib/gemini/client";
+
+import type { StudentProfile } from "./StudentSelector";
+import { StudentSelector } from "./StudentSelector";
 
 interface HeaderProps {
   currentStudent: StudentProfile;
-  students: StudentProfile[];
-  onSelectStudent: (student: StudentProfile) => void;
-  onAddStudent: (student: StudentProfile) => void;
-  onOpenSettings: () => void;
-  onOpenHistory: () => void;
   dyslexicMode: boolean;
+  onAddStudent: (student: StudentProfile) => void;
+  onOpenHistory: () => void;
+  onOpenSettings: () => void;
+  onSelectStudent: (student: StudentProfile) => void;
   onToggleDyslexicMode: () => void;
+  students: StudentProfile[];
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,23 +30,23 @@ export const Header: React.FC<HeaderProps> = ({
   const hasKey = hasStoredApiKey();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 transition-all">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-slate-200/80 border-b bg-white/80 px-4 py-3.5 backdrop-blur-md transition-all sm:px-8">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         {/* Logo & Titre */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200">
-            <BookOpen className="w-5 h-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-indigo-200 shadow-md">
+            <BookOpen className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-black text-slate-900 font-fun tracking-tight">
+              <h1 className="font-black font-fun text-slate-900 text-xl tracking-tight">
                 Fluence
               </h1>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+              <span className="hidden rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 font-bold text-[10px] text-indigo-700 sm:inline-block">
                 Protocole ELFE / Éduscol
               </span>
             </div>
-            <p className="text-[11px] text-slate-600 font-sans hidden sm:block">
+            <p className="hidden font-sans text-[11px] text-slate-600 sm:block">
               Évaluation et entraînement de lecture du CE1 au CM2
             </p>
           </div>
@@ -54,51 +57,54 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Sélecteur de profil élève */}
           <StudentSelector
             currentStudent={currentStudent}
-            students={students}
-            onSelectStudent={onSelectStudent}
             onAddStudent={onAddStudent}
+            onSelectStudent={onSelectStudent}
+            students={students}
           />
 
           {/* Bouton bascule police Dyslexie / Confort de lecture */}
           <button
-            onClick={onToggleDyslexicMode}
-            className={`p-2.5 rounded-2xl border text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
-              dyslexicMode
-                ? 'bg-amber-100 border-amber-300 text-amber-900'
-                : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'
-            }`}
-            title="Activer la police adaptée à la dyslexie et espacement renforcé"
             aria-label="Activer le mode confort de lecture"
             aria-pressed={dyslexicMode}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-2xl border p-2.5 font-bold text-xs transition-colors ${
+              dyslexicMode
+                ? "border-amber-300 bg-amber-100 text-amber-900"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+            }`}
+            onClick={onToggleDyslexicMode}
+            title="Activer la police adaptée à la dyslexie et espacement renforcé"
+            type="button"
           >
-            <Type className="w-4 h-4" />
+            <Type className="h-4 w-4" />
             <span className="hidden md:inline">Dys-confort</span>
           </button>
 
           {/* Bouton Historique */}
           <button
-            onClick={onOpenHistory}
-            className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
-            title="Historique des séances"
             aria-label="Historique des séances"
+            className="cursor-pointer rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            onClick={onOpenHistory}
+            title="Historique des séances"
+            type="button"
           >
-            <History className="w-4 h-4" />
+            <History className="h-4 w-4" />
           </button>
 
           {/* Bouton Paramètres Clé API */}
           <button
-            onClick={onOpenSettings}
-            className={`p-2.5 rounded-2xl border transition-colors relative cursor-pointer ${
-              !hasKey
-                ? 'bg-amber-50 border-amber-300 text-amber-700 animate-pulse'
-                : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
-            }`}
-            title="Paramètres de la clé API Google"
             aria-label="Paramètres de la clé API Google"
+            className={`relative cursor-pointer rounded-2xl border p-2.5 transition-colors ${
+              hasKey
+                ? "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                : "animate-pulse border-amber-300 bg-amber-50 text-amber-700"
+            }`}
+            onClick={onOpenSettings}
+            title="Paramètres de la clé API Google"
+            type="button"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="h-4 w-4" />
             {!hasKey && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
             )}
           </button>
         </div>

@@ -15,10 +15,10 @@ Configure under `tasks` in `pnpm-workspace.yaml`:
 tasks:
   build:
     dependsOn:
-      - ^build        # build in each workspace dependency
+      - ^build # build in each workspace dependency
   test:
     dependsOn:
-      - build         # build in the same project
+      - build # build in the same project
 ```
 
 - `build` → the `build` task in the same project.
@@ -32,8 +32,8 @@ tasks:
 ```yaml title="pnpm-workspace.yaml"
 tasks:
   build:
-    concurrency: 2          # max 2 instances of build across projects
-    dependsOn: ['^build']
+    concurrency: 2 # max 2 instances of build across projects
+    dependsOn: ["^build"]
 ```
 
 Separate from `--workspace-concurrency`; a task waiting for its slot doesn't occupy a workspace slot.
@@ -48,7 +48,7 @@ tasks:
     concurrencyGroup: cargo
     dependsOn: []
 concurrencyGroups:
-  cargo: 2                  # at most 2 cargo tasks at once, across processes
+  cargo: 2 # at most 2 cargo tasks at once, across processes
 ```
 
 - A nested `pnpm run` in the same group reuses its parent's slot. Slots release on process exit/crash.
@@ -61,7 +61,7 @@ concurrencyGroups:
 ```yaml title="pnpm-workspace.yaml"
 tasks:
   build:critical: { concurrencyGroup: build, priority: 10 }
-  build:cleanup:  { concurrencyGroup: build, priority: -1 }
+  build:cleanup: { concurrencyGroup: build, priority: -1 }
 ```
 
 ### Inspecting groups (v12.6.0)
@@ -99,9 +99,15 @@ Runs a named set of tasks the way a CI job would: frozen install, then the affec
 
 ```yaml title="pnpm-workspace.yaml"
 tasks:
-  build: { dependsOn: ['^build'], outputs: ['dist/**'], inputs: ['src/**'], env: ['NODE_ENV'] }
-  test:  { dependsOn: ['build'], outputs: [] }
-  lint:  { outputs: [] }
+  build:
+    {
+      dependsOn: ["^build"],
+      outputs: ["dist/**"],
+      inputs: ["src/**"],
+      env: ["NODE_ENV"],
+    }
+  test: { dependsOn: ["build"], outputs: [] }
+  lint: { outputs: [] }
 pipelines:
   default: [build, test, lint]
   release: [build]

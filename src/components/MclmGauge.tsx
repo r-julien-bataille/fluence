@@ -1,11 +1,12 @@
-import React from 'react';
-import { FluencyLevel } from '@/db/db';
-import { FLUENCY_NORMS } from '@/lib/utils';
-import { Award, Zap, CheckCircle2, TrendingUp } from 'lucide-react';
+import { Award, CheckCircle2, TrendingUp, Zap } from "lucide-react";
+import type React from "react";
+
+import type { FluencyLevel } from "@/db/db";
+import { FLUENCY_NORMS } from "@/lib/utils";
 
 interface MclmGaugeProps {
-  mclm: number;
   level: FluencyLevel;
+  mclm: number;
   previousMclm?: number;
   showComparison?: boolean;
 }
@@ -17,8 +18,8 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
   showComparison = false,
 }) => {
   const norm = FLUENCY_NORMS[level];
-  const target = norm.target;
-  const min = norm.min;
+  const { target } = norm;
+  const { min } = norm;
 
   // Pourcentage par rapport à la cible (max 150%)
   const percentage = Math.min(130, Math.round((mclm / target) * 100));
@@ -41,29 +42,39 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
     IconComponent = TrendingUp;
   }
 
-  const delta = previousMclm !== undefined ? mclm - previousMclm : null;
+  const delta = previousMclm === undefined ? null : mclm - previousMclm;
+
+  let deltaBadgeClass = "bg-rose-100 text-rose-700";
+  if (delta !== null && delta > 0) {
+    deltaBadgeClass = "bg-emerald-100 text-emerald-700";
+  } else if (delta === 0) {
+    deltaBadgeClass = "bg-slate-100 text-slate-600";
+  }
+
+  let progressGradient = "bg-linear-to-r from-amber-400 to-orange-500";
+  if (mclm >= target) {
+    progressGradient = "bg-linear-to-r from-emerald-400 to-teal-500";
+  } else if (mclm >= min) {
+    progressGradient = "bg-linear-to-r from-blue-400 to-indigo-500";
+  }
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <span className="font-bold text-slate-400 text-xs uppercase tracking-wider">
             Score de Fluence ELFE
           </span>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-4xl sm:text-5xl font-black text-slate-900 font-fun">
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="font-black font-fun text-4xl text-slate-900 sm:text-5xl">
               {mclm}
             </span>
-            <span className="text-slate-500 font-medium text-sm sm:text-base">MCLM</span>
+            <span className="font-medium text-slate-500 text-sm sm:text-base">
+              MCLM
+            </span>
             {delta !== null && (
               <span
-                className={`ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
-                  delta > 0
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : delta === 0
-                    ? 'bg-slate-100 text-slate-600'
-                    : 'bg-rose-100 text-rose-700'
-                }`}
+                className={`ml-2 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-bold text-xs ${deltaBadgeClass}`}
               >
                 {delta > 0 ? `+${delta}` : delta} MCLM
               </span>
@@ -71,46 +82,50 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
           </div>
         </div>
 
-        <div className={`px-3 py-1.5 rounded-2xl border text-xs sm:text-sm font-semibold flex items-center gap-2 ${statusBadgeColor}`}>
-          <IconComponent className="w-4 h-4 shrink-0" />
+        <div
+          className={`flex items-center gap-2 rounded-2xl border px-3 py-1.5 font-semibold text-xs sm:text-sm ${statusBadgeColor}`}
+        >
+          <IconComponent className="h-4 w-4 shrink-0" />
           <span>{statusText}</span>
         </div>
       </div>
 
       {/* Barre de progression avec marqueurs */}
       <div className="space-y-2">
-        <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden p-0.5">
+        <div className="relative h-4 overflow-hidden rounded-full bg-slate-100 p-0.5">
           <div
-            className={`h-full rounded-full transition-all duration-700 ${
-              mclm >= target
-                ? 'bg-linear-to-r from-emerald-400 to-teal-500'
-                : mclm >= min
-                ? 'bg-linear-to-r from-blue-400 to-indigo-500'
-                : 'bg-linear-to-r from-amber-400 to-orange-500'
-            }`}
+            className={`h-full rounded-full transition-all duration-700 ${progressGradient}`}
             style={{ width: `${Math.max(6, Math.min(100, percentage))}%` }}
           />
         </div>
 
-        <div className="flex justify-between items-center text-xs text-slate-500 font-medium px-1">
+        <div className="flex items-center justify-between px-1 font-medium text-slate-500 text-xs">
           <span>0</span>
-          <span className="text-slate-600 font-semibold">Repère min : {min}</span>
-          <span className="text-indigo-600 font-bold">Cible {level} : {target}</span>
+          <span className="font-semibold text-slate-600">
+            Repère min : {min}
+          </span>
+          <span className="font-bold text-indigo-600">
+            Cible {level} : {target}
+          </span>
         </div>
       </div>
 
       {showComparison && previousMclm !== undefined && (
-        <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-4 text-center">
-          <div className="bg-slate-50 rounded-2xl p-3">
-            <div className="text-xs text-slate-400">1ère lecture</div>
-            <div className="text-2xl font-bold text-slate-700 font-fun mt-0.5">
-              {previousMclm} <span className="text-xs text-slate-400 font-sans">MCLM</span>
+        <div className="mt-4 grid grid-cols-2 gap-4 border-slate-100 border-t pt-4 text-center">
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-slate-400 text-xs">1ère lecture</div>
+            <div className="mt-0.5 font-bold font-fun text-2xl text-slate-700">
+              {previousMclm}{" "}
+              <span className="font-sans text-slate-400 text-xs">MCLM</span>
             </div>
           </div>
-          <div className="bg-indigo-50/60 rounded-2xl p-3">
-            <div className="text-xs text-indigo-500 font-medium">Défi Record</div>
-            <div className="text-2xl font-bold text-indigo-700 font-fun mt-0.5">
-              {mclm} <span className="text-xs text-indigo-400 font-sans">MCLM</span>
+          <div className="rounded-2xl bg-indigo-50/60 p-3">
+            <div className="font-medium text-indigo-500 text-xs">
+              Défi Record
+            </div>
+            <div className="mt-0.5 font-bold font-fun text-2xl text-indigo-700">
+              {mclm}{" "}
+              <span className="font-sans text-indigo-400 text-xs">MCLM</span>
             </div>
           </div>
         </div>

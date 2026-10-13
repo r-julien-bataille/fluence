@@ -1,31 +1,36 @@
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta
-      name="description"
       content="Application web d'entraînement et d'évaluation de la fluence de lecture du CE1 au CM2 selon le protocole officiel ELFE / Éduscol."
-    />
+      name="description"
+    >
     <title>Fluence - Entraînement à la lecture (ELFE / Éduscol)</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link
-      rel="preload"
       as="style"
       href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lexend:wght@300;400;500;600;700&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+      rel="preload"
+    >
     <noscript>
       <link
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lexend:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
-      />
+      >
     </noscript>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900 min-h-screen">
+  <body
+    class="min-h-screen bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900"
+  >
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script src="/src/main.tsx" type="module"></script>
   </body>
 </html>

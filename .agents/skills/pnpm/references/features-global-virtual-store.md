@@ -10,7 +10,7 @@ description: Global virtual store for shared node_modules, git-worktree multi-ag
 By default each project has its own `node_modules/.pnpm` virtual store containing hard links to the content-addressable store. With the **global virtual store** enabled, pnpm keeps one shared virtual store at `<store-path>/links/` (find it via `pnpm store path`), and each project's `node_modules` contains only **symlinks** into it.
 
 ```yaml title="pnpm-workspace.yaml"
-virtualStoreType: global    # canonical spelling since v11.23.0
+virtualStoreType: global # canonical spelling since v11.23.0
 # enableGlobalVirtualStore: true   # older spelling, still works
 ```
 
@@ -48,7 +48,7 @@ git worktree add ./fix-api fix/api-error
 
 ```yaml title="pnpm-workspace.yaml"
 packages:
-  - 'packages/*'
+  - "packages/*"
 virtualStoreType: global
 ```
 

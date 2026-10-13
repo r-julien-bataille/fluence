@@ -14,13 +14,13 @@ Create `pnpm-workspace.yaml` at the repository root:
 ```yaml
 packages:
   # Include all packages in packages/ directory
-  - 'packages/*'
+  - "packages/*"
   # Include all apps
-  - 'apps/*'
+  - "apps/*"
   # Include nested packages
-  - 'tools/*/packages/*'
+  - "tools/*/packages/*"
   # Exclude test directories
-  - '!**/test/**'
+  - "!**/test/**"
 ```
 
 ## Workspace Protocol
@@ -39,12 +39,12 @@ Use `workspace:` protocol to reference local packages:
 
 ### Protocol Variants
 
-| Protocol | Behavior | Published As |
-|----------|----------|--------------|
-| `workspace:*` | Any version | Actual version (e.g., `1.2.3`) |
-| `workspace:^` | Compatible version | `^1.2.3` |
-| `workspace:~` | Patch version | `~1.2.3` |
-| `workspace:^1.0.0` | Semver range | `^1.0.0` |
+| Protocol           | Behavior           | Published As                   |
+| ------------------ | ------------------ | ------------------------------ |
+| `workspace:*`      | Any version        | Actual version (e.g., `1.2.3`) |
+| `workspace:^`      | Compatible version | `^1.2.3`                       |
+| `workspace:~`      | Patch version      | `~1.2.3`                       |
+| `workspace:^1.0.0` | Semver range       | `^1.0.0`                       |
 
 ## Filtering Packages
 
@@ -87,6 +87,7 @@ pnpm --filter "[HEAD~5]" lint
 ## Workspace Commands
 
 ### Install dependencies
+
 ```bash
 # Install all workspace packages
 pnpm install
@@ -99,6 +100,7 @@ pnpm --filter @myorg/app add @myorg/utils
 ```
 
 ### Run scripts
+
 ```bash
 # Run in all packages with that script
 pnpm -r run build
@@ -114,6 +116,7 @@ pnpm -r --stream run dev
 ```
 
 ### Execute commands
+
 ```bash
 # Run command in all packages
 pnpm -r exec pwd
@@ -128,7 +131,7 @@ Configure in `pnpm-workspace.yaml` using **camelCase** keys (these settings no l
 
 ```yaml title="pnpm-workspace.yaml"
 packages:
-  - 'packages/*'
+  - "packages/*"
 
 # Link workspace packages automatically
 linkWorkspacePackages: true
@@ -158,9 +161,9 @@ ignoreWorkspaceCycles: false
 ```yaml title="pnpm-workspace.yaml"
 tasks:
   build:
-    dependsOn: ['^build']   # build each workspace dependency first
+    dependsOn: ["^build"] # build each workspace dependency first
   test:
-    dependsOn: ['build']
+    dependsOn: ["build"]
 ```
 
 ### Per-package configuration (packageConfigs)
@@ -172,7 +175,7 @@ packageConfigs:
   project-1:
     saveExact: true
   project-2:
-    savePrefix: '~'
+    savePrefix: "~"
 ```
 
 ## Publishing Workspaces
@@ -196,6 +199,7 @@ When publishing, `workspace:` protocols are converted:
 ```
 
 Use `--no-git-checks` for publishing from CI:
+
 ```bash
 pnpm publish -r --no-git-checks
 ```
@@ -230,7 +234,7 @@ my-monorepo/
         └── package.json
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/workspaces
 - https://pnpm.io/filtering

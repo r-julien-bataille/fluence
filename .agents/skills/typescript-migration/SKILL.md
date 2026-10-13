@@ -39,7 +39,7 @@ Authoritative migration guide for TypeScript 5.x → 6 → 7 (native Go port). S
 ## Project-Type Decision Matrix
 
 | Project type | Recommendation | Why |
-|---|---|---|
+| --- | --- | --- |
 | Greenfield, no API-dependent tooling | Adopt TS 7 directly | Full speedup, no blockers |
 | Existing TS project, no special tooling | 5 → 6 → 7 sequentially | TS 6 surfaces every deprecation as a warning first |
 | Uses typescript-eslint / ts-morph / API consumers | 5 → 6 → 7 via `@typescript/typescript6` side-by-side | TS 7 has no programmatic API until 7.1 |
@@ -50,7 +50,7 @@ Authoritative migration guide for TypeScript 5.x → 6 → 7 (native Go port). S
 ## TS 6 — Top Breaking Changes (Quick View)
 
 | Change | Old default | TS 6 default | Fix |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `strict` | false | **true** | Set explicitly or fix errors |
 | `module` | CommonJS | **esnext** | Set `commonjs` if needed |
 | `target` | ES3 | **es2025** (floating) | Set explicitly |
@@ -145,7 +145,7 @@ Full install, commands, and gate logic in `references/ts-migrating-tool-guide.md
 ## Common Error Codes
 
 | Code | Meaning | Action |
-|---|---|---|
+| --- | --- | --- |
 | TS5011 | rootDir mismatch | Set `"rootDir": "./src"` |
 | TS5101 | Option deprecated, stops in TS {ver} | Add `"ignoreDeprecations": "6.0"` (TS 6 only) or fix |
 | TS5102 | Option removed | Remove from tsconfig |
@@ -159,7 +159,7 @@ Full install, commands, and gate logic in `references/ts-migrating-tool-guide.md
 Load these reference files when the user needs detail beyond the quick-reference above:
 
 | Load This File | When |
-|---|---|
+| --- | --- |
 | `references/ts6-breaking-changes.md` | Migrating to TS 6; need full PR-cited detail on each default change, deprecation, or syntax change |
 | `references/ts7-go-rewrite.md` | Adopting TS 7; need install detail, compat matrix, performance tables, known gaps |
 | `references/ecosystem-compatibility.md` | Checking whether a specific tool (typescript-eslint, ts-morph, ts-node, vite, webpack, vitest, etc.) works under TS 7 |

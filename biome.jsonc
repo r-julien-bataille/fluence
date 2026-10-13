@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noJsxPropsBind": "off"
+      },
+      "style": {
+        "noIncrementDecrement": "off",
+        "noNestedTernary": "off",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["kebab-case", "PascalCase"]
+          }
+        }
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noLeakedRender": "off"
+      }
+    }
+  }
+}

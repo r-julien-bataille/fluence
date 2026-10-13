@@ -1,33 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { ExerciseText, FluencyAttempt } from '@/db/db';
-import { Flashcard } from './Flashcard';
-import { FluencyTextDisplay } from './FluencyTextDisplay';
 import {
-  Sparkles,
   ArrowRight,
-  HelpCircle,
   BookOpen,
-  Volume2,
+  HelpCircle,
   Pause,
   Play,
+  Sparkles,
   Square,
+  Volume2,
   VolumeX,
-} from 'lucide-react';
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+
+import type { ExerciseText, FluencyAttempt } from "@/db/db";
 import {
-  speakFrenchText,
   pauseFrenchSpeech,
   resumeFrenchSpeech,
+  speakFrenchText,
   stopFrenchSpeech,
-} from '@/lib/audio/speech';
+} from "@/lib/audio/speech";
+
+import { Flashcard } from "./Flashcard";
+import { FluencyTextDisplay } from "./FluencyTextDisplay";
 
 interface Step2RemediationProps {
-  text: ExerciseText;
   attempt1: FluencyAttempt;
-  onReadyForStep3: () => void;
   dyslexicMode: boolean;
+  onReadyForStep3: () => void;
+  text: ExerciseText;
 }
 
-type AudioPlayState = 'idle' | 'playing' | 'paused';
+type AudioPlayState = "idle" | "playing" | "paused";
 
 export const Step2Remediation: React.FC<Step2RemediationProps> = ({
   text,
@@ -37,21 +40,27 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
 }) => {
   const stumbledWords = attempt1.stumbledWords || [];
   const [masteredWords, setMasteredWords] = useState<Set<string>>(new Set());
-  const [revealedQuestions, setRevealedQuestions] = useState<Set<number>>(new Set());
-  const [audioState, setAudioState] = useState<AudioPlayState>('idle');
+  const [revealedQuestions, setRevealedQuestions] = useState<Set<number>>(
+    new Set()
+  );
+  const [audioState, setAudioState] = useState<AudioPlayState>("idle");
 
   // Arrêter toute lecture audio quand le composant est démonté
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       stopFrenchSpeech();
-    };
-  }, []);
+    },
+    []
+  );
 
   const handleToggleMastered = (word: string) => {
     setMasteredWords((prev) => {
       const next = new Set(prev);
-      if (next.has(word)) next.delete(word);
-      else next.add(word);
+      if (next.has(word)) {
+        next.delete(word);
+      } else {
+        next.add(word);
+      }
       return next;
     });
   };
@@ -59,39 +68,42 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
   const handleToggleQuestion = (index: number) => {
     setRevealedQuestions((prev) => {
       const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
       return next;
     });
   };
 
   // Lecture complète avec gestion Play / Pause / Reprendre / Arrêter
   const handleStartFullSpeech = async () => {
-    setAudioState('playing');
+    setAudioState("playing");
     await speakFrenchText(text.content, {
-      rate: 0.82,
       onEnd: () => {
-        setAudioState('idle');
+        setAudioState("idle");
       },
       onError: () => {
-        setAudioState('idle');
+        setAudioState("idle");
       },
+      rate: 0.82,
     });
   };
 
   const handlePauseSpeech = () => {
     pauseFrenchSpeech();
-    setAudioState('paused');
+    setAudioState("paused");
   };
 
   const handleResumeSpeech = () => {
     resumeFrenchSpeech();
-    setAudioState('playing');
+    setAudioState("playing");
   };
 
   const handleStopSpeech = () => {
     stopFrenchSpeech();
-    setAudioState('idle');
+    setAudioState("idle");
   };
 
   const handleProceedToStep3 = () => {
@@ -100,33 +112,36 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="fade-in animate-in space-y-8 duration-300">
       {/* En-tête de l'étape 2 */}
-      <div className="bg-amber-500/10 border border-amber-200/80 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-amber-200/80 bg-amber-500/10 p-6 sm:p-8 md:flex-row">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="rounded-full bg-amber-100 px-3 py-1 font-bold text-amber-800 text-xs">
               Étape 2 sur 3
             </span>
-            <span className="text-xs text-amber-900 font-semibold">
+            <span className="font-semibold text-amber-900 text-xs">
               Sans chronomètre · À ton rythme
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-fun">
+          <h2 className="font-extrabold font-fun text-2xl text-slate-900 sm:text-3xl">
             Remédiation & Consolidation
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
-            Entraîne-toi sur les mots qui t'ont posé difficulté lors de la première lecture, puis relis le texte tranquillement pour préparer ton Défi Record !
+          <p className="mt-1 max-w-xl text-slate-600 text-xs sm:text-sm">
+            Entraîne-toi sur les mots qui t’ont posé difficulté lors de la
+            première lecture, puis relis le texte tranquillement pour préparer
+            ton Défi Record !
           </p>
         </div>
 
         <button
+          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 font-bold text-sm text-white shadow-indigo-200 shadow-lg transition-all hover:scale-105 hover:bg-indigo-700"
           onClick={handleProceedToStep3}
-          className="shrink-0 py-3.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-indigo-200 flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
+          type="button"
         >
-          <Sparkles className="w-5 h-5 text-amber-300" />
+          <Sparkles className="h-5 w-5 text-amber-300" />
           <span>Prêt pour le Défi Record (60s) !</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="h-4 w-4" />
         </button>
       </div>
 
@@ -134,22 +149,25 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {stumbledWords.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-900 font-fun flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <span>Mots à consolider ({masteredWords.size} / {stumbledWords.length} maîtrisés)</span>
+            <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-slate-900">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              <span>
+                Mots à consolider ({masteredWords.size} / {stumbledWords.length}{" "}
+                maîtrisés)
+              </span>
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-slate-400 text-xs">
               Écoute la prononciation en français et repère les syllabes
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {stumbledWords.map((word, idx) => (
               <Flashcard
-                key={idx}
-                word={word}
                 isMastered={masteredWords.has(word)}
+                key={idx}
                 onMastered={handleToggleMastered}
+                word={word}
               />
             ))}
           </div>
@@ -159,65 +177,72 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {/* Lecture fluide du texte complet sans chrono avec contrôles audio (Play/Pause/Stop) */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-bold text-slate-900 font-fun flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-indigo-600" />
+          <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-slate-900">
+            <BookOpen className="h-5 w-5 text-indigo-600" />
             <span>Relis le texte entier à voix haute</span>
           </h3>
 
           {/* Barre de contrôles de lecture audio */}
-          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-2xl border border-slate-200 shadow-2xs">
-            {audioState === 'idle' ? (
+          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-1.5 shadow-2xs">
+            {audioState === "idle" && (
               <button
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1 font-semibold text-indigo-600 text-xs transition-colors hover:bg-indigo-100 hover:text-indigo-800"
                 onClick={handleStartFullSpeech}
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
                 title="Écouter la lecture complète du texte par le modèle français"
+                type="button"
               >
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="h-4 w-4" />
                 <span>Écouter le modèle complet</span>
               </button>
-            ) : audioState === 'playing' ? (
+            )}
+            {audioState === "playing" && (
               <>
-                <span className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 mr-1 animate-pulse">
-                  <Volume2 className="w-4 h-4" />
+                <span className="mr-1 flex animate-pulse items-center gap-1.5 font-bold text-indigo-700 text-xs">
+                  <Volume2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Lecture en cours...</span>
                 </span>
                 <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-amber-100 p-1.5 font-bold text-amber-900 text-xs transition-colors hover:bg-amber-200"
                   onClick={handlePauseSpeech}
-                  className="p-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                   title="Mettre en pause"
+                  type="button"
                 >
-                  <Pause className="w-3.5 h-3.5" />
+                  <Pause className="h-3.5 w-3.5" />
                   <span className="text-[11px]">Pause</span>
                 </button>
                 <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-rose-100 p-1.5 font-bold text-rose-900 text-xs transition-colors hover:bg-rose-200"
                   onClick={handleStopSpeech}
-                  className="p-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                   title="Arrêter la lecture"
+                  type="button"
                 >
-                  <Square className="w-3.5 h-3.5 fill-rose-900" />
+                  <Square className="h-3.5 w-3.5 fill-rose-900" />
                   <span className="text-[11px]">Arrêter</span>
                 </button>
               </>
-            ) : (
+            )}
+            {audioState === "paused" && (
               <>
-                <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 mr-1">
-                  <VolumeX className="w-4 h-4" />
+                <span className="mr-1 flex items-center gap-1.5 font-bold text-amber-700 text-xs">
+                  <VolumeX className="h-4 w-4" />
                   <span className="hidden sm:inline">En pause</span>
                 </span>
                 <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-emerald-100 p-1.5 font-bold text-emerald-900 text-xs transition-colors hover:bg-emerald-200"
                   onClick={handleResumeSpeech}
-                  className="p-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                   title="Reprendre la lecture"
+                  type="button"
                 >
-                  <Play className="w-3.5 h-3.5 fill-emerald-900" />
+                  <Play className="h-3.5 w-3.5 fill-emerald-900" />
                   <span className="text-[11px]">Reprendre</span>
                 </button>
                 <button
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-rose-100 p-1.5 font-bold text-rose-900 text-xs transition-colors hover:bg-rose-200"
                   onClick={handleStopSpeech}
-                  className="p-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
                   title="Arrêter la lecture"
+                  type="button"
                 >
-                  <Square className="w-3.5 h-3.5 fill-rose-900" />
+                  <Square className="h-3.5 w-3.5 fill-rose-900" />
                   <span className="text-[11px]">Arrêter</span>
                 </button>
               </>
@@ -232,64 +257,68 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       </div>
 
       {/* Questions de compréhension */}
-      {text.comprehensionQuestions && text.comprehensionQuestions.length > 0 && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
-              <HelpCircle className="w-5 h-5" />
+      {text.comprehensionQuestions &&
+        text.comprehensionQuestions.length > 0 && (
+          <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+                <HelpCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="font-bold font-fun text-base text-slate-900">
+                  Compréhension de l’histoire
+                </h4>
+                <p className="text-slate-500 text-xs">
+                  Vérifie que tu as bien compris le sens du texte
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-bold text-slate-900 text-base font-fun">
-                Compréhension de l'histoire
-              </h4>
-              <p className="text-xs text-slate-500">
-                Vérifie que tu as bien compris le sens du texte
-              </p>
+
+            <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2">
+              {text.comprehensionQuestions.map((q, idx) => {
+                const isRevealed = revealedQuestions.has(idx);
+                return (
+                  <div
+                    className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                    key={idx}
+                  >
+                    <div className="mb-3 font-semibold text-slate-800 text-sm">
+                      Question {idx + 1} : {q.question}
+                    </div>
+
+                    <div>
+                      {isRevealed ? (
+                        <div className="fade-in animate-in rounded-xl border border-emerald-200 bg-emerald-50 p-3 font-medium text-emerald-900 text-xs">
+                          <span className="font-bold">Réponse :</span>{" "}
+                          {q.answer}
+                        </div>
+                      ) : (
+                        <button
+                          className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 text-xs transition-colors hover:bg-slate-100"
+                          onClick={() => handleToggleQuestion(idx)}
+                          type="button"
+                        >
+                          <span>Afficher la réponse</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            {text.comprehensionQuestions.map((q, idx) => {
-              const isRevealed = revealedQuestions.has(idx);
-              return (
-                <div
-                  key={idx}
-                  className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between"
-                >
-                  <div className="text-sm font-semibold text-slate-800 mb-3">
-                    Question {idx + 1} : {q.question}
-                  </div>
-
-                  <div>
-                    {isRevealed ? (
-                      <div className="p-3 bg-emerald-50 text-emerald-900 rounded-xl text-xs font-medium border border-emerald-200 animate-in fade-in">
-                        <span className="font-bold">Réponse :</span> {q.answer}
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleToggleQuestion(idx)}
-                        className="w-full py-2 px-3 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <span>Afficher la réponse</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Bouton pour lancer l'étape 3 */}
       <div className="flex justify-center pt-4">
         <button
+          className="flex cursor-pointer items-center gap-3 rounded-3xl bg-indigo-600 px-8 py-4 font-extrabold text-base text-white shadow-indigo-200 shadow-xl transition-all hover:scale-105 hover:bg-indigo-700"
           onClick={handleProceedToStep3}
-          className="py-4 px-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-3xl font-extrabold text-base shadow-xl shadow-indigo-200 flex items-center gap-3 transition-all hover:scale-105 cursor-pointer"
+          type="button"
         >
-          <Sparkles className="w-6 h-6 text-amber-300" />
+          <Sparkles className="h-6 w-6 text-amber-300" />
           <span>Lancer le Défi Record (Chrono 60s)</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="h-5 w-5" />
         </button>
       </div>
     </div>

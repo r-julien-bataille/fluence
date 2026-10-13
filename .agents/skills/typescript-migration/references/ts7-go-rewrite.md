@@ -14,18 +14,23 @@
 ## 2. Installation
 
 **Stable release (primary):**
+
 ```bash
 npm install -D typescript
 ```
+
 This installs TS 7.0 as the `tsc` binary. Run via `npx tsc`.
 
 **Nightly builds:**
+
 ```bash
 npm install -D typescript@next
 ```
+
 (The legacy `@typescript/native-preview` package was the preview nightly during development. Going forward, nightlies are under the standard `typescript` package with the `next` tag.)
 
 **Side-by-side with TS 6 (official compat pattern)** — for projects whose tooling needs the TS Compiler API (typescript-eslint, ts-morph, etc.):
+
 ```json
 {
   "devDependencies": {
@@ -34,6 +39,7 @@ npm install -D typescript@next
   }
 }
 ```
+
 - `npx tsc` runs TS 7 (via the `@typescript/native` alias).
 - Tools that import `typescript` transparently get TS 6's API via `@typescript/typescript6`.
 - A `tsc6` executable is also available if you need to invoke TS 6 directly.
@@ -43,37 +49,38 @@ npm install -D typescript@next
 
 **Performance — official numbers (real OSS codebases, `--checkers 4` default):**
 
-| Codebase | TS 6 | TS 7 | Speedup |
-|---|---|---|---|
-| vscode | 125.7s | 10.6s | 11.9x |
-| sentry | 139.8s | 15.7s | 8.9x |
-| bluesky | 24.3s | 2.8s | 8.7x |
-| playwright | 12.8s | 1.47s | 8.7x |
-| tldraw | 11.2s | 1.46s | 7.7x |
+| Codebase   | TS 6   | TS 7  | Speedup |
+| ---------- | ------ | ----- | ------- |
+| vscode     | 125.7s | 10.6s | 11.9x   |
+| sentry     | 139.8s | 15.7s | 8.9x    |
+| bluesky    | 24.3s  | 2.8s  | 8.7x    |
+| playwright | 12.8s  | 1.47s | 8.7x    |
+| tldraw     | 11.2s  | 1.46s | 7.7x    |
 
 With `--checkers 8`:
 
-| Codebase | TS 6 | TS 7 (`--checkers 8`) | Speedup |
-|---|---|---|---|
-| vscode | 125.7s | 7.51s | 16.7x |
-| sentry | 139.8s | 12.08s | 11.6x |
-| bluesky | 24.3s | 2.01s | 12.1x |
-| playwright | 12.8s | 1.16s | 11x |
-| tldraw | 11.2s | 1.06s | 10.6x |
+| Codebase   | TS 6   | TS 7 (`--checkers 8`) | Speedup |
+| ---------- | ------ | --------------------- | ------- |
+| vscode     | 125.7s | 7.51s                 | 16.7x   |
+| sentry     | 139.8s | 12.08s                | 11.6x   |
+| bluesky    | 24.3s  | 2.01s                 | 12.1x   |
+| playwright | 12.8s  | 1.16s                 | 11x     |
+| tldraw     | 11.2s  | 1.06s                 | 10.6x   |
 
 **Memory reduction — official (NOT the 50–70% claimed by some third parties):**
 
-| Codebase | TS 6 | TS 7 | Memory Delta |
-|---|---|---|---|
-| vscode | 5.2GB | 4.2GB | −18% |
-| sentry | 4.9GB | 4.6GB | −6% |
-| bluesky | 1.8GB | 1.3GB | −26% |
-| playwright | 1.0GB | 0.9GB | −11% |
-| tldraw | 0.6GB | 0.5GB | −15% |
+| Codebase   | TS 6  | TS 7  | Memory Delta |
+| ---------- | ----- | ----- | ------------ |
+| vscode     | 5.2GB | 4.2GB | −18%         |
+| sentry     | 4.9GB | 4.6GB | −6%          |
+| bluesky    | 1.8GB | 1.3GB | −26%         |
+| playwright | 1.0GB | 0.9GB | −11%         |
+| tldraw     | 0.6GB | 0.5GB | −15%         |
 
 **Editor experience**: VS Code's codebase — opening a file with an error previously took ~17.5s to show the first error; with TS 7 it's under 1.3s (over 13x faster).
 
 **New parallelization flags:**
+
 - `--checkers N` (default 4) — number of type-checker workers. Type-checking uses a fixed number of workers that always divide files identically, ensuring deterministic results. Increasing speeds up large codebases at the cost of memory. Decrease to `--checkers 1` on CI runners with few cores.
 - `--builders N` — number of parallel project reference builders under `--build`. Helpful for monorepos. Has a multiplicative effect with `--checkers` (e.g., `--checkers 4 --builders 4` allows up to 16 type-checkers).
 - `--singleThreaded` — disables all parallelization (parsing, type-checking, emitting). Useful for debugging, comparing with TS 6, or constrained environments.
@@ -89,6 +96,7 @@ With `--checkers 8`:
 **Golden rule**: TS 7 removes everything TS 6 deprecated. Quoting the official blog: "TypeScript 7.0 adopts 6.0's new defaults, and provides hard errors in the face of any flags and constructs deprecated in TypeScript 6.0."
 
 **Defaults adopted from 6.0:**
+
 - `strict` is `true` by default.
 - `module` defaults to `esnext`.
 - `target` defaults to the current stable ECMAScript version immediately preceding `esnext` (currently `es2025`).
@@ -99,6 +107,7 @@ With `--checkers 8`:
 - `types` defaults to `[]` — restore old behavior with `"types": ["*"]`.
 
 **Hard errors (deprecated in 6.0, removed in 7.0):**
+
 - `target: es5` — no longer supported. Use `es2015`+ or external transpiler.
 - `downlevelIteration` — no longer supported.
 - `moduleResolution: node` / `node10` — no longer supported. Use `nodenext` or `bundler`.
@@ -114,15 +123,19 @@ With `--checkers 8`:
 
 **NEW breaking changes not present in TS 6:**
 
-1. **`preserveConstEnums` removed** — the Go compiler always emits const enum declarations (equivalent to old `preserveConstEnums: true`). Behavioral change if you relied on const enum *inlining* across module boundaries. Test runtime JS output carefully.
+1. **`preserveConstEnums` removed** — the Go compiler always emits const enum declarations (equivalent to old `preserveConstEnums: true`). Behavioral change if you relied on const enum _inlining_ across module boundaries. Test runtime JS output carefully.
 
 2. **Template literal types now preserve Unicode code points.** Previously TS followed JS UTF-16 indexing and split surrogate pairs:
+
    ```typescript
-   type HeadTail<S> = S extends `${infer Head}${infer Tail}` ? [Head, Tail] : never;
+   type HeadTail<S> = S extends `${infer Head}${infer Tail}`
+     ? [Head, Tail]
+     : never;
    type Result = HeadTail<"😀abc">;
    // TS 7:  ["😀", "abc"]
    // TS 6:  ["\ud83d", "\ude00abc"]
    ```
+
    Breaks type-level string utilities that intentionally modeled UTF-16 code units (e.g., some `Length` utilities). New behavior matches `for...of` / spread intuition.
 
 3. **JavaScript file handling reworked** — `.js` files now analyzed more consistently with `.ts`. Specific changes:
@@ -161,6 +174,7 @@ New CLI flags (not tsconfig options): `--checkers`, `--builders`, `--singleThrea
 ## 7. Editor / IDE Setup
 
 **VS Code**:
+
 - Install the official extension: `TypeScriptTeam.native-preview` (https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.native-preview).
 - It **auto-enables** as the default language server. No `settings.json` key needed.
 - Toggle via Command Palette: "Disable TypeScript 7 Language Server" / "Enable TypeScript 7 Language Server".
@@ -186,12 +200,14 @@ Codes are identical between TS 6 and TS 7; **message wording differs**. When dif
 ## 10. When to Adopt TS 7 (and When Not To)
 
 **Adopt now if:**
+
 - Greenfield project with no Compiler-API-dependent tooling.
 - Existing TS project already clean on TS 6 (zero deprecation warnings).
 - CI type-check is slow (>10s, 500+ files) — the speedup is the headline win.
 - Editor language-server latency is hurting the team.
 
 **Do NOT adopt yet if:**
+
 - Vue / Svelte / Astro / MDX / Angular-template project relying on Volar/template type-checking.
 - Toolchain depends on ts-morph, ts-patch, ttypescript, typia, or custom AST transformers.
 - Risk-averse production environment where any behavioral divergence is unacceptable — wait for 7.1 and the CHANGES.md tracker to clear.

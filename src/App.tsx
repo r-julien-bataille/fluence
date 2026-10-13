@@ -1,39 +1,42 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { seedDatabaseIfEmpty } from './db/seeds';
-import { Header } from './components/Header';
-import { SessionRunner } from './components/SessionRunner';
-import { StudentProfile } from './components/StudentSelector';
-import { hasStoredApiKey } from './lib/gemini/client';
-import { Key, X } from 'lucide-react';
+import { Key, X } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
-const SettingsModal = lazy(() =>
-  import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal }))
-);
-const HistoryDrawer = lazy(() =>
-  import('./components/HistoryDrawer').then((m) => ({ default: m.HistoryDrawer }))
-);
+import { Header } from "./components/Header";
+import { SessionRunner } from "./components/SessionRunner";
+import type { StudentProfile } from "./components/StudentSelector";
+import { seedDatabaseIfEmpty } from "./db/seeds";
+import { hasStoredApiKey } from "./lib/gemini/client";
+
+const SettingsModal = lazy(async () => {
+  const m = await import("./components/SettingsModal");
+  return { default: m.SettingsModal };
+});
+const HistoryDrawer = lazy(async () => {
+  const m = await import("./components/HistoryDrawer");
+  return { default: m.HistoryDrawer };
+});
 
 const DEFAULT_STUDENTS: StudentProfile[] = [
-  { name: 'Hugo', level: 'CM2' },
-  { name: 'Léa', level: 'CE2' },
-  { name: 'Thomas', level: 'CM1' },
-  { name: 'Manon', level: 'CE1' },
+  { level: "CM2", name: "Hugo" },
+  { level: "CE2", name: "Léa" },
+  { level: "CM1", name: "Thomas" },
+  { level: "CE1", name: "Manon" },
 ];
 
-export function App() {
+export const App: React.FC = () => {
   const [students, setStudents] = useState<StudentProfile[]>(() => {
-    const saved = localStorage.getItem('FLUENCE_STUDENTS');
+    const saved = localStorage.getItem("FLUENCE_STUDENTS");
     return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
   });
 
   const [currentStudent, setCurrentStudent] = useState<StudentProfile>(() => {
-    const saved = localStorage.getItem('FLUENCE_CURRENT_STUDENT');
+    const saved = localStorage.getItem("FLUENCE_CURRENT_STUDENT");
     return saved ? JSON.parse(saved) : DEFAULT_STUDENTS[0];
   });
 
-  const [dyslexicMode, setDyslexicMode] = useState<boolean>(() => {
-    return localStorage.getItem('FLUENCE_DYS_MODE') === 'true';
-  });
+  const [dyslexicMode, setDyslexicMode] = useState<boolean>(
+    () => localStorage.getItem("FLUENCE_DYS_MODE") === "true"
+  );
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -42,25 +45,24 @@ export function App() {
 
   // Initialisation de la base Dexie avec les seeds ELFE
   useEffect(() => {
-    seedDatabaseIfEmpty().catch(console.error);
+    seedDatabaseIfEmpty();
   }, []);
 
   // Sauvegarde des profils
   useEffect(() => {
-    localStorage.setItem('FLUENCE_STUDENTS', JSON.stringify(students));
+    localStorage.setItem("FLUENCE_STUDENTS", JSON.stringify(students));
   }, [students]);
 
   useEffect(() => {
-    localStorage.setItem('FLUENCE_CURRENT_STUDENT', JSON.stringify(currentStudent));
+    localStorage.setItem(
+      "FLUENCE_CURRENT_STUDENT",
+      JSON.stringify(currentStudent)
+    );
   }, [currentStudent]);
 
   useEffect(() => {
-    localStorage.setItem('FLUENCE_DYS_MODE', String(dyslexicMode));
-    if (dyslexicMode) {
-      document.body.classList.add('dys-mode');
-    } else {
-      document.body.classList.remove('dys-mode');
-    }
+    localStorage.setItem("FLUENCE_DYS_MODE", String(dyslexicMode));
+    document.body.classList.toggle("dys-mode", dyslexicMode);
   }, [dyslexicMode]);
 
   const handleAddStudent = (newStudent: StudentProfile) => {
@@ -72,42 +74,46 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="flex min-h-screen flex-col bg-slate-50 font-sans">
       {/* Header global */}
       <Header
         currentStudent={currentStudent}
-        students={students}
-        onSelectStudent={setCurrentStudent}
-        onAddStudent={handleAddStudent}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenHistory={() => setIsHistoryOpen(true)}
         dyslexicMode={dyslexicMode}
+        onAddStudent={handleAddStudent}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onSelectStudent={setCurrentStudent}
         onToggleDyslexicMode={() => setDyslexicMode(!dyslexicMode)}
+        students={students}
       />
 
       {/* Alerte discrète si pas de clé configurée */}
-      {!hasKey && !dismissBanner && (
-        <div className="bg-amber-500 text-slate-950 px-4 py-2.5 text-xs sm:text-sm font-semibold flex items-center justify-between shadow-xs">
-          <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-2">
+      {!(hasKey || dismissBanner) && (
+        <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-slate-950 text-xs shadow-xs sm:text-sm">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Key className="w-4 h-4 text-slate-950 shrink-0" />
+              <Key className="h-4 w-4 shrink-0 text-slate-950" />
               <span>
-                <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI Studio pour activer la transcription <code>gemini-3.5-transcribe</code> et le générateur d'histoires.
+                <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
+                Studio pour activer la transcription{" "}
+                <code>gemini-3.5-transcribe</code> et le générateur d’histoires.
               </span>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex shrink-0 items-center gap-2">
               <button
+                className="rounded-xl bg-slate-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-slate-800"
                 onClick={() => setIsSettingsOpen(true)}
-                className="bg-slate-950 text-white px-3 py-1 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
+                type="button"
               >
                 Renseigner ma clé
               </button>
               <button
+                className="p-1 text-slate-900 hover:text-black"
                 onClick={() => setDismissBanner(true)}
-                className="text-slate-900 hover:text-black p-1"
                 title="Fermer ce message"
+                type="button"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -118,9 +124,9 @@ export function App() {
       <main className="flex-1 pb-16">
         <SessionRunner
           currentStudent={currentStudent}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenHistory={() => setIsHistoryOpen(true)}
           dyslexicMode={dyslexicMode}
+          onOpenHistory={() => setIsHistoryOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </main>
 
@@ -147,6 +153,4 @@ export function App() {
       )}
     </div>
   );
-}
-
-export default App;
+};

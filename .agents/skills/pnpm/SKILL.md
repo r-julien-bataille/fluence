@@ -18,7 +18,7 @@ pnpm is a fast, disk space efficient package manager. It uses a content-addressa
 ## Core
 
 | Topic | Description | Reference |
-|-------|-------------|-----------|
+| --- | --- | --- |
 | CLI Commands | install/add/remove/update, run, dlx/pnx, workspace, runtime, publishing (version, view, sbom, stage) | [core-cli](references/core-cli.md) |
 | Configuration | pnpm-workspace.yaml settings (camelCase), global config.yaml, packageConfigs, .npmrc auth | [core-config](references/core-config.md) |
 | Workspaces | Monorepo support: filtering, workspace protocol, shared lockfile, packageConfigs | [core-workspaces](references/core-workspaces.md) |
@@ -27,7 +27,7 @@ pnpm is a fast, disk space efficient package manager. It uses a content-addressa
 ## Features
 
 | Topic | Description | Reference |
-|-------|-------------|-----------|
+| --- | --- | --- |
 | Catalogs | Centralized dependency versions; catalogMode, catalog: in overrides | [features-catalogs](references/features-catalogs.md) |
 | Overrides | Force versions (incl. transitive & peer deps); packageExtensions | [features-overrides](references/features-overrides.md) |
 | Patches | Modify third-party packages; patchedDependencies in pnpm-workspace.yaml | [features-patches](references/features-patches.md) |
@@ -44,7 +44,7 @@ pnpm is a fast, disk space efficient package manager. It uses a content-addressa
 ## Best Practices
 
 | Topic | Description | Reference |
-|-------|-------------|-----------|
+| --- | --- | --- |
 | CI/CD Setup | GitHub Actions, GitLab, Docker, pnpm ci, store caching, frozen lockfiles | [best-practices-ci](references/best-practices-ci.md) |
 | Migration | npm/Yarn → pnpm, phantom deps, and pnpm v10 → v11 → v12 upgrade notes | [best-practices-migration](references/best-practices-migration.md) |
 | Performance | Install optimizations, allowBuilds, global virtual store, workspace parallelization | [best-practices-performance](references/best-practices-performance.md) |

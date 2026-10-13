@@ -26,6 +26,7 @@ Writes e.g. `.changeset/calm-cats-resolve.md`:
 ---
 "@example/core": minor
 ---
+
 Added a `--watch` flag to the build command.
 ```
 
@@ -46,17 +47,17 @@ No git commit/tag is created (many packages, many versions) — commit yourself,
 ```yaml title="pnpm-workspace.yaml"
 versioning:
   fixed:
-    - ['@example/cli', '@example/napi']   # always release at one shared version
+    - ["@example/cli", "@example/napi"] # always release at one shared version
   ignore:
-    - '@example/internal'                 # excluded from versioning + propagation
-  maxBump: minor                          # cap the bump this checkout may apply
+    - "@example/internal" # excluded from versioning + propagation
+  maxBump: minor # cap the bump this checkout may apply
   lanes:
-    '@example/cli': alpha                 # parallel release track
+    "@example/cli": alpha # parallel release track
   epics:
-    - lead: '@example/app'
-      packages: ['./packages/**', '!./packages/private-*']
+    - lead: "@example/app"
+      packages: ["./packages/**", "!./packages/private-*"]
   changelog:
-    storage: repository                   # commit CHANGELOG.md (default: registry)
+    storage: repository # commit CHANGELOG.md (default: registry)
 ```
 
 - **fixed groups** release together at the highest current version bumped by the largest needed bump; must move lanes together and sit wholly in/out of an epic.

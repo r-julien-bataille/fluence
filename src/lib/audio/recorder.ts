@@ -1,9 +1,10 @@
 export interface AudioRecorderState {
-  isRecording: boolean;
   audioBlob: Blob | null;
+  // 0 à 100 pour le visualiseur audio
+  audioLevel: number;
   audioUrl: string | null;
   error: string | null;
-  audioLevel: number; // 0 à 100 pour le visualiseur audio
+  isRecording: boolean;
 }
 
 export class AudioRecorder {
@@ -13,7 +14,7 @@ export class AudioRecorder {
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private animationFrameId: number | null = null;
-  private onLevelChange?: (level: number) => void;
+  private readonly onLevelChange?: (level: number) => void;
 
   constructor(onLevelChange?: (level: number) => void) {
     this.onLevelChange = onLevelChange;
@@ -25,15 +26,18 @@ export class AudioRecorder {
     // Demande d'accès au micro
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
+        autoGainControl: true,
         echoCancellation: true,
         noiseSuppression: true,
-        autoGainControl: true,
       },
     });
 
     // Configuration de l'analyseur de niveau audio pour le retour visuel
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
       if (AudioCtx) {
         this.audioContext = new AudioCtx();
         const source = this.audioContext.createMediaStreamSource(this.stream);
@@ -42,18 +46,18 @@ export class AudioRecorder {
         source.connect(this.analyser);
         this.monitorAudioLevel();
       }
-    } catch (e) {
-      console.warn("Visualiseur audio non supporté :", e);
+    } catch (error) {
+      console.warn("Visualiseur audio non supporté :", error);
     }
 
     // Détermination du meilleur mimeType supporté
     const mimeTypes = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/mp4',
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/ogg;codecs=opus",
+      "audio/mp4",
     ];
-    let selectedMime = '';
+    let selectedMime = "";
     for (const type of mimeTypes) {
       if (MediaRecorder.isTypeSupported(type)) {
         selectedMime = type;
@@ -76,15 +80,19 @@ export class AudioRecorder {
   }
 
   private monitorAudioLevel() {
-    if (!this.analyser) return;
+    if (!this.analyser) {
+      return;
+    }
     const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
 
     const update = () => {
-      if (!this.analyser) return;
+      if (!this.analyser) {
+        return;
+      }
       this.analyser.getByteFrequencyData(dataArray);
       let sum = 0;
-      for (let i = 0; i < dataArray.length; i++) {
-        sum += dataArray[i];
+      for (const val of dataArray) {
+        sum += val;
       }
       const avg = sum / dataArray.length;
       // Normaliser entre 0 et 100 avec amplification pour bonne réactivité
@@ -98,27 +106,29 @@ export class AudioRecorder {
     this.animationFrameId = requestAnimationFrame(update);
   }
 
-  async stop(): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      if (!this.mediaRecorder) {
-        return reject(new Error("Aucun enregistrement en cours."));
-      }
+  stop(): Promise<Blob> {
+    if (!this.mediaRecorder) {
+      return Promise.reject(new Error("Aucun enregistrement en cours."));
+    }
 
-      this.mediaRecorder.onstop = () => {
-        const mimeType = this.mediaRecorder?.mimeType || 'audio/webm';
-        const blob = new Blob(this.audioChunks, { type: mimeType });
-        this.cleanup();
-        resolve(blob);
-      };
+    const { promise, resolve } = Promise.withResolvers<Blob>();
 
-      if (this.mediaRecorder.state !== 'inactive') {
-        this.mediaRecorder.stop();
-      } else {
-        const blob = new Blob(this.audioChunks, { type: 'audio/webm' });
-        this.cleanup();
-        resolve(blob);
-      }
-    });
+    this.mediaRecorder.onstop = () => {
+      const mimeType = this.mediaRecorder?.mimeType || "audio/webm";
+      const blob = new Blob(this.audioChunks, { type: mimeType });
+      this.cleanup();
+      resolve(blob);
+    };
+
+    if (this.mediaRecorder.state === "inactive") {
+      const blob = new Blob(this.audioChunks, { type: "audio/webm" });
+      this.cleanup();
+      resolve(blob);
+    } else {
+      this.mediaRecorder.stop();
+    }
+
+    return promise;
   }
 
   private cleanup() {
@@ -126,12 +136,14 @@ export class AudioRecorder {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-    if (this.audioContext && this.audioContext.state !== 'closed') {
-      this.audioContext.close().catch(() => {});
+    if (this.audioContext && this.audioContext.state !== "closed") {
+      this.audioContext.close().catch(console.debug);
       this.audioContext = null;
     }
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      for (const track of this.stream.getTracks()) {
+        track.stop();
+      }
       this.stream = null;
     }
     if (this.onLevelChange) {
@@ -141,10 +153,12 @@ export class AudioRecorder {
 
   abort() {
     this.cleanup();
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+    if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
       try {
         this.mediaRecorder.stop();
-      } catch (_) {}
+      } catch (error) {
+        console.warn("Erreur arrêt MediaRecorder :", error);
+      }
     }
   }
 }

@@ -1,19 +1,11 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
+import path from "node:path";
+
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, './src'),
-    },
-  },
   build: {
     chunkSizeWarningLimit: 1000,
     rolldownOptions: {
@@ -21,16 +13,22 @@ export default defineConfig({
         codeSplitting: {
           groups: [
             {
-              name: 'vendor',
-              test: /node_modules[\\/]react(-dom)?[\\/]/,
+              name: "vendor",
+              test: /node_modules[\\/]react(?:-dom)?[\\/]/u,
             },
             {
-              name: 'dexie',
-              test: /node_modules[\\/]dexie(-react-hooks)?[\\/]/,
+              name: "dexie",
+              test: /node_modules[\\/]dexie(?:-react-hooks)?[\\/]/u,
             },
           ],
         },
       },
+    },
+  },
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
 });

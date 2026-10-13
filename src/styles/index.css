@@ -2,8 +2,8 @@
 
 @layer base {
   :root {
-    --font-reading: 'Lexend', system-ui, -apple-system, sans-serif;
-    --font-title: 'Fredoka', cursive, system-ui, sans-serif;
+    --font-reading: "Lexend", system-ui, -apple-system, sans-serif;
+    --font-title: "Fredoka", cursive, system-ui, sans-serif;
   }
 
   body {
@@ -12,15 +12,24 @@
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4, .font-fun {
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-fun {
     font-family: var(--font-title);
   }
 }
 
 /* Animations d'encouragement et pulsations */
 @keyframes pulse-subtle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
 }
 
 .animate-pulse-subtle {
@@ -30,22 +39,25 @@
 /* Style de texte de lecture adapté aux enfants */
 .reading-text-flow {
   line-height: 2.2;
-  letter-spacing: 0.03em;
   word-spacing: 0.15em;
+  letter-spacing: 0.03em;
 }
 
 .dys-mode .reading-text-flow {
-  font-family: 'Open Dyslexic', 'Lexend', sans-serif;
-  letter-spacing: 0.08em;
-  word-spacing: 0.25em;
+  font-family: "Open Dyslexic", "Lexend", sans-serif;
   line-height: 2.5;
+  word-spacing: 0.25em;
+  letter-spacing: 0.08em;
 }
 
 @media print {
   body {
     background-color: white !important;
   }
-  header, nav, button, .no-print {
+  header,
+  nav,
+  button,
+  .no-print {
     display: none !important;
   }
   .print-only {

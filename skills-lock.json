@@ -19,6 +19,12 @@
       "skillPath": "plugins/typescript-migration/skills/typescript-migration/SKILL.md",
       "computedHash": "b0ed3a81966efbe7bfd62780ed77d7a7e776a1fe9a5b873d4d3214c900b7c2e4"
     },
+    "ultracite": {
+      "source": "haydenbleasel/ultracite",
+      "sourceType": "github",
+      "skillPath": "skills/ultracite/SKILL.md",
+      "computedHash": "a97df1e37bd2025efc378aa7881dd2ea510bf6d599bf92dee1ace2ecf174866c"
+    },
     "vite": {
       "source": "antfu/skills",
       "sourceType": "github",
