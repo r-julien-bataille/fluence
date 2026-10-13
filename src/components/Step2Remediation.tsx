@@ -146,9 +146,9 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       </div>
 
       {/* Cartes interactives des mots butés */}
-      {stumbledWords.length > 0 && (
+      {stumbledWords.length > 0 ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-slate-900">
               <Sparkles className="h-5 w-5 text-amber-500" />
               <span>
@@ -156,21 +156,38 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                 maîtrisés)
               </span>
             </h3>
-            <span className="text-slate-400 text-xs">
+            <span className="text-slate-500 text-xs">
               Écoute la prononciation en français et repère les syllabes
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {stumbledWords.map((word, idx) => (
+          <div
+            className={`grid gap-5 ${
+              stumbledWords.length === 1
+                ? "mx-auto max-w-sm grid-cols-1"
+                : stumbledWords.length === 2
+                  ? "mx-auto max-w-2xl grid-cols-1 sm:grid-cols-2"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
+            {stumbledWords.map((word) => (
               <Flashcard
                 isMastered={masteredWords.has(word)}
-                key={idx}
+                key={word}
                 onMastered={handleToggleMastered}
                 word={word}
               />
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-emerald-900">
+          <Sparkles className="h-5 w-5 shrink-0 text-emerald-600" />
+          <p className="font-medium text-xs sm:text-sm">
+            <strong>Félicitations !</strong> Aucun mot difficile détecté lors de
+            la première lecture. Relis le texte ci-dessous pour perfectionner
+            ton intonation avant le Défi Record.
+          </p>
         </div>
       )}
 
