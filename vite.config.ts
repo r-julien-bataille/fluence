@@ -11,16 +11,24 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   build: {
     chunkSizeWarningLimit: 1000,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          dexie: ['dexie', 'dexie-react-hooks'],
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules[\\/]react(-dom)?[\\/]/,
+            },
+            {
+              name: 'dexie',
+              test: /node_modules[\\/]dexie(-react-hooks)?[\\/]/,
+            },
+          ],
         },
       },
     },

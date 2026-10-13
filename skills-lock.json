@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "tsdown": {
+      "source": "rolldown/tsdown",
+      "sourceType": "github",
+      "skillPath": "skills/tsdown/SKILL.md",
+      "computedHash": "5764d08af27a89c5fdaf3d49926116636ea33580b864e3aae201a90703a7ef53"
+    },
+    "typescript-migration": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/typescript-migration/skills/typescript-migration/SKILL.md",
+      "computedHash": "b0ed3a81966efbe7bfd62780ed77d7a7e776a1fe9a5b873d4d3214c900b7c2e4"
+    },
+    "vite": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vite/SKILL.md",
+      "computedHash": "88ee465fd10f711efecc76e91e96accae2b229dda371614dcf219099c264a486"
+    }
+  }
+}
