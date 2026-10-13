@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "pnpm": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pnpm/SKILL.md",
+      "computedHash": "d1bd6f4fd38ff1ba33b857223c58a832d1cd5b488163ba0d389db449be472603"
+    },
     "tsdown": {
       "source": "rolldown/tsdown",
       "sourceType": "github",

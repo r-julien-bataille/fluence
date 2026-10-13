@@ -36,10 +36,10 @@ Each training session follows a 3-step pedagogical workflow managed by `src/comp
 Always verify changes using the following commands before finishing a task:
 
 ```bash
-npm run typecheck   # Runs `tsc -b` (TypeScript 7 native Go typechecker)
-npm run build       # Runs `tsc -b && vite build` (Rolldown production bundle)
-npm run dev         # Starts local Vite dev server
-npm run preview     # Serves the production build from dist/
+pnpm typecheck   # Runs `tsc -b` (TypeScript 7 native Go typechecker)
+pnpm build       # Runs `tsc -b && vite build` (Rolldown production bundle)
+pnpm dev         # Starts local Vite dev server
+pnpm preview     # Serves the production build from dist/
 ```
 
 ---
@@ -56,6 +56,7 @@ npm run preview     # Serves the production build from dist/
    - All user-facing UI strings and pedagogical prompts must be in **French**.
    - Prefer minimal, direct fixes at the root cause over defensive workarounds or unnecessary abstractions.
 4. **Workspace Skills (`.agents/skills/`)**:
+   - Consult `.agents/skills/pnpm/SKILL.md` for package management, strict peer dependency, and allowBuilds rules.
    - Consult `.agents/skills/vite/SKILL.md` for Vite 8 / Rolldown configuration changes.
    - Consult `.agents/skills/typescript-migration/SKILL.md` for TypeScript 7 compiler rules and diagnostics.
    - Consult `.agents/skills/tsdown/SKILL.md` if extracting or bundling standalone TypeScript libraries.
