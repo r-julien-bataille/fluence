@@ -181,7 +181,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
   return (
     <div
-      className={`rounded-3xl border border-slate-800 bg-slate-900 p-4 text-white shadow-xl sm:p-5 ${className}`}
+      className={`rounded-3xl border border-stone-800 bg-stone-900 p-4 text-white shadow-xl sm:p-5 ${className}`}
     >
       <audio
         onEnded={() => setIsPlaying(false)}
@@ -196,17 +196,17 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
       <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
         {/* Titre et icône */}
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/20 text-indigo-400">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary-500/30 bg-primary-500/20 text-primary-400">
             <Headphones className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2 font-bold text-white text-xs">
               <span>Écoute de l’enregistrement de l’élève</span>
-              <span className="rounded-full border border-indigo-500/30 bg-indigo-500/20 px-2 py-0.5 font-mono text-[10px] text-indigo-300">
+              <span className="rounded-full border border-primary-500/30 bg-primary-500/20 px-2 py-0.5 font-mono text-[10px] text-primary-300">
                 Vérification humaine
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-stone-400">
               Clique sur n’importe quel mot du texte pour écouter ce passage
               précis
             </p>
@@ -216,7 +216,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
         {/* Contrôles de lecture */}
         <div className="flex items-center gap-2 self-center">
           <button
-            className="cursor-pointer rounded-xl bg-slate-800 p-2 text-slate-300 transition-colors hover:bg-slate-700"
+            className="cursor-pointer rounded-xl bg-stone-800 p-2 text-stone-300 transition-colors hover:bg-stone-700"
             onClick={() => handleSkip(-3)}
             title="Reculer de 3 secondes"
             type="button"
@@ -225,7 +225,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
           </button>
 
           <button
-            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-indigo-600/30 shadow-lg transition-all hover:scale-105 hover:bg-indigo-500"
+            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg shadow-primary-600/30 transition-all hover:scale-105 hover:bg-primary-500"
             onClick={togglePlay}
             title={isPlaying ? "Pause" : "Lecture"}
             type="button"
@@ -238,7 +238,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
           </button>
 
           <button
-            className="cursor-pointer rounded-xl bg-slate-800 p-2 text-slate-300 transition-colors hover:bg-slate-700"
+            className="cursor-pointer rounded-xl bg-stone-800 p-2 text-stone-300 transition-colors hover:bg-stone-700"
             onClick={() => handleSkip(3)}
             title="Avancer de 3 secondes"
             type="button"
@@ -247,13 +247,13 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
           </button>
 
           {/* Vitesse de lecture */}
-          <div className="ml-2 flex items-center gap-1 rounded-xl bg-slate-800 p-1">
+          <div className="ml-2 flex items-center gap-1 rounded-xl bg-stone-800 p-1">
             {[1, 0.8, 0.6].map((rate) => (
               <button
                 className={`cursor-pointer rounded-lg px-2 py-1 font-bold text-[10px] transition-colors ${
                   playbackRate === rate
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-primary-600 text-white"
+                    : "text-stone-400 hover:text-white"
                 }`}
                 key={rate}
                 onClick={() => changeSpeed(rate)}
@@ -269,12 +269,12 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
       {/* Barre de défilement temporelle */}
       <div className="mt-4 flex items-center gap-3">
-        <span className="w-10 text-right font-mono text-[11px] text-slate-400">
+        <span className="w-10 text-right font-mono text-[11px] text-stone-400">
           {formatTime(currentTimeSec)}
         </span>
 
         <input
-          className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-800 accent-indigo-500"
+          className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-stone-800 accent-primary-500"
           max={durationSec || MAX_DURATION_SEC}
           min={0}
           onChange={handleSeekChange}
@@ -283,7 +283,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
           value={currentTimeSec}
         />
 
-        <span className="w-10 font-mono text-[11px] text-slate-400">
+        <span className="w-10 font-mono text-[11px] text-stone-400">
           {formatTime(durationSec || MAX_DURATION_SEC)}
         </span>
       </div>

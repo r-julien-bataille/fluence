@@ -97,10 +97,10 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
   };
 
   return (
-    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-xs duration-200">
-      <div className="relative my-8 w-full max-w-2xl rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl sm:p-8">
+    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
+      <div className="relative my-8 w-full max-w-2xl rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
         <button
-          className="absolute top-5 right-5 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          className="absolute top-5 right-5 rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
           onClick={onClose}
           title="Fermer"
           type="button"
@@ -109,14 +109,14 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
         </button>
 
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700 shadow-inner">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
             <Wand2 className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold font-fun text-slate-900 text-xl">
+            <h3 className="font-bold font-fun text-stone-900 text-xl">
               Créer une histoire sur mesure
             </h3>
-            <p className="font-sans text-slate-500 text-xs">
+            <p className="font-sans text-stone-500 text-xs">
               Généré par Gemini 3.8 Flash selon les normes pédagogiques Éduscol
             </p>
           </div>
@@ -125,39 +125,39 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
         {previewStory ? (
           /* Prévisualisation de l'histoire générée */
           <div className="fade-in animate-in space-y-5">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="rounded-2xl border border-stone-200 bg-cream p-5">
               <div className="mb-2 flex items-center justify-between">
-                <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 font-bold text-indigo-700 text-xs">
+                <span className="rounded-full bg-primary-100 px-2.5 py-0.5 font-bold text-primary-700 text-xs">
                   {previewStory.level} · {previewStory.wordCount} mots
                 </span>
-                <span className="text-slate-400 text-xs">
+                <span className="text-stone-400 text-xs">
                   Cible : {previewStory.targetMclm} MCLM
                 </span>
               </div>
-              <h4 className="mb-2 font-bold font-fun text-lg text-slate-900">
+              <h4 className="mb-2 font-bold font-fun text-lg text-stone-900">
                 {previewStory.title}
               </h4>
-              <p className="max-h-48 overflow-y-auto pr-2 text-slate-700 text-sm leading-relaxed">
+              <p className="max-h-48 overflow-y-auto pr-2 text-sm text-stone-700 leading-relaxed">
                 {previewStory.content}
               </p>
             </div>
 
             {previewStory.comprehensionQuestions.length > 0 && (
-              <div className="rounded-2xl border border-indigo-100/60 bg-indigo-50/50 p-4">
-                <div className="mb-2 flex items-center gap-1.5 font-bold text-indigo-800 text-xs uppercase tracking-wide">
+              <div className="rounded-2xl border border-primary-100/60 bg-primary-50/50 p-4">
+                <div className="mb-2 flex items-center gap-1.5 font-bold text-primary-800 text-xs uppercase tracking-wide">
                   <BookOpen className="h-3.5 w-3.5" /> Questions de
                   compréhension
                 </div>
-                <div className="space-y-2 text-slate-700 text-xs">
+                <div className="space-y-2 text-stone-700 text-xs">
                   {previewStory.comprehensionQuestions.map((q, i) => (
                     <div
-                      className="rounded-xl border border-indigo-50 bg-white/80 p-2.5"
+                      className="rounded-xl border border-primary-50 bg-paper/80 p-2.5"
                       key={i}
                     >
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-stone-900">
                         Q{i + 1} : {q.question}
                       </div>
-                      <div className="mt-0.5 text-slate-500 italic">
+                      <div className="mt-0.5 text-stone-500 italic">
                         Réponse attendue : {q.answer}
                       </div>
                     </div>
@@ -168,7 +168,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
             <div className="flex items-center gap-3">
               <button
-                className="flex-1 rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 text-sm transition-colors hover:bg-slate-50"
+                className="flex-1 rounded-xl border border-stone-200 px-4 py-3 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream"
                 onClick={() => setPreviewStory(null)}
                 type="button"
               >
@@ -188,7 +188,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
           <div className="space-y-5">
             {/* Choix du niveau */}
             <div>
-              <span className="mb-2 block font-semibold text-slate-700 text-sm">
+              <span className="mb-2 block font-semibold text-sm text-stone-700">
                 Niveau scolaire
               </span>
               <div className="grid grid-cols-4 gap-2">
@@ -196,8 +196,8 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
                   <button
                     className={`rounded-xl border py-2.5 font-bold text-sm transition-all ${
                       level === lvl
-                        ? "border-indigo-600 bg-indigo-600 text-white shadow-indigo-200 shadow-md"
-                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                        ? "border-primary-600 bg-primary-600 text-white shadow-md shadow-primary-200"
+                        : "border-stone-200 bg-cream text-stone-700 hover:bg-stone-100"
                     }`}
                     key={lvl}
                     onClick={() => setLevel(lvl)}
@@ -211,7 +211,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
             {/* Suggestions de thèmes */}
             <div>
-              <span className="mb-2 block font-semibold text-slate-700 text-sm">
+              <span className="mb-2 block font-semibold text-sm text-stone-700">
                 Idées de thèmes
               </span>
               <div className="flex flex-wrap gap-2">
@@ -222,7 +222,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
                       className={`rounded-xl border px-3 py-1.5 font-medium text-xs transition-colors ${
                         theme === label && !customTheme
                           ? "border-amber-300 bg-amber-100 font-semibold text-amber-900"
-                          : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          : "border-stone-200 bg-cream text-stone-600 hover:bg-stone-100"
                       }`}
                       key={sug}
                       onClick={() => {
@@ -241,13 +241,13 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             {/* Thème libre */}
             <div>
               <label
-                className="mb-1.5 block font-semibold text-slate-700 text-sm"
+                className="mb-1.5 block font-semibold text-sm text-stone-700"
                 htmlFor="custom-story-theme-input"
               >
                 Ou saisis ton propre thème
               </label>
               <input
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-800 text-sm focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-stone-200 bg-cream px-4 py-2.5 text-sm text-stone-800 focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                 id="custom-story-theme-input"
                 onChange={(e) => setCustomTheme(e.target.value)}
                 placeholder="Ex : Un dauphin qui explore une épave de pirate..."
@@ -276,7 +276,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             )}
 
             <button
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3.5 font-bold text-white shadow-indigo-200 shadow-lg transition-all hover:bg-indigo-700 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary-600 py-3.5 font-bold text-white shadow-lg shadow-primary-200 transition-all hover:bg-primary-700 disabled:opacity-60"
               disabled={isGenerating}
               onClick={handleGenerate}
               type="button"

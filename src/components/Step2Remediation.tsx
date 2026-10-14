@@ -124,10 +124,10 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
               Sans chronomètre · À ton rythme
             </span>
           </div>
-          <h2 className="font-extrabold font-fun text-2xl text-slate-900 sm:text-3xl">
+          <h2 className="font-extrabold font-fun text-2xl text-stone-900 sm:text-3xl">
             Remédiation & Consolidation
           </h2>
-          <p className="mt-1 max-w-xl text-slate-600 text-xs sm:text-sm">
+          <p className="mt-1 max-w-xl text-stone-600 text-xs sm:text-sm">
             Entraîne-toi sur les mots qui t’ont posé difficulté lors de la
             première lecture, puis relis le texte tranquillement pour préparer
             ton Défi Record !
@@ -135,7 +135,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
         </div>
 
         <button
-          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 font-bold text-sm text-white shadow-indigo-200 shadow-lg transition-all hover:scale-105 hover:bg-indigo-700"
+          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-primary-600 px-6 py-3.5 font-bold text-sm text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700"
           onClick={handleProceedToStep3}
           type="button"
         >
@@ -149,14 +149,14 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {stumbledWords.length > 0 ? (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-slate-900">
+            <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-stone-900">
               <Sparkles className="h-5 w-5 text-amber-500" />
               <span>
                 Mots à consolider ({masteredWords.size} / {stumbledWords.length}{" "}
                 maîtrisés)
               </span>
             </h3>
-            <span className="text-slate-500 text-xs">
+            <span className="text-stone-500 text-xs">
               Écoute la prononciation en français et repère les syllabes
             </span>
           </div>
@@ -194,16 +194,16 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {/* Lecture fluide du texte complet sans chrono avec contrôles audio (Play/Pause/Stop) */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-slate-900">
-            <BookOpen className="h-5 w-5 text-indigo-600" />
+          <h3 className="flex items-center gap-2 font-bold font-fun text-lg text-stone-900">
+            <BookOpen className="h-5 w-5 text-primary-600" />
             <span>Relis le texte entier à voix haute</span>
           </h3>
 
           {/* Barre de contrôles de lecture audio */}
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-1.5 shadow-2xs">
+          <div className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-3 py-1.5 shadow-2xs">
             {audioState === "idle" && (
               <button
-                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1 font-semibold text-indigo-600 text-xs transition-colors hover:bg-indigo-100 hover:text-indigo-800"
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-primary-50 px-3 py-1 font-semibold text-primary-600 text-xs transition-colors hover:bg-primary-100 hover:text-primary-800"
                 onClick={handleStartFullSpeech}
                 title="Écouter la lecture complète du texte par le modèle français"
                 type="button"
@@ -214,7 +214,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
             )}
             {audioState === "playing" && (
               <>
-                <span className="mr-1 flex animate-pulse items-center gap-1.5 font-bold text-indigo-700 text-xs">
+                <span className="mr-1 flex animate-pulse items-center gap-1.5 font-bold text-primary-700 text-xs">
                   <Volume2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Lecture en cours...</span>
                 </span>
@@ -276,16 +276,16 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {/* Questions de compréhension */}
       {text.comprehensionQuestions &&
         text.comprehensionQuestions.length > 0 && (
-          <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-8">
+          <div className="space-y-4 rounded-3xl border border-stone-200/90 bg-paper p-6 shadow-sm sm:p-8">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
                 <HelpCircle className="h-5 w-5" />
               </div>
               <div>
-                <h4 className="font-bold font-fun text-base text-slate-900">
+                <h4 className="font-bold font-fun text-base text-stone-900">
                   Compréhension de l’histoire
                 </h4>
-                <p className="text-slate-500 text-xs">
+                <p className="text-stone-500 text-xs">
                   Vérifie que tu as bien compris le sens du texte
                 </p>
               </div>
@@ -296,10 +296,10 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                 const isRevealed = revealedQuestions.has(idx);
                 return (
                   <div
-                    className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                    className="flex flex-col justify-between rounded-2xl border border-stone-200 bg-cream p-4"
                     key={idx}
                   >
-                    <div className="mb-3 font-semibold text-slate-800 text-sm">
+                    <div className="mb-3 font-semibold text-sm text-stone-800">
                       Question {idx + 1} : {q.question}
                     </div>
 
@@ -311,7 +311,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                         </div>
                       ) : (
                         <button
-                          className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 text-xs transition-colors hover:bg-slate-100"
+                          className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-paper px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-stone-100"
                           onClick={() => handleToggleQuestion(idx)}
                           type="button"
                         >
@@ -329,7 +329,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
       {/* Bouton pour lancer l'étape 3 */}
       <div className="flex justify-center pt-4">
         <button
-          className="flex cursor-pointer items-center gap-3 rounded-3xl bg-indigo-600 px-8 py-4 font-extrabold text-base text-white shadow-indigo-200 shadow-xl transition-all hover:scale-105 hover:bg-indigo-700"
+          className="flex cursor-pointer items-center gap-3 rounded-3xl bg-primary-600 px-8 py-4 font-extrabold text-base text-white shadow-primary-200 shadow-xl transition-all hover:scale-105 hover:bg-primary-700"
           onClick={handleProceedToStep3}
           type="button"
         >

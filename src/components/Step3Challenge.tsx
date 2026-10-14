@@ -276,42 +276,42 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     <div className="fade-in animate-in space-y-6 duration-300">
       {/* Alerte si les 60 secondes sont écoulées */}
       {isAutoStopped && (
-        <div className="zoom-in-95 flex animate-in items-center justify-between gap-3 rounded-2xl bg-amber-500 px-5 py-3.5 font-bold text-slate-950 shadow-lg duration-200">
+        <div className="zoom-in-95 flex animate-in items-center justify-between gap-3 rounded-2xl bg-amber-500 px-5 py-3.5 font-bold text-stone-950 shadow-lg duration-200">
           <div className="flex items-center gap-2.5">
-            <Clock className="h-5 w-5 shrink-0 text-slate-950" />
+            <Clock className="h-5 w-5 shrink-0 text-stone-950" />
             <span className="text-sm">
               <strong>60 secondes écoulées !</strong> Défi Record terminé,
               calcul du nouveau score en cours...
             </span>
           </div>
-          <span className="shrink-0 rounded-xl bg-slate-950 px-2.5 py-1 font-mono text-white text-xs">
+          <span className="shrink-0 rounded-xl bg-stone-950 px-2.5 py-1 font-mono text-white text-xs">
             T = 60s
           </span>
         </div>
       )}
 
       {/* En-tête de l'étape 3 */}
-      <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-purple-700 via-indigo-700 to-indigo-800 p-6 text-white shadow-xl sm:p-8 md:flex-row">
+      <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-primary-700 via-primary-700 to-primary-800 p-6 text-white shadow-xl sm:p-8 md:flex-row">
         <div className="relative z-10">
           <div className="mb-2 flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 font-extrabold text-slate-900 text-xs">
+            <span className="flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 font-extrabold text-stone-900 text-xs">
               <Trophy className="h-3.5 w-3.5" /> Étape 3 sur 3 : Défi Record
             </span>
-            <span className="font-semibold text-indigo-200 text-xs">
+            <span className="font-semibold text-primary-200 text-xs">
               Battre son premier score ({attempt1.mclm} MCLM)
             </span>
           </div>
           <h2 className="font-extrabold font-fun text-2xl sm:text-3xl">
             À toi de jouer pour le record !
           </h2>
-          <p className="mt-1 max-w-lg text-indigo-100 text-xs sm:text-sm">
+          <p className="mt-1 max-w-lg text-primary-100 text-xs sm:text-sm">
             Applique ce que tu as appris sur les mots difficiles. Lis vite et
             avec précision ! L’enregistrement s’arrête automatiquement à 60s.
           </p>
         </div>
 
         {/* Compteur chrono visuel avec anneau SVG */}
-        <div className="relative z-10 flex items-center gap-4 rounded-3xl border border-white/20 bg-white/10 p-3 backdrop-blur-md sm:p-4">
+        <div className="relative z-10 flex items-center gap-4 rounded-3xl border border-white/20 bg-paper/10 p-3 backdrop-blur-md sm:p-4">
           <CircularTimer
             isRecording={isRecording}
             size={76}
@@ -319,11 +319,11 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
             totalTime={60}
           />
 
-          <div className="mx-1 h-12 w-px bg-white/20" />
+          <div className="mx-1 h-12 w-px bg-paper/20" />
 
           {alignmentResult && (
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-2xl bg-white/20 px-4 py-3 font-semibold text-white text-xs transition-colors hover:bg-white/30"
+              className="flex cursor-pointer items-center gap-1.5 rounded-2xl bg-paper/20 px-4 py-3 font-semibold text-white text-xs transition-colors hover:bg-paper/30"
               onClick={() => {
                 setAlignmentResult(null);
                 setRecordedAudioUrl(null);
@@ -349,7 +349,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           )}
           {!(alignmentResult || isRecording) && (
             <button
-              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-amber-400 px-6 py-4 font-black text-base text-slate-950 shadow-amber-950/20 shadow-lg transition-all hover:scale-105 hover:bg-amber-300 disabled:opacity-50"
+              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-amber-400 px-6 py-4 font-black text-base text-stone-950 shadow-amber-950/20 shadow-lg transition-all hover:scale-105 hover:bg-amber-300 disabled:opacity-50"
               disabled={isAnalyzing}
               onClick={startReading}
               type="button"
@@ -363,7 +363,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
 
       {isRecording && (
         <div className="fade-in animate-in py-2 text-center">
-          <p className="mb-2 font-semibold text-indigo-600 text-xs">
+          <p className="mb-2 font-semibold text-primary-600 text-xs">
             Enregistrement en direct · Donne tout !
           </p>
           <AudioVisualizer audioLevel={audioLevel} isRecording={isRecording} />
@@ -371,14 +371,14 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       )}
 
       {isAnalyzing && (
-        <div className="fade-in animate-in space-y-3 rounded-3xl border border-indigo-200 bg-indigo-50 p-8 text-center">
-          <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600" />
-          <h3 className="font-bold font-fun text-indigo-950 text-lg">
+        <div className="fade-in animate-in space-y-3 rounded-3xl border border-primary-200 bg-primary-50 p-8 text-center">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary-600" />
+          <h3 className="font-bold font-fun text-lg text-primary-950">
             {isAutoStopped
               ? "60 secondes écoulées ! Calcul de ton nouveau record..."
               : "Calcul de ton nouveau record de fluence..."}
           </h3>
-          <p className="text-indigo-700 text-xs">
+          <p className="text-primary-700 text-xs">
             Comparaison entre la 1ère lecture et ton nouveau score.
           </p>
         </div>
@@ -401,7 +401,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
               </button>
             )}
             <button
-              className="cursor-pointer rounded-lg border border-rose-200 bg-white px-3 py-1 font-bold text-rose-900 transition-colors hover:bg-rose-100"
+              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-3 py-1 font-bold text-rose-900 transition-colors hover:bg-rose-100"
               onClick={handleSimulateChallenge}
               type="button"
             >
@@ -462,8 +462,8 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           )}
 
           <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-              <Headphones className="h-4 w-4 text-indigo-600" />
+            <div className="flex items-center gap-1.5 text-stone-500 text-xs">
+              <Headphones className="h-4 w-4 text-primary-600" />
               <span>
                 Clique sur un mot ci-dessous pour sauter à son horodatage et
                 vérifier la prononciation
@@ -486,7 +486,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       {!(alignmentResult || isRecording) && (
         <div className="pt-2 text-center">
           <button
-            className="cursor-pointer font-medium text-slate-400 text-xs underline transition-colors hover:text-indigo-600"
+            className="cursor-pointer font-medium text-stone-400 text-xs underline transition-colors hover:text-primary-600"
             onClick={handleSimulateChallenge}
             type="button"
           >

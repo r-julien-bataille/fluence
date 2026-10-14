@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+/*
+ * Palette « papier et encre » : fonds crème légèrement chauds (pas de blanc pur)
+ * pour limiter l'éblouissement des écrans, et accent bleu canard désaturé.
+ * Les luminosités suivent l'échelle Tailwind pour conserver les contrastes WCAG AA.
+ */
+@theme {
+  --color-paper: oklch(0.985 0.01 85);
+  --color-cream: oklch(0.965 0.016 85);
+
+  --color-primary-50: oklch(0.962 0.012 205);
+  --color-primary-100: oklch(0.93 0.022 205);
+  --color-primary-200: oklch(0.87 0.04 205);
+  --color-primary-300: oklch(0.785 0.06 205);
+  --color-primary-400: oklch(0.673 0.075 205);
+  --color-primary-500: oklch(0.585 0.08 205);
+  --color-primary-600: oklch(0.511 0.078 205);
+  --color-primary-700: oklch(0.457 0.07 205);
+  --color-primary-800: oklch(0.398 0.06 205);
+  --color-primary-900: oklch(0.359 0.05 205);
+  --color-primary-950: oklch(0.257 0.035 205);
+}
+
 @layer base {
   :root {
     --font-reading: "Lexend", system-ui, -apple-system, sans-serif;

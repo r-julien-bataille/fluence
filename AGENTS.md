@@ -50,7 +50,7 @@ pnpm preview     # Serves the production build from dist/
 1. **Performance & Bundle Splitting**:
    - Keep the initial entry bundle minimal. Secondary views (`Step1Reading`, `Step2Remediation`, `Step3Challenge`, `StepSummary`, `StoryGeneratorModal`, `SettingsModal`, `HistoryDrawer`) must remain lazy-loaded with `React.lazy()` and `<Suspense>`.
 2. **Accessibility (WCAG AA) & Dyslexia Support**:
-   - Maintain a contrast ratio of at least `4.5:1` for body/badge text (use `text-slate-600` or darker on white/light backgrounds; avoid `text-slate-400` on text).
+   - Maintain a contrast ratio of at least `4.5:1` for body/badge text (use `text-stone-600` or darker on `bg-paper`/`bg-cream` backgrounds; avoid `text-stone-400` on text).
    - Provide explicit `aria-label` attributes on icon-only buttons.
    - Preserve support for the `mode-dyslexique` toggle (`Lexend` font, increased letter/word spacing, and syllable coloring in remediation).
 3. **Language & Simplicity**:

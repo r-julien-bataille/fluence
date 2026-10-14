@@ -235,7 +235,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           <span
             className={
               idx % 2 === 0
-                ? "font-semibold text-indigo-900"
+                ? "font-semibold text-primary-900"
                 : "font-bold text-rose-600"
             }
             key={idx}
@@ -428,7 +428,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
               ? "Inversion de mots - Cliquer pour écouter"
               : `Substitution ${ann.spokenWord ? `(lu: "${ann.spokenWord}")` : ""} - Cliquer pour écouter`;
       } else if (ann.status === "unreached") {
-        styleClass = "text-slate-400 opacity-50";
+        styleClass = "text-stone-400 opacity-50";
         tooltip = "Non atteint dans les 60s";
       }
 
@@ -436,9 +436,9 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
         <button
           className={`relative inline-block cursor-pointer transition-all duration-150 ${styleClass} ${
             isCurrentlyPlayingAudio
-              ? "z-10 scale-110 font-black shadow-md ring-4 ring-indigo-500 ring-offset-2"
+              ? "z-10 scale-110 font-black shadow-md ring-4 ring-primary-500 ring-offset-2"
               : isInspected
-                ? "ring-2 ring-slate-900 ring-offset-1"
+                ? "ring-2 ring-stone-900 ring-offset-1"
                 : "hover:scale-105"
           }`}
           key={item.tokenIndex ?? wIdx}
@@ -456,7 +456,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
     return (
       <button
-        className={`inline-block cursor-pointer transition-colors hover:text-indigo-600 ${
+        className={`inline-block cursor-pointer transition-colors hover:text-primary-600 ${
           isCurrent
             ? "rounded-sm bg-amber-200 px-1 text-amber-950 shadow-xs"
             : ""
@@ -472,21 +472,21 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
   return (
     <div
-      className={`rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all sm:p-10 ${
+      className={`rounded-3xl border border-stone-200/80 bg-paper p-6 shadow-sm transition-all sm:p-10 ${
         dyslexicMode ? "dys-mode" : ""
       }`}
     >
       {/* Barre d'outils d'accessibilité de lecture */}
       {!showResults && (
-        <div className="mb-4 flex items-center justify-between border-slate-100 border-b pb-3 text-xs">
-          <span className="hidden font-medium text-slate-400 sm:inline">
+        <div className="mb-4 flex items-center justify-between border-stone-100 border-b pb-3 text-xs">
+          <span className="hidden font-medium text-stone-400 sm:inline">
             Repères de mots cumulés en marge droite (protocole ELFE)
           </span>
           <button
             className={`flex cursor-pointer items-center gap-2 rounded-xl px-3 py-1.5 font-bold transition-all ${
               bicolorSyllables
-                ? "border border-indigo-200 bg-indigo-100 text-indigo-900 shadow-2xs"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "border border-primary-200 bg-primary-100 text-primary-900 shadow-2xs"
+                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
             }`}
             onClick={() => setBicolorSyllables(!bicolorSyllables)}
             title="Affiche les syllabes en couleurs alternées pour faciliter le décodage dyslexique"
@@ -496,8 +496,8 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
             <span
               className={`h-2 w-2 rounded-full transition-colors ${
                 bicolorSyllables
-                  ? "bg-indigo-600 ring-2 ring-indigo-300"
-                  : "bg-slate-300"
+                  ? "bg-primary-600 ring-2 ring-primary-300"
+                  : "bg-stone-300"
               }`}
             />
           </button>
@@ -512,11 +512,11 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
           return (
             <div
-              className="flex items-start justify-between gap-4 rounded-xl border-slate-100/60 border-b px-2 pb-2 transition-colors last:border-b-0 hover:bg-slate-50/50"
+              className="flex items-start justify-between gap-4 rounded-xl border-stone-100/60 border-b px-2 pb-2 transition-colors last:border-b-0 hover:bg-cream/50"
               key={lineIdx}
             >
               {/* Ligne de texte avec mots */}
-              <div className="reading-text-flow flex flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-2 font-medium text-lg text-slate-800 sm:text-xl lg:text-2xl">
+              <div className="reading-text-flow flex flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-2 font-medium text-lg text-stone-800 sm:text-xl lg:text-2xl">
                 {line.words.length <= 2 || !secondToLastWord || !lastWord ? (
                   line.words.map((item, wIdx) => renderWord(item, wIdx))
                 ) : (
@@ -534,7 +534,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
               {/* Repère de mots cumulés en marge droite (norme ELFE) */}
               <div className="w-12 shrink-0 select-none pt-1 text-right sm:w-16">
-                <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 font-bold font-mono text-slate-500 text-xs sm:text-sm">
+                <span className="inline-block rounded-md bg-stone-100 px-2 py-0.5 font-bold font-mono text-stone-500 text-xs sm:text-sm">
                   {line.cumulativeCount}
                 </span>
               </div>
@@ -544,9 +544,9 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       </div>
 
       {showResults && (
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-slate-100 border-t pt-6 text-slate-600 text-xs sm:flex-row sm:items-center sm:text-sm">
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-stone-100 border-t pt-6 text-stone-600 text-xs sm:flex-row sm:items-center sm:text-sm">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="font-semibold text-slate-700">Légende :</span>
+            <span className="font-semibold text-stone-700">Légende :</span>
             <span className="flex items-center gap-1.5">
               <span className="inline-block h-3.5 w-3.5 rounded border border-emerald-500 bg-emerald-200" />
               <span>Vert : Mot bien lu (vrai positif)</span>
@@ -561,7 +561,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1 font-medium text-indigo-600 text-xs">
+          <div className="flex items-center gap-1 font-medium text-primary-600 text-xs">
             <Headphones className="h-4 w-4" />
             <span>
               Clique sur n'importe quel mot pour réécouter et vérifier la
@@ -577,8 +577,8 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           aria-label={`Correction du mot ${inspectedWord.expectedWord}`}
           className={
             isMobile
-              ? "fade-in slide-in-from-bottom-4 fixed inset-x-3 bottom-4 z-50 mx-auto max-w-md animate-in rounded-2xl border border-slate-700/80 bg-slate-900/95 p-3.5 text-white shadow-2xl backdrop-blur-md duration-200"
-              : "fade-in zoom-in-95 fixed z-50 w-80 animate-in rounded-2xl border border-slate-700/80 bg-slate-900/95 p-3.5 text-white shadow-2xl backdrop-blur-md duration-150"
+              ? "fade-in slide-in-from-bottom-4 fixed inset-x-3 bottom-4 z-50 mx-auto max-w-md animate-in rounded-2xl border border-stone-700/80 bg-stone-900/95 p-3.5 text-white shadow-2xl backdrop-blur-md duration-200"
+              : "fade-in zoom-in-95 fixed z-50 w-80 animate-in rounded-2xl border border-stone-700/80 bg-stone-900/95 p-3.5 text-white shadow-2xl backdrop-blur-md duration-150"
           }
           ref={popoverRef}
           role="dialog"
@@ -594,7 +594,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           {/* Caret indicateur de ciblage pour écran desktop */}
           {!isMobile && popoverPos && (
             <div
-              className={`absolute h-2.5 w-2.5 rotate-45 border-slate-700/80 bg-slate-900/95 ${
+              className={`absolute h-2.5 w-2.5 rotate-45 border-stone-700/80 bg-stone-900/95 ${
                 popoverPos.placement === "top"
                   ? "-bottom-1.5 border-r border-b"
                   : "-top-1.5 border-t border-l"
@@ -604,7 +604,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           )}
 
           {/* En-tête : mot, statut et bouton fermer */}
-          <div className="flex items-center justify-between gap-2 border-slate-800 border-b pb-2">
+          <div className="flex items-center justify-between gap-2 border-stone-800 border-b pb-2">
             <div className="flex min-w-0 items-center gap-2">
               <span className="truncate font-bold text-sm text-white">
                 « {inspectedWord.expectedWord} »
@@ -630,7 +630,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
             <button
               aria-label="Fermer la pop-up"
-              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-stone-800 hover:text-white"
               onClick={() => setInspectedWord(null)}
               type="button"
             >
@@ -641,7 +641,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           {/* Détails IA : transcription ou timing */}
           {(inspectedWord.spokenWord ||
             inspectedWord.timestampMs !== undefined) && (
-            <div className="my-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-300 text-xs">
+            <div className="my-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-stone-300 text-xs">
               {inspectedWord.spokenWord && (
                 <span>
                   IA a entendu :{" "}
@@ -651,7 +651,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 </span>
               )}
               {inspectedWord.timestampMs !== undefined && (
-                <span className="font-mono text-slate-400">
+                <span className="font-mono text-stone-400">
                   • {(inspectedWord.timestampMs / 1000).toFixed(1)}s
                 </span>
               )}
@@ -662,7 +662,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           <div className="mt-2.5 flex items-center gap-2">
             {inspectedWord.timestampMs !== undefined && onSeekAudioMs && (
               <button
-                className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-slate-800 px-3 py-2 font-semibold text-indigo-300 text-xs transition-colors hover:bg-slate-700"
+                className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-stone-800 px-3 py-2 font-semibold text-primary-300 text-xs transition-colors hover:bg-stone-700"
                 onClick={() => {
                   if (inspectedWord.timestampMs !== undefined) {
                     onSeekAudioMs(

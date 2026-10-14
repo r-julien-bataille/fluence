@@ -75,7 +75,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 font-sans">
+    <div className="flex min-h-screen flex-col bg-cream font-sans">
       {/* Header global */}
       <Header
         currentStudent={currentStudent}
@@ -90,10 +90,10 @@ export const App: React.FC = () => {
 
       {/* Alerte discrète si pas de clé configurée */}
       {!(hasKey || dismissBanner) && (
-        <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-slate-950 text-xs shadow-xs sm:text-sm">
+        <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-stone-950 text-xs shadow-xs sm:text-sm">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Key className="h-4 w-4 shrink-0 text-slate-950" />
+              <Key className="h-4 w-4 shrink-0 text-stone-950" />
               <span>
                 <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
                 Studio pour activer la transcription{" "}
@@ -102,14 +102,14 @@ export const App: React.FC = () => {
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button
-                className="rounded-xl bg-slate-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-slate-800"
+                className="rounded-xl bg-stone-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-stone-800"
                 onClick={() => setIsSettingsOpen(true)}
                 type="button"
               >
                 Renseigner ma clé
               </button>
               <button
-                className="p-1 text-slate-900 hover:text-black"
+                className="p-1 text-stone-900 hover:text-black"
                 onClick={() => setDismissBanner(true)}
                 title="Fermer ce message"
                 type="button"

@@ -30,20 +30,20 @@ export const Header: React.FC<HeaderProps> = ({
   const hasKey = hasStoredApiKey();
 
   return (
-    <header className="sticky top-0 z-40 border-slate-200/80 border-b bg-white/80 px-4 py-3.5 backdrop-blur-md transition-all sm:px-8">
+    <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/80 px-4 py-3.5 backdrop-blur-md transition-all sm:px-8">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         {/* Logo & Titre */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-indigo-200 shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-md shadow-primary-200">
             <BookOpen className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-black font-fun text-slate-900 text-xl tracking-tight">
+              <h1 className="font-black font-fun text-stone-900 text-xl tracking-tight">
                 Fluence
-              </h1> 
+              </h1>
             </div>
-            <p className="hidden font-sans text-[11px] text-slate-600 sm:block">
+            <p className="hidden font-sans text-[11px] text-stone-600 sm:block">
               Évaluation et entraînement de lecture du CE1 au CM2
             </p>
           </div>
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`flex cursor-pointer items-center gap-1.5 rounded-2xl border p-2.5 font-bold text-xs transition-colors ${
               dyslexicMode
                 ? "border-amber-300 bg-amber-100 text-amber-900"
-                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                : "border-stone-200 bg-paper text-stone-600 hover:bg-cream"
             }`}
             onClick={onToggleDyslexicMode}
             title="Activer la police adaptée à la dyslexie et espacement renforcé"
@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Bouton Historique */}
           <button
             aria-label="Historique des séances"
-            className="cursor-pointer rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="cursor-pointer rounded-2xl border border-stone-200 bg-paper p-2.5 text-stone-600 transition-colors hover:bg-cream hover:text-stone-900"
             onClick={onOpenHistory}
             title="Historique des séances"
             type="button"
@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Paramètres de la clé API Google"
             className={`relative cursor-pointer rounded-2xl border p-2.5 transition-colors ${
               hasKey
-                ? "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                ? "border-stone-200 bg-paper text-stone-600 hover:bg-cream hover:text-stone-900"
                 : "animate-pulse border-amber-300 bg-amber-50 text-amber-700"
             }`}
             onClick={onOpenSettings}

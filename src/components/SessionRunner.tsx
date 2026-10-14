@@ -97,23 +97,23 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setCurrentStep("step1");
   };
 
-  let step1Class = "text-slate-400";
+  let step1Class = "text-stone-400";
   if (currentStep === "step1") {
-    step1Class = "bg-indigo-600 text-white shadow-xs";
+    step1Class = "bg-primary-600 text-white shadow-xs";
   } else if (step1Attempt) {
     step1Class = "bg-emerald-50 text-emerald-800";
   }
 
-  let step2Class = "text-slate-400";
+  let step2Class = "text-stone-400";
   if (currentStep === "step2") {
-    step2Class = "bg-indigo-600 text-white shadow-xs";
+    step2Class = "bg-primary-600 text-white shadow-xs";
   } else if (currentStep === "step3" || currentStep === "summary") {
     step2Class = "bg-emerald-50 text-emerald-800";
   }
 
-  let step3Class = "text-slate-400";
+  let step3Class = "text-stone-400";
   if (currentStep === "step3") {
-    step3Class = "bg-indigo-600 text-white shadow-xs";
+    step3Class = "bg-primary-600 text-white shadow-xs";
   } else if (step3Attempt) {
     step3Class = "bg-emerald-50 text-emerald-800";
   }
@@ -125,7 +125,7 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
         <div className="mb-8">
           <div className="mb-4 flex items-center justify-between">
             <button
-              className="inline-flex items-center gap-1.5 font-semibold text-slate-500 text-xs transition-colors hover:text-slate-800 sm:text-sm"
+              className="inline-flex items-center gap-1.5 font-semibold text-stone-500 text-xs transition-colors hover:text-stone-800 sm:text-sm"
               onClick={handleResetToSelection}
               type="button"
             >
@@ -133,9 +133,9 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
               <span>Changer d’histoire</span>
             </button>
 
-            <div className="font-bold text-slate-500 text-xs">
+            <div className="font-bold text-stone-500 text-xs">
               Texte :{" "}
-              <span className="font-extrabold text-indigo-600">
+              <span className="font-extrabold text-primary-600">
                 {selectedText.title}
               </span>{" "}
               ({selectedText.level})
@@ -143,7 +143,7 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
           </div>
 
           {/* Stepper de progression */}
-          <div className="grid grid-cols-4 gap-2 rounded-2xl border border-slate-200/80 bg-white p-3 text-center text-xs shadow-2xs">
+          <div className="grid grid-cols-4 gap-2 rounded-2xl border border-stone-200/80 bg-paper p-3 text-center text-xs shadow-2xs">
             <div
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step1Class}`}
             >
@@ -171,8 +171,8 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
             <div
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${
                 currentStep === "summary"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-400"
+                  ? "bg-primary-600 text-white shadow-xs"
+                  : "text-stone-400"
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />

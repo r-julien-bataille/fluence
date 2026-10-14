@@ -21,8 +21,8 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
   const isCritical = timeLeft <= 10 && isRecording;
   const isWarning = timeLeft <= 20 && !isCritical && isRecording;
 
-  let strokeColor = "text-slate-300";
-  let textColor = "text-slate-800";
+  let strokeColor = "text-stone-300";
+  let textColor = "text-stone-800";
 
   if (isRecording) {
     if (isCritical) {
@@ -32,8 +32,8 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
       strokeColor = "text-amber-500";
       textColor = "text-amber-600";
     } else {
-      strokeColor = "text-indigo-600";
-      textColor = "text-indigo-600";
+      strokeColor = "text-primary-600";
+      textColor = "text-primary-600";
     }
   }
 
@@ -50,7 +50,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
         <title>Minuteur circulaire</title>
         {/* Piste de fond */}
         <circle
-          className="stroke-slate-200"
+          className="stroke-stone-200"
           cx="42"
           cy="42"
           r={radius}
@@ -78,7 +78,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
         >
           {timeLeft}
         </span>
-        <span className="mt-0.5 font-bold text-[10px] text-slate-400 uppercase tracking-tighter">
+        <span className="mt-0.5 font-bold text-[10px] text-stone-400 uppercase tracking-tighter">
           sec
         </span>
       </div>

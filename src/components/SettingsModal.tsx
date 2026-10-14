@@ -62,10 +62,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl sm:p-8">
+    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
+      <div className="relative w-full max-w-lg rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
         <button
-          className="absolute top-5 right-5 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          className="absolute top-5 right-5 rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
           onClick={onClose}
           title="Fermer"
           type="button"
@@ -78,23 +78,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <Key className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold font-fun text-slate-900 text-xl">
+            <h3 className="font-bold font-fun text-stone-900 text-xl">
               Configuration de la clé API
             </h3>
-            <p className="font-sans text-slate-500 text-xs">
+            <p className="font-sans text-stone-500 text-xs">
               Modèle Bring Your Own Key (BYOK) - 100% Client-Side
             </p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-800 text-xs">
-            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+          <div className="flex items-start gap-3 rounded-2xl border border-primary-200 bg-primary-50 p-4 text-primary-800 text-xs">
+            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
             <div>
               <p className="mb-1 font-semibold">Confidentialité garantie</p>
               <p>
                 Votre clé Google AI Studio est stockée exclusivement dans le{" "}
-                <code className="rounded bg-blue-100 px-1 py-0.5 font-mono">
+                <code className="rounded bg-primary-100 px-1 py-0.5 font-mono">
                   localStorage
                 </code>{" "}
                 de votre navigateur. Aucune donnée n’est envoyée à un serveur
@@ -105,14 +105,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <div>
             <label
-              className="mb-1.5 block font-semibold text-slate-700 text-sm"
+              className="mb-1.5 block font-semibold text-sm text-stone-700"
               htmlFor="gemini-api-key-input"
             >
               Clé Google AI Studio (Gemini)
             </label>
             <div className="relative">
               <input
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-slate-800 text-sm transition-all focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-stone-200 bg-cream px-4 py-3 font-mono text-sm text-stone-800 transition-all focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                 id="gemini-api-key-input"
                 onChange={(e) => {
                   setApiKey(e.target.value);
@@ -123,13 +123,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 value={apiKey}
               />
             </div>
-            <p className="mt-1.5 flex items-center justify-between text-slate-500 text-xs">
+            <p className="mt-1.5 flex items-center justify-between text-stone-500 text-xs">
               <span>
                 Utilise <code>gemini-3.5-transcribe</code> et{" "}
                 <code>gemini-3.8-flash</code>
               </span>
               <a
-                className="inline-flex items-center gap-1 font-medium text-indigo-600 underline hover:text-indigo-800"
+                className="inline-flex items-center gap-1 font-medium text-primary-600 underline hover:text-primary-800"
                 href="https://aistudio.google.com/app/apikey"
                 rel="noreferrer"
                 target="_blank"
@@ -160,7 +160,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <div className="flex items-center gap-3 pt-3">
             <button
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 font-semibold text-slate-700 text-sm transition-colors hover:bg-slate-50 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream disabled:opacity-50"
               disabled={isTesting || !apiKey.trim()}
               onClick={handleTest}
               type="button"
@@ -169,7 +169,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {isTesting ? "Vérification..." : "Tester la clé"}
             </button>
             <button
-              className="flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 font-semibold text-sm text-white shadow-indigo-200 shadow-md transition-all hover:bg-indigo-700"
+              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 font-semibold text-sm text-white shadow-md shadow-primary-200 transition-all hover:bg-primary-700"
               onClick={handleSave}
               type="button"
             >
