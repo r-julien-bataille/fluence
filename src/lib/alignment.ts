@@ -1,7 +1,7 @@
 import type { FluencyAttempt } from "@/db/db";
 
 import type { TranscribedWord } from "./gemini/transcribe";
-import { normalizeWord } from "./utils";
+import { ELISION_REGEX, normalizeWord } from "./utils";
 
 export interface AlignmentOptions {
   hesitationThresholdMs?: number; // 3 000 ms par défaut
@@ -9,6 +9,7 @@ export interface AlignmentOptions {
 }
 
 export interface AlignedToken {
+  endMs?: number;
   errorType?: "substitution" | "omission" | "inversion" | "hesitation";
   expectedIndex: number;
   expectedWord: string;
@@ -81,6 +82,33 @@ function wordSimilarity(w1: string, w2: string): number {
 }
 
 /**
+ * Sépare un mot prononcé élidé (« d'étonnement », « l'intérieur ») en deux mots,
+ * comme le fait `tokenizeFrenchText` pour le texte attendu (« d » + « étonnement »).
+ * Le temps du mot est réparti proportionnellement à la longueur de chaque partie.
+ */
+function splitElidedSpokenWord(word: TranscribedWord): TranscribedWord[] {
+  const match = word.text.trim().match(ELISION_REGEX);
+  if (!match) {
+    return [word];
+  }
+  const [, prefix = "", rest = ""] = match;
+  const cleanPrefix = normalizeWord(prefix);
+  const cleanRest = normalizeWord(rest);
+  if (!(cleanPrefix && cleanRest)) {
+    return [word];
+  }
+  const totalChars = cleanPrefix.length + cleanRest.length;
+  const splitMs = Math.round(
+    word.startMs +
+      ((word.endMs - word.startMs) * cleanPrefix.length) / totalChars
+  );
+  return [
+    { ...word, cleanText: cleanPrefix, endMs: splitMs, text: prefix },
+    { ...word, cleanText: cleanRest, startMs: splitMs, text: rest },
+  ];
+}
+
+/**
  * Moteur d'alignement phonétique et textuel ELFE
  */
 export function alignFluencyReading(
@@ -92,9 +120,9 @@ export function alignFluencyReading(
   const hesitationThresholdMs = options.hesitationThresholdMs ?? 3000;
 
   // 1. Filtrer les mots prononcés dans les 60 secondes (T <= 60 000 ms)
-  const validSpoken = spokenWords.filter(
-    (w) => (w.startMs || 0) <= maxDurationMs
-  );
+  const validSpoken = spokenWords
+    .filter((w) => (w.startMs || 0) <= maxDurationMs)
+    .flatMap(splitElidedSpokenWord);
 
   // Traiter les autocorrelations et répétitions consécutives dans les mots prononcés
   // Exemple : "le... le vieux" -> répétition tolérée
@@ -311,6 +339,7 @@ export function alignFluencyReading(
         // Blocage / hésitation > 3s comptabilisée en erreur ELFE
         errorsCount++;
         alignedTokens.push({
+          endMs: spokenObj.endMs,
           errorType: "hesitation",
           expectedIndex: expIdx,
           expectedWord,
@@ -327,6 +356,7 @@ export function alignFluencyReading(
         stumbledWordsSet.add(expectedWord);
       } else {
         alignedTokens.push({
+          endMs: spokenObj.endMs,
           expectedIndex: expIdx,
           expectedWord,
           spokenWord: spokenObj.text,
@@ -338,6 +368,7 @@ export function alignFluencyReading(
       // Substitution : mot mal décodé ou remplacé
       errorsCount++;
       alignedTokens.push({
+        endMs: spokenObj.endMs,
         errorType: "substitution",
         expectedIndex: expIdx,
         expectedWord,

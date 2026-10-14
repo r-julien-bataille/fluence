@@ -7,10 +7,17 @@ interface AttemptAudioPlayerProps {
   className?: string;
   onSeekHandled?: () => void;
   onTimeUpdate?: (currentTimeMs: number) => void;
-  seekToTimeMs?: number | null;
+  seekRequest?: { endMs?: number; startMs: number } | null;
 }
 
-const formatTime = (sec: number) => {
+// Lecture strictement à partir du début du mot (aucun mot précédent),
+// et arrêt quelques secondes après la fin du mot pour une écoute plus naturelle.
+const WORD_END_PADDING_SEC = 0.5;
+const MAX_DURATION_SEC = 60;
+const DEFAULT_WORD_DURATION_SEC = 0.7;
+
+const formatTime = (rawSec: number) => {
+  const sec = Number.isFinite(rawSec) ? rawSec : 0;
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s < 10 ? "0" : ""}${s}`;
@@ -19,7 +26,7 @@ const formatTime = (sec: number) => {
 export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
   audioUrl,
   onTimeUpdate,
-  seekToTimeMs,
+  seekRequest,
   onSeekHandled,
   className = "",
 }) => {
@@ -29,6 +36,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
   const [durationSec, setDurationSec] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
 
+  const stopAtSecRef = useRef<number | null>(null);
   const isPlayingRef = useRef(isPlaying);
   const onSeekHandledRef = useRef(onSeekHandled);
 
@@ -37,35 +45,52 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
     onSeekHandledRef.current = onSeekHandled;
   });
 
-  // Gestion du saut vers un mot précis sélectionné par l'utilisateur
+  // Lecture isolée du mot sélectionné : on joue du début à la fin du mot, puis pause (0,5 s après la fin du mot)
   useEffect(() => {
-    if (
-      seekToTimeMs !== null &&
-      seekToTimeMs !== undefined &&
-      audioRef.current
-    ) {
-      // 0.5s avant pour donner le contexte
-      const targetSec = Math.max(0, seekToTimeMs / 1000 - 0.5);
-      audioRef.current.currentTime = targetSec;
-      setCurrentTimeSec(targetSec);
-      if (!isPlayingRef.current) {
-        audioRef.current
-          ?.play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error: unknown) => {
-            console.debug("Audio play error", error);
-          });
-      }
-      onSeekHandledRef.current?.();
+    const audio = audioRef.current;
+    if (!(seekRequest && audio)) {
+      return;
     }
-  }, [seekToTimeMs]);
+    const startSec = seekRequest.startMs / 1000;
+    stopAtSecRef.current =
+      seekRequest.endMs === undefined
+        ? startSec + DEFAULT_WORD_DURATION_SEC + WORD_END_PADDING_SEC
+        : seekRequest.endMs / 1000 + WORD_END_PADDING_SEC;
+    audio.currentTime = startSec;
+    setCurrentTimeSec(startSec);
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch((error: unknown) => {
+        console.debug("Audio play error", error);
+      });
+    onSeekHandledRef.current?.();
+  }, [seekRequest]);
+
+  // Arrêt précis à la fin du mot (timeupdate est trop espacé)
+  useEffect(() => {
+    if (!isPlaying) {
+      return;
+    }
+    const id = window.setInterval(() => {
+      const audio = audioRef.current;
+      const stopAt = stopAtSecRef.current;
+      if (audio && stopAt !== null && audio.currentTime >= stopAt) {
+        audio.pause();
+        stopAtSecRef.current = null;
+        setIsPlaying(false);
+      }
+    }, 30);
+    return () => window.clearInterval(id);
+  }, [isPlaying]);
 
   const togglePlay = async () => {
     if (!audioRef.current) {
       return;
     }
+    stopAtSecRef.current = null;
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -90,13 +115,37 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
     }
   };
 
+  const applyDuration = (audio: HTMLAudioElement) => {
+    const { duration } = audio;
+    setDurationSec(
+      Number.isFinite(duration) && duration > 0
+        ? Math.min(duration, MAX_DURATION_SEC)
+        : MAX_DURATION_SEC
+    );
+  };
+
   const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDurationSec(audioRef.current.duration || 60);
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
     }
+    if (Number.isFinite(audio.duration)) {
+      applyDuration(audio);
+      return;
+    }
+    // Les enregistrements MediaRecorder (webm) annoncent une durée « Infinity » :
+    // un saut à la fin force le navigateur à calculer la vraie durée.
+    const onDurationResolved = () => {
+      audio.removeEventListener("timeupdate", onDurationResolved);
+      audio.currentTime = 0;
+      applyDuration(audio);
+    };
+    audio.addEventListener("timeupdate", onDurationResolved);
+    audio.currentTime = Number.MAX_SAFE_INTEGER;
   };
 
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    stopAtSecRef.current = null;
     const newSec = Number(e.target.value);
     if (audioRef.current) {
       audioRef.current.currentTime = newSec;
@@ -108,6 +157,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
   };
 
   const handleSkip = (seconds: number) => {
+    stopAtSecRef.current = null;
     if (audioRef.current) {
       const nextTime = Math.max(
         0,
@@ -225,7 +275,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
         <input
           className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-800 accent-indigo-500"
-          max={durationSec || 60}
+          max={durationSec || MAX_DURATION_SEC}
           min={0}
           onChange={handleSeekChange}
           step={0.1}
@@ -234,7 +284,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
         />
 
         <span className="w-10 font-mono text-[11px] text-slate-400">
-          {formatTime(durationSec || 60)}
+          {formatTime(durationSec || MAX_DURATION_SEC)}
         </span>
       </div>
     </div>

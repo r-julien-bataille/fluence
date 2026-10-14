@@ -58,7 +58,10 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     useState<AlignmentResult | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [playbackTimeMs, setPlaybackTimeMs] = useState<number>(0);
-  const [seekToTimeMs, setSeekToTimeMs] = useState<number | null>(null);
+  const [seekToTimeMs, setSeekToTimeMs] = useState<{
+    endMs?: number;
+    startMs: number;
+  } | null>(null);
 
   const recorderRef = useRef<AudioRecorder | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -454,7 +457,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}
               onTimeUpdate={(timeMs) => setPlaybackTimeMs(timeMs)}
-              seekToTimeMs={seekToTimeMs}
+              seekRequest={seekToTimeMs}
             />
           )}
 
@@ -475,7 +478,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
         content={text.content}
         dyslexicMode={dyslexicMode}
         onOverrideWordStatus={handleOverrideWordStatus}
-        onSeekAudioMs={(ms) => setSeekToTimeMs(ms)}
+        onSeekAudioMs={(startMs, endMs) => setSeekToTimeMs({ endMs, startMs })}
         playbackTimeMs={playbackTimeMs}
         showResults={Boolean(alignmentResult)}
       />

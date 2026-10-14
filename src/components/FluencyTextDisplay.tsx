@@ -27,7 +27,7 @@ interface FluencyTextDisplayProps {
     expectedIndexes: number[],
     newStatus: "correct" | "error"
   ) => void;
-  onSeekAudioMs?: (timestampMs: number) => void;
+  onSeekAudioMs?: (timestampMs: number, endMs?: number) => void;
   onWordClick?: (token: AlignedToken | { word: string; index: number }) => void;
   // Nouvelles fonctionnalités de synchronisation audio
   playbackTimeMs?: number;
@@ -74,6 +74,7 @@ const mergeWordTokens = (
     .map((p) => p.spokenWord)
     .filter((w): w is string => Boolean(w));
   return {
+    endMs: parts.findLast((p) => p.endMs !== undefined)?.endMs,
     errorType: parts.find((p) => p.status === status)?.errorType,
     expectedIndex: first.expectedIndex,
     expectedWord: word.match(WORD_BOUNDARY_REGEX)?.[2] || word,
@@ -378,7 +379,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
     if (showResults && ann) {
       setInspectedWord(ann);
       if (onSeekAudioMs && ann.timestampMs !== undefined) {
-        onSeekAudioMs(ann.timestampMs);
+        onSeekAudioMs(ann.timestampMs, ann.endMs);
       }
       if (onWordClick) {
         onWordClick(ann);
@@ -433,7 +434,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
       return (
         <button
-          className={`relative inline-block cursor-pointer border-none bg-transparent p-0 font-inherit text-inherit transition-all duration-150 ${styleClass} ${
+          className={`relative inline-block cursor-pointer transition-all duration-150 ${styleClass} ${
             isCurrentlyPlayingAudio
               ? "z-10 scale-110 font-black shadow-md ring-4 ring-indigo-500 ring-offset-2"
               : isInspected
@@ -455,7 +456,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
     return (
       <button
-        className={`inline-block cursor-pointer border-none bg-transparent p-0 font-inherit text-inherit transition-colors hover:text-indigo-600 ${
+        className={`inline-block cursor-pointer transition-colors hover:text-indigo-600 ${
           isCurrent
             ? "rounded-sm bg-amber-200 px-1 text-amber-950 shadow-xs"
             : ""
@@ -664,7 +665,10 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-slate-800 px-3 py-2 font-semibold text-indigo-300 text-xs transition-colors hover:bg-slate-700"
                 onClick={() => {
                   if (inspectedWord.timestampMs !== undefined) {
-                    onSeekAudioMs(inspectedWord.timestampMs);
+                    onSeekAudioMs(
+                      inspectedWord.timestampMs,
+                      inspectedWord.endMs
+                    );
                   }
                 }}
                 title="Réécouter ce mot dans l'enregistrement"

@@ -6,7 +6,7 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 const PUNCTUATION_REGEX = /[.,/#!$%^&*;:{}=\-_`~()?"«»'’]/gu;
 const WHITESPACE_REGEX = /\s+/u;
-const ELISION_REGEX = /^(?<prefix>[ldnqscmjLDNQSCMJ]['’])(?<rest>.+)$/u;
+export const ELISION_REGEX = /^(?<prefix>[ldnqscmjLDNQSCMJ]['’])(?<rest>.+)$/u;
 
 /**
  * Normalise un mot pour la comparaison phonétique et d'alignement :
