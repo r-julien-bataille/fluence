@@ -280,7 +280,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           <div className="flex items-center gap-2.5">
             <Clock className="h-5 w-5 shrink-0 text-slate-950" />
             <span className="text-sm">
-              ⏳ <strong>60 secondes écoulées !</strong> Défi Record terminé,
+              <strong>60 secondes écoulées !</strong> Défi Record terminé,
               calcul du nouveau score en cours...
             </span>
           </div>
@@ -430,7 +430,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
                 <h4 className="font-extrabold font-fun text-emerald-950 text-lg">
                   Progression :{" "}
                   {delta !== null && delta > 0
-                    ? `+${delta} mots par minute ! 🚀`
+                    ? `+${delta} mots par minute !`
                     : `${delta} MCLM`}
                 </h4>
                 <p className="text-emerald-700 text-xs">

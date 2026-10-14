@@ -26,14 +26,14 @@ interface StoryGeneratorModalProps {
 const EMOJI_PREFIX_REGEX = /^[\p{Emoji}\s]+/u;
 
 const THEME_SUGGESTIONS = [
-  "🚀 Voyage dans les étoiles",
-  "🐾 Animaux extraordinaires",
-  "🕵️‍♀️ Mystère et détectives",
-  "🌊 Monde sous-marin secret",
-  "🌲 Forêt enchantée",
-  "⚽ Championnat sportif",
-  "🏰 Château magique",
-  "🦖 Les dinosaures curieux",
+  "Voyage dans les étoiles",
+  "Animaux extraordinaires",
+  "Mystère et détectives",
+  "Monde sous-marin secret",
+  "Forêt enchantée",
+  "Championnat sportif",
+  "Château magique",
+  "Les dinosaures curieux",
 ];
 
 export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({

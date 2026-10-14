@@ -4,7 +4,7 @@ Application web SPA 100 % client-side dédiée à l'évaluation et l'entraîneme
 
 ---
 
-## 🎯 Cadre Pédagogique & Règles Métier (ELFE)
+## Cadre Pédagogique & Règles Métier (ELFE)
 
 ### Formule de référence : MCLM
 
@@ -31,16 +31,20 @@ $$\text{MCLM} = \text{Mots Correctement Lus en 60 secondes} = \text{Mots Totaux 
 
 ---
 
-## 🏗️ Architecture Technique (100 % Client-Side & BYOK)
+## Architecture Technique (100 % Client-Side & BYOK)
 
 - **Architecture :** Single Page Application 100 % front-end. Aucun serveur distant, aucune base de données centrale.
 - **Persistance locale :** **IndexedDB** via **Dexie.js** avec hooks réactifs (`dexie-react-hooks`) et typage TypeScript complet.
 - **Modèle BYOK (Bring Your Own Key) :** La clé Google AI Studio est stockée localement dans le `localStorage` de l'utilisateur sous la clé `GOOGLE_AI_KEY`.
 - **Stack UI & Build :**
-  - Bundler : **Vite** (React 19 + TypeScript strict).
-  - Styles : **Tailwind CSS v4**, **Lucide React**.
+  - Framework : **React 19**, avec chargement différé (`React.lazy`) des vues secondaires.
+  - Langage : **TypeScript 7** (compilateur natif Go) avec références de projets (`tsconfig.app.json` + `tsconfig.node.json`).
+  - Bundler : **Vite 8** (Rolldown + Oxc, découpage via `build.rolldownOptions.output.codeSplitting`).
+  - Styles : **Tailwind CSS v4** (`@tailwindcss/vite`), **Lucide React**.
   - Typographie : **Lexend** (recherche scientifique sur la fluence) et mode **Dys-confort**.
   - Confettis : **canvas-confetti**.
+  - Qualité de code : **Ultracite** (Biome) pour le lint et le formatage.
+  - Gestionnaire de paquets : **pnpm**.
 - **Intégration IA Google GenAI :**
   - SDK officiel : `@google/genai`
   - **STT :** `gemini-3.5-transcribe` configuré en mode `verbatim`, avec `languageCodes: ["fr-FR"]`, `timestamps: ["word"]` et injection du vocabulaire attendu dans `customVocabulary` (avec fallback multimodal fluide via `gemini-3.8-flash`).
@@ -49,7 +53,7 @@ $$\text{MCLM} = \text{Mots Correctement Lus en 60 secondes} = \text{Mots Totaux 
 
 ---
 
-## 🚀 Machine à États de la Séance (`SessionRunner`)
+## Machine à États de la Séance (`SessionRunner`)
 
 1. **Choix / Génération :**
    - Sélection du profil de l'élève (Hugo, Léa, etc.).
@@ -70,22 +74,31 @@ $$\text{MCLM} = \text{Mots Correctement Lus en 60 secondes} = \text{Mots Totaux 
 
 ---
 
-## 🛠️ Démarrage Rapide
+## Démarrage Rapide
 
 ### Prérequis
 
-- Node.js $\ge 18$
+- Node.js $\ge 22.12$ (requis par Vite 8)
+- **pnpm** 11 (`corepack enable`)
 - Clé API Google AI Studio (gratuite sur [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ### Installation et lancement
 
 ```bash
 # Cloner le projet et installer les dépendances
-npm install
+pnpm install
 
 # Démarrer le serveur de développement Vite
-npm run dev
+pnpm dev
 
-# Tester la compilation de production
-npm run build
+# Vérifier les types (TypeScript 7)
+pnpm typecheck
+
+# Lint et formatage (Ultracite / Biome)
+pnpm check
+pnpm fix
+
+# Tester la compilation de production, puis la prévisualiser
+pnpm build
+pnpm preview
 ```

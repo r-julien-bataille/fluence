@@ -125,7 +125,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
         </div>
 
         <h2 className="mb-2 font-black font-fun text-3xl tracking-wide sm:text-4xl">
-          Bravo {studentName} ! 🎉
+          Bravo {studentName} !
         </h2>
         <p className="mx-auto max-w-lg text-indigo-100 text-sm sm:text-base">
           Tu as complété ton cycle d’entraînement de fluence sur <br />

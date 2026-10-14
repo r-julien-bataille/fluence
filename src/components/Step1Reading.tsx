@@ -290,7 +290,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           <div className="flex items-center gap-2.5">
             <Clock className="h-5 w-5 shrink-0 text-slate-950" />
             <span className="text-sm">
-              ⏳ <strong>60 secondes écoulées !</strong> L’enregistrement s’est
+              <strong>60 secondes écoulées !</strong> L’enregistrement s’est
               arrêté automatiquement.
             </span>
           </div>
@@ -394,7 +394,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           </h3>
           <p className="mx-auto max-w-md text-indigo-700 text-xs">
             Détection verbatim des mots prononcés, des hésitations et calcul de
-            la fluence selon le protocole officiel ELFE.
+            la fluence selon une méthode inspirée du protocole ELFE.
           </p>
         </div>
       )}

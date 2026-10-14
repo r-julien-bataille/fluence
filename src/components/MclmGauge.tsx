@@ -29,15 +29,15 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
   let IconComponent = Zap;
 
   if (mclm >= target) {
-    statusText = "Objectif de classe atteint ! 🎉";
+    statusText = "Objectif de classe atteint !";
     statusBadgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
     IconComponent = Award;
   } else if (mclm >= min) {
-    statusText = "Bonne progression ! 🚀";
+    statusText = "Bonne progression !";
     statusBadgeColor = "bg-blue-100 text-blue-800 border-blue-200";
     IconComponent = CheckCircle2;
   } else {
-    statusText = "Courage, chaque entraînement fait progresser ! 🌱";
+    statusText = "Courage, chaque entraînement fait progresser !";
     statusBadgeColor = "bg-amber-100 text-amber-800 border-amber-200";
     IconComponent = TrendingUp;
   }

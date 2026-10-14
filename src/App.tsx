@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Header } from "./components/Header";
 import { SessionRunner } from "./components/SessionRunner";
+import { SourcesFooter } from "./components/SourcesFooter";
 import type { StudentProfile } from "./components/StudentSelector";
 import { seedDatabaseIfEmpty } from "./db/seeds";
 import { hasStoredApiKey } from "./lib/gemini/client";
@@ -129,6 +130,8 @@ export const App: React.FC = () => {
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </main>
+
+      <SourcesFooter />
 
       {/* Modal Réglages Clé API */}
       {isSettingsOpen && (

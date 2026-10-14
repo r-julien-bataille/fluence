@@ -4,8 +4,19 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+const basePath = process.env.BASE_PATH;
+const base =
+  basePath === undefined
+    ? process.env.GITHUB_ACTIONS
+      ? "/fluence/"
+      : "/"
+    : basePath.endsWith("/")
+      ? basePath
+      : `${basePath}/`;
+
 // https://vite.dev/config/
 export default defineConfig({
+  base,
   build: {
     chunkSizeWarningLimit: 1000,
     rolldownOptions: {

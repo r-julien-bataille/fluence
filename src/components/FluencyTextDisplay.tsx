@@ -492,7 +492,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
             title="Affiche les syllabes en couleurs alternées pour faciliter le décodage dyslexique"
             type="button"
           >
-            <span>🎨 Syllabes bicolores (Dys)</span>
+            <span>Syllabes bicolores (Dys)</span>
             <span
               className={`h-2 w-2 rounded-full transition-colors ${
                 bicolorSyllables

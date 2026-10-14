@@ -30,7 +30,7 @@ export const getGenAIClient = async (
   const apiKey = overrideKey?.trim() || getStoredApiKey();
   if (!apiKey) {
     throw new Error(
-      "Clé API Google AI Studio manquante. Veuillez configurer votre clé dans les paramètres (icône ⚙️)."
+      "Clé API Google AI Studio manquante. Veuillez configurer votre clé dans les paramètres (icône d’engrenage)."
     );
   }
   const { GoogleGenAI: GenAIConstructor } = await import("@google/genai");
