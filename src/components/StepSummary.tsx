@@ -302,11 +302,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
           <div>
             <h1 className="font-black text-2xl uppercase tracking-tight">
               Fiche d’Évaluation de Fluence de Lecture
-            </h1>
-            <p className="font-semibold text-slate-600 text-xs">
-              Protocole ELFE (Évaluation de la Lecture en Fluence) · Normes
-              Cogni-Sciences / Éduscol
-            </p>
+            </h1> 
           </div>
           <div className="text-right text-xs">
             <p className="font-bold">Date : {sessionDate}</p>

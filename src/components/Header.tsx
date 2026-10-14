@@ -41,10 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2">
               <h1 className="font-black font-fun text-slate-900 text-xl tracking-tight">
                 Fluence
-              </h1>
-              <span className="hidden rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 font-bold text-[10px] text-indigo-700 sm:inline-block">
-                Protocole ELFE / Éduscol
-              </span>
+              </h1> 
             </div>
             <p className="hidden font-sans text-[11px] text-slate-600 sm:block">
               Évaluation et entraînement de lecture du CE1 au CM2

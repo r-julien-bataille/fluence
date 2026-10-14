@@ -3,7 +3,7 @@ import type React from "react";
 
 const SOURCES = [
   {
-    href: "https://www.cognisciences.com/",
+    href: "https://www1.ac-grenoble.fr/cognisciences-121593",
     label: "ELFE – Laboratoire Cogni-Sciences",
   },
   {
