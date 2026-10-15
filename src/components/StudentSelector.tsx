@@ -1,6 +1,6 @@
 import { Check, Plus } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { FluencyLevel } from "@/db/db";
 
@@ -26,6 +26,37 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [newLevel, setNewLevel] = useState<FluencyLevel>("CM2");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        setIsAdding(false);
+      }
+    };
+
+    const handlePointerDown = (e: PointerEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setIsAdding(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isOpen]);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,8 +75,10 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <button
+        aria-expanded={isOpen}
+        aria-haspopup="true"
         className="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-paper px-3 py-2 text-left shadow-2xs transition-all hover:bg-cream"
         onClick={() => setIsOpen(!isOpen)}
         type="button"
@@ -72,7 +105,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
           <div className="max-h-48 space-y-1 overflow-y-auto">
             {students.map((s, idx) => (
               <button
-                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 font-medium text-xs transition-colors ${
+                className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 font-medium text-xs transition-colors ${
                   currentStudent.name === s.name
                     ? "bg-primary-50 font-bold text-primary-900"
                     : "text-stone-700 hover:bg-cream"
@@ -110,7 +143,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               <div className="flex gap-1">
                 {(["CE1", "CE2", "CM1", "CM2"] as FluencyLevel[]).map((lvl) => (
                   <button
-                    className={`flex-1 rounded py-1 font-bold text-[10px] ${
+                    className={`flex-1 cursor-pointer rounded py-1 font-bold text-[10px] ${
                       newLevel === lvl
                         ? "bg-primary-600 text-white"
                         : "bg-stone-100 text-stone-600 hover:bg-stone-200"
@@ -125,14 +158,14 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               </div>
               <div className="flex gap-1 pt-1">
                 <button
-                  className="flex-1 rounded bg-stone-100 py-1 text-[11px] text-stone-600 hover:bg-stone-200"
+                  className="flex-1 cursor-pointer rounded bg-stone-100 py-1 text-[11px] text-stone-600 hover:bg-stone-200"
                   onClick={() => setIsAdding(false)}
                   type="button"
                 >
                   Annuler
                 </button>
                 <button
-                  className="flex-1 rounded bg-primary-600 py-1 font-bold text-[11px] text-white hover:bg-primary-700"
+                  className="flex-1 cursor-pointer rounded bg-primary-600 py-1 font-bold text-[11px] text-white hover:bg-primary-700"
                   type="submit"
                 >
                   Valider
@@ -141,7 +174,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
             </form>
           ) : (
             <button
-              className="mt-2 flex w-full items-center gap-2 rounded-xl border-stone-100 border-t px-3 py-1.5 pt-2 font-semibold text-primary-600 text-xs transition-colors hover:bg-primary-50"
+              className="mt-2 flex w-full cursor-pointer items-center gap-2 rounded-xl border-stone-100 border-t px-3 py-1.5 pt-2 font-semibold text-primary-600 text-xs transition-colors hover:bg-primary-50"
               onClick={() => setIsAdding(true)}
               type="button"
             >

@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { BookOpen, Calendar, Trash2, X } from "lucide-react";
 import type React from "react";
+import { useEffect } from "react";
 
 import type { FluencySession } from "@/db/db";
 import { db } from "@/db/db";
@@ -26,6 +27,23 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
   }, []);
 
   const texts = useLiveQuery(async () => await db.texts.toArray(), []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -60,8 +78,10 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
             </p>
           </div>
           <button
-            className="rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
+            aria-label="Fermer l'historique"
+            className="cursor-pointer rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
             onClick={onClose}
+            title="Fermer"
             type="button"
           >
             <X className="h-5 w-5" />

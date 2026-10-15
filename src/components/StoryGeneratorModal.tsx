@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { ExerciseText, FluencyLevel } from "@/db/db";
 import { db } from "@/db/db";
@@ -50,6 +50,23 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [previewStory, setPreviewStory] = useState<ExerciseText | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -100,7 +117,8 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
     <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
       <div className="relative my-8 w-full max-w-2xl rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
         <button
-          className="absolute top-5 right-5 rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
+          aria-label="Fermer la fenêtre"
+          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
           onClick={onClose}
           title="Fermer"
           type="button"
