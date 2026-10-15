@@ -4,11 +4,35 @@
     <meta charset="UTF-8">
     <link href="/favicon.svg" rel="icon" type="image/svg+xml">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="#2563EB" name="theme-color">
     <meta
       content="Application web d'entraînement et d'évaluation de la fluence de lecture du CE1 au CM2 selon le protocole officiel ELFE / Éduscol."
       name="description"
     >
     <title>Fluence - Entraînement à la lecture (ELFE / Éduscol)</title>
+    <script>
+    "use strict";
+    try {
+      const s = localStorage.getItem("FLUENCE_THEME");
+      const theme =
+        s === "ocean" || s === "sauge" || s === "indigo" || s === "corail"
+          ? s
+          : "ocean";
+      document.documentElement.setAttribute("data-theme", theme);
+      const colors = {
+        corail: "#EA580C",
+        indigo: "#4F46E5",
+        ocean: "#2563EB",
+        sauge: "#0D9488",
+      };
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta && colors[theme]) {
+        meta.setAttribute("content", colors[theme]);
+      }
+    } catch {
+      // Ignorer si localStorage n'est pas accessible
+    }
+    </script>
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link

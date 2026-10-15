@@ -9,8 +9,8 @@
       y1="4"
       y2="44"
     >
-      <stop stop-color="#1E737C" />
-      <stop offset="1" stop-color="#18626A" />
+      <stop stop-color="#2563EB" />
+      <stop offset="1" stop-color="#1D4ED8" />
     </linearGradient>
     <linearGradient
       gradientUnits="userSpaceOnUse"
@@ -41,7 +41,7 @@
   />
   <path
     d="M24 16V34"
-    stroke="#D8ECEF"
+    stroke="#DBEAFE"
     stroke-linecap="round"
     stroke-width="1.5"
   />

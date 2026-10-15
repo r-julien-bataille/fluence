@@ -7,6 +7,7 @@ import { SourcesFooter } from "./components/SourcesFooter";
 import type { StudentProfile } from "./components/StudentSelector";
 import { seedDatabaseIfEmpty } from "./db/seeds";
 import { hasStoredApiKey } from "./lib/gemini/client";
+import { applyTheme, getStoredTheme, type ThemeId } from "./lib/theme";
 
 const SettingsModal = lazy(async () => {
   const m = await import("./components/SettingsModal");
@@ -39,6 +40,8 @@ export const App: React.FC = () => {
     () => localStorage.getItem("FLUENCE_DYS_MODE") === "true"
   );
 
+  const [theme, setTheme] = useState<ThemeId>(getStoredTheme);
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [hasKey, setHasKey] = useState(hasStoredApiKey());
@@ -48,6 +51,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     seedDatabaseIfEmpty();
   }, []);
+
+  // Synchronisation du thème scolaire
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   // Sauvegarde des profils
   useEffect(() => {
@@ -133,13 +141,15 @@ export const App: React.FC = () => {
 
       <SourcesFooter />
 
-      {/* Modal Réglages Clé API */}
+      {/* Modal Réglages Clé API & Ambiances */}
       {isSettingsOpen && (
         <Suspense fallback={null}>
           <SettingsModal
+            currentTheme={theme}
             isOpen={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
             onKeySaved={handleKeySaved}
+            onSelectTheme={setTheme}
           />
         </Suspense>
       )}

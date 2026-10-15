@@ -2,8 +2,8 @@ import {
   AlertCircle,
   CheckCircle2,
   ExternalLink,
-  Key,
   Shield,
+  SlidersHorizontal,
   Sparkles,
   X,
 } from "lucide-react";
@@ -15,23 +15,29 @@ import {
   setStoredApiKey,
   testApiKey,
 } from "@/lib/gemini/client";
+import type { ThemeId } from "@/lib/theme";
+import { ThemeSelector } from "./ThemeSelector";
 
 interface SettingsModalProps {
+  currentTheme?: ThemeId;
   isOpen: boolean;
   onClose: () => void;
   onKeySaved?: () => void;
+  onSelectTheme?: (themeId: ThemeId) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   onKeySaved,
+  currentTheme,
+  onSelectTheme,
 }) => {
   const [apiKey, setApiKey] = useState(getStoredApiKey);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
-    success: boolean;
     message: string;
+    success: boolean;
   } | null>(null);
 
   if (!isOpen) {
@@ -39,7 +45,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   }
 
   const handleSave = () => {
-    setStoredApiKey(apiKey);
+    setStoredApiKey(apiKey.trim());
     if (onKeySaved) {
       onKeySaved();
     }
@@ -63,9 +69,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
-      <div className="relative w-full max-w-lg rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
+      <div className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
         <button
-          className="absolute top-5 right-5 rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
+          aria-label="Fermer les réglages"
+          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
           onClick={onClose}
           title="Fermer"
           type="button"
@@ -74,15 +81,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </button>
 
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-inner">
-            <Key className="h-6 w-6" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
+            <SlidersHorizontal className="h-6 w-6" />
           </div>
           <div>
             <h3 className="font-bold font-fun text-stone-900 text-xl">
-              Configuration de la clé API
+              Réglages de l'application
             </h3>
             <p className="font-sans text-stone-500 text-xs">
-              Modèle Bring Your Own Key (BYOK) - 100% Client-Side
+              Clé API Gemini (BYOK) & Ambiance visuelle scolaire
             </p>
           </div>
         </div>
@@ -158,9 +165,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
 
+          {/* Section Ambiances scolaires */}
+          {currentTheme && onSelectTheme && (
+            <div className="border-stone-100 border-t pt-4">
+              <div className="mb-3">
+                <h4 className="font-bold font-fun text-sm text-stone-900">
+                  Ambiance visuelle scolaire
+                </h4>
+                <p className="font-sans text-stone-500 text-xs">
+                  4 palettes lumineuses et stimulantes pensées pour la classe,
+                  conformes aux normes WCAG AA.
+                </p>
+              </div>
+              <ThemeSelector
+                currentTheme={currentTheme}
+                onSelectTheme={onSelectTheme}
+              />
+            </div>
+          )}
+
           <div className="flex items-center gap-3 pt-3">
             <button
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream disabled:opacity-50"
+              className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isTesting || !apiKey.trim()}
               onClick={handleTest}
               type="button"
@@ -169,7 +195,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {isTesting ? "Vérification..." : "Tester la clé"}
             </button>
             <button
-              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 font-semibold text-sm text-white shadow-md shadow-primary-200 transition-all hover:bg-primary-700"
+              className="flex-1 cursor-pointer rounded-xl bg-primary-600 px-4 py-2.5 font-semibold text-sm text-white shadow-md shadow-primary-200 transition-all hover:bg-primary-700"
               onClick={handleSave}
               type="button"
             >

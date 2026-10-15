@@ -87,16 +87,24 @@ export const Header: React.FC<HeaderProps> = ({
             <History className="h-4 w-4" />
           </button>
 
-          {/* Bouton Paramètres Clé API */}
+          {/* Bouton Réglages Clé API & Ambiances */}
           <button
-            aria-label="Paramètres de la clé API Google"
+            aria-label={
+              hasKey
+                ? "Réglages de l'application"
+                : "Réglages : Clé API Google requise"
+            }
             className={`relative cursor-pointer rounded-2xl border p-2.5 transition-colors ${
               hasKey
                 ? "border-stone-200 bg-paper text-stone-600 hover:bg-cream hover:text-stone-900"
                 : "animate-pulse border-amber-300 bg-amber-50 text-amber-700"
             }`}
             onClick={onOpenSettings}
-            title="Paramètres de la clé API Google"
+            title={
+              hasKey
+                ? "Réglages de l'application"
+                : "Réglages : Clé API Google requise"
+            }
             type="button"
           >
             <Settings className="h-4 w-4" />
