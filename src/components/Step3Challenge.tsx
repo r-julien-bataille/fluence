@@ -209,6 +209,9 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       });
 
       setAlignmentResult(result);
+      setRecordedAudioUrl(
+        "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA=="
+      );
       setIsAnalyzing(false);
     }, 1200);
   };
@@ -451,16 +454,6 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
             </button>
           </div>
 
-          {/* Lecteur audio de l'enregistrement du Défi Record */}
-          {recordedAudioUrl && (
-            <AttemptAudioPlayer
-              audioUrl={recordedAudioUrl}
-              onSeekHandled={() => setSeekToTimeMs(null)}
-              onTimeUpdate={(timeMs) => setPlaybackTimeMs(timeMs)}
-              seekRequest={seekToTimeMs}
-            />
-          )}
-
           <div className="flex items-center justify-between gap-3 pt-1">
             <div className="flex items-center gap-1.5 text-stone-500 text-xs">
               <Headphones className="h-4 w-4 text-primary-600" />
@@ -473,15 +466,31 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
         </div>
       )}
 
-      <FluencyTextDisplay
-        annotatedTokens={alignmentResult?.alignedTokens}
-        content={text.content}
-        dyslexicMode={dyslexicMode}
-        onOverrideWordStatus={handleOverrideWordStatus}
-        onSeekAudioMs={(startMs, endMs) => setSeekToTimeMs({ endMs, startMs })}
-        playbackTimeMs={playbackTimeMs}
-        showResults={Boolean(alignmentResult)}
-      />
+      {/* Zone du texte avec lecteur audio en sticky header */}
+      <div className="space-y-4">
+        {alignmentResult && recordedAudioUrl && (
+          <div className="sticky top-[79px] z-30 bg-cream/95 py-2 backdrop-blur-sm">
+            <AttemptAudioPlayer
+              audioUrl={recordedAudioUrl}
+              onSeekHandled={() => setSeekToTimeMs(null)}
+              onTimeUpdate={(timeMs) => setPlaybackTimeMs(timeMs)}
+              seekRequest={seekToTimeMs}
+            />
+          </div>
+        )}
+
+        <FluencyTextDisplay
+          annotatedTokens={alignmentResult?.alignedTokens}
+          content={text.content}
+          dyslexicMode={dyslexicMode}
+          onOverrideWordStatus={handleOverrideWordStatus}
+          onSeekAudioMs={(startMs, endMs) =>
+            setSeekToTimeMs({ endMs, startMs })
+          }
+          playbackTimeMs={playbackTimeMs}
+          showResults={Boolean(alignmentResult)}
+        />
+      </div>
 
       {!(alignmentResult || isRecording) && (
         <div className="pt-2 text-center">

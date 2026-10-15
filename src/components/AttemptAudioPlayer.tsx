@@ -202,9 +202,6 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
           <div>
             <div className="flex items-center gap-2 font-bold text-white text-xs">
               <span>Écoute de l’enregistrement de l’élève</span>
-              <span className="rounded-full border border-primary-500/30 bg-primary-500/20 px-2 py-0.5 font-mono text-[10px] text-primary-300">
-                Vérification humaine
-              </span>
             </div>
             <p className="text-[11px] text-stone-400">
               Clique sur n’importe quel mot du texte pour écouter ce passage
