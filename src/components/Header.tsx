@@ -30,12 +30,12 @@ export const Header: React.FC<HeaderProps> = ({
   const hasKey = hasStoredApiKey();
 
   return (
-    <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/80 px-4 py-3.5 backdrop-blur-md transition-all sm:px-8">
+    <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/80 px-4 pt-[max(0.875rem,env(safe-area-inset-top))] pb-3.5 backdrop-blur-md transition-all sm:px-8">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         {/* Logo & Titre */}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-md shadow-primary-200">
-            <BookOpen className="h-5 w-5" />
+            <BookOpen aria-hidden="true" className="h-5 w-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Activer la police adaptée à la dyslexie et espacement renforcé"
             type="button"
           >
-            <Type className="h-4 w-4" />
+            <Type aria-hidden="true" className="h-4 w-4" />
             <span className="hidden md:inline">Dys-confort</span>
           </button>
 
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Historique des séances"
             type="button"
           >
-            <History className="h-4 w-4" />
+            <History aria-hidden="true" className="h-4 w-4" />
           </button>
 
           {/* Bouton Réglages Clé API & Ambiances */}
@@ -107,9 +107,12 @@ export const Header: React.FC<HeaderProps> = ({
             }
             type="button"
           >
-            <Settings className="h-4 w-4" />
+            <Settings aria-hidden="true" className="h-4 w-4" />
             {!hasKey && (
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-white" />
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500" />
+              </span>
             )}
           </button>
         </div>

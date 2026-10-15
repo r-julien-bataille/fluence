@@ -13,7 +13,7 @@ const SOURCES = [
 ] as const;
 
 export const SourcesFooter: React.FC = () => (
-  <footer className="border-stone-200 border-t bg-paper px-4 py-6 text-center text-stone-600 text-xs">
+  <footer className="border-stone-200 border-t bg-paper px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center text-stone-600 text-xs">
     <p className="mb-2 font-semibold">
       Protocole de référence : ELFE (Évaluation de la Lecture en FluencE) et
       repères Éduscol. Application d’entraînement inspirée de ces protocoles,

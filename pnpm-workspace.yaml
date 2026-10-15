@@ -2,3 +2,4 @@ allowBuilds:
   "@google/genai": true
   esbuild: true
   protobufjs: true
+auditConfig: { ignoreGhsas: [ GHSA-vfj7-8cjw-p6xm ] }

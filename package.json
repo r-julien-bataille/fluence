@@ -12,12 +12,12 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@google/genai": "^2.29.0",
+    "@google/genai": "^2.29.1",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "dexie": "^4.4.6",
     "dexie-react-hooks": "^4.4.0",
-    "lucide-react": "^1.56.0",
+    "lucide-react": "^1.57.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "tailwind-merge": "^3.7.0"
@@ -35,7 +35,9 @@
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "ultracite": "8.0.0",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "workbox-window": "^7.4.1"
   },
   "packageManager": "pnpm@11.1.2"
 }

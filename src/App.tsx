@@ -1,4 +1,4 @@
-import { Key, X } from "lucide-react";
+import { Key, WifiOff, X } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Header } from "./components/Header";
@@ -46,10 +46,26 @@ export const App: React.FC = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [hasKey, setHasKey] = useState(hasStoredApiKey());
   const [dismissBanner, setDismissBanner] = useState(false);
+  const [isOnline, setIsOnline] = useState<boolean>(() =>
+    typeof navigator === "undefined" ? true : navigator.onLine
+  );
 
   // Initialisation de la base Dexie avec les seeds ELFE
   useEffect(() => {
     seedDatabaseIfEmpty();
+  }, []);
+
+  // Synchronisation de l'état réseau (mode hors-ligne PWA)
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
   // Synchronisation du thème scolaire
@@ -82,64 +98,94 @@ export const App: React.FC = () => {
     setHasKey(hasStoredApiKey());
   };
 
+  const isOverlayOpen = isSettingsOpen || isHistoryOpen;
+
   return (
     <div className="flex min-h-screen flex-col bg-cream font-sans">
-      {/* Header global */}
-      <Header
-        currentStudent={currentStudent}
-        dyslexicMode={dyslexicMode}
-        onAddStudent={handleAddStudent}
-        onOpenHistory={() => setIsHistoryOpen(true)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onSelectStudent={setCurrentStudent}
-        onToggleDyslexicMode={() => setDyslexicMode(!dyslexicMode)}
-        students={students}
-      />
-
-      {/* Alerte discrète si pas de clé configurée */}
-      {!(hasKey || dismissBanner) && (
-        <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-stone-950 text-xs shadow-xs sm:text-sm">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Key className="h-4 w-4 shrink-0 text-stone-950" />
-              <span>
-                <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
-                Studio pour activer la transcription{" "}
-                <code>gemini-3.5-transcribe</code> et le générateur d’histoires.
-              </span>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                className="rounded-xl bg-stone-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-stone-800"
-                onClick={() => setIsSettingsOpen(true)}
-                type="button"
-              >
-                Renseigner ma clé
-              </button>
-              <button
-                className="p-1 text-stone-900 hover:text-black"
-                onClick={() => setDismissBanner(true)}
-                title="Fermer ce message"
-                type="button"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Contenu principal / Machine à états */}
-      <main className="flex-1 pb-16">
-        <SessionRunner
+      <div
+        className="flex flex-1 flex-col"
+        inert={isOverlayOpen ? true : undefined}
+      >
+        {/* Header global */}
+        <Header
           currentStudent={currentStudent}
           dyslexicMode={dyslexicMode}
+          onAddStudent={handleAddStudent}
           onOpenHistory={() => setIsHistoryOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          onSelectStudent={setCurrentStudent}
+          onToggleDyslexicMode={() => setDyslexicMode(!dyslexicMode)}
+          students={students}
         />
-      </main>
 
-      <SourcesFooter />
+        {/* Alerte si passage hors ligne */}
+        {!isOnline && (
+          <div
+            aria-live="polite"
+            className="flex items-center justify-center gap-2 border-amber-300 border-b bg-amber-100 px-4 py-1.5 font-medium text-amber-900 text-xs"
+            role="status"
+          >
+            <WifiOff
+              aria-hidden="true"
+              className="h-3.5 w-3.5 shrink-0 text-amber-700"
+            />
+            <span>
+              Mode hors-ligne : Les textes, le chronomètre et l'historique
+              restent 100% disponibles.
+            </span>
+          </div>
+        )}
+
+        {/* Alerte discrète si pas de clé configurée */}
+        {!(hasKey || dismissBanner) && (
+          <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-stone-950 text-xs shadow-xs sm:text-sm">
+            <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Key
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0 text-stone-950"
+                />
+                <span>
+                  <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
+                  Studio pour activer la transcription{" "}
+                  <code>gemini-3.5-transcribe</code> et le générateur
+                  d’histoires.
+                </span>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  className="cursor-pointer rounded-xl bg-stone-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-stone-800"
+                  onClick={() => setIsSettingsOpen(true)}
+                  type="button"
+                >
+                  Renseigner ma clé
+                </button>
+                <button
+                  aria-label="Fermer le bandeau d'information"
+                  className="cursor-pointer p-1.5 text-stone-900 hover:text-black"
+                  onClick={() => setDismissBanner(true)}
+                  title="Fermer ce message"
+                  type="button"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Contenu principal / Machine à états */}
+        <main className="flex-1 pb-16">
+          <SessionRunner
+            currentStudent={currentStudent}
+            dyslexicMode={dyslexicMode}
+            onOpenHistory={() => setIsHistoryOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        </main>
+
+        <SourcesFooter />
+      </div>
 
       {/* Modal Réglages Clé API & Ambiances */}
       {isSettingsOpen && (

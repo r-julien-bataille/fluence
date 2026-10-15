@@ -86,26 +86,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
-      <div className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
+      <div
+        aria-labelledby="settings-modal-title"
+        aria-modal="true"
+        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8"
+        role="dialog"
+      >
         <button
           aria-label="Fermer les réglages"
-          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
           onClick={onClose}
           title="Fermer"
           type="button"
         >
-          <X className="h-5 w-5" />
+          <X aria-hidden="true" className="h-5 w-5" />
         </button>
 
         <div className="mb-6 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
-            <SlidersHorizontal className="h-6 w-6" />
+            <SlidersHorizontal aria-hidden="true" className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold font-fun text-stone-900 text-xl">
+            <h2
+              className="font-bold font-fun text-stone-900 text-xl"
+              id="settings-modal-title"
+            >
               Réglages de l'application
-            </h3>
-            <p className="font-sans text-stone-500 text-xs">
+            </h2>
+            <p className="font-sans text-stone-600 text-xs">
               Clé API Gemini (BYOK) & Ambiance visuelle scolaire
             </p>
           </div>
@@ -113,7 +121,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div className="space-y-4">
           <div className="flex items-start gap-3 rounded-2xl border border-primary-200 bg-primary-50 p-4 text-primary-800 text-xs">
-            <Shield className="mt-0.5 h-5 w-5 shrink-0 text-primary-600" />
+            <Shield
+              aria-hidden="true"
+              className="mt-0.5 h-5 w-5 shrink-0 text-primary-600"
+            />
             <div>
               <p className="mb-1 font-semibold">Confidentialité garantie</p>
               <p>
@@ -147,7 +158,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 value={apiKey}
               />
             </div>
-            <p className="mt-1.5 flex items-center justify-between text-stone-500 text-xs">
+            <p className="mt-1.5 flex items-center justify-between text-stone-600 text-xs">
               <span>
                 Utilise <code>gemini-3.5-transcribe</code> et{" "}
                 <code>gemini-3.8-flash</code>
@@ -155,10 +166,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <a
                 className="inline-flex items-center gap-1 font-medium text-primary-600 underline hover:text-primary-800"
                 href="https://aistudio.google.com/app/apikey"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 target="_blank"
               >
-                Obtenir une clé gratuite <ExternalLink className="h-3 w-3" />
+                Obtenir une clé gratuite{" "}
+                <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
             </p>
           </div>
@@ -170,11 +182,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
                   : "border border-rose-200 bg-rose-50 text-rose-800"
               }`}
+              role="status"
             >
               {testResult.success ? (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+                <CheckCircle2
+                  aria-hidden="true"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600"
+                />
               ) : (
-                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-600" />
+                <AlertCircle
+                  aria-hidden="true"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-rose-600"
+                />
               )}
               <span className="text-xs leading-relaxed">
                 {testResult.message}
@@ -186,10 +205,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {currentTheme && onSelectTheme && (
             <div className="border-stone-100 border-t pt-4">
               <div className="mb-3">
-                <h4 className="font-bold font-fun text-sm text-stone-900">
+                <h3 className="font-bold font-fun text-sm text-stone-900">
                   Ambiance visuelle scolaire
-                </h4>
-                <p className="font-sans text-stone-500 text-xs">
+                </h3>
+                <p className="font-sans text-stone-600 text-xs">
                   4 palettes lumineuses et stimulantes pensées pour la classe,
                   conformes aux normes WCAG AA.
                 </p>
@@ -208,7 +227,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={handleTest}
               type="button"
             >
-              <Sparkles className="h-4 w-4 text-amber-500" />
+              <Sparkles aria-hidden="true" className="h-4 w-4 text-amber-500" />
               {isTesting ? "Vérification..." : "Tester la clé"}
             </button>
             <button
