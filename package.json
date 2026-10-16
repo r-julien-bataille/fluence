@@ -1,6 +1,6 @@
 {
   "name": "fluence",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +8,10 @@
     "check": "ultracite check",
     "dev": "vite",
     "fix": "ultracite fix",
+    "prepare": "git config core.hooksPath .githooks || true",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "version:bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",

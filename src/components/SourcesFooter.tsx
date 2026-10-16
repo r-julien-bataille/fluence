@@ -1,6 +1,8 @@
 import { ExternalLink } from "lucide-react";
 import type React from "react";
 
+import { APP_VERSION } from "@/lib/version";
+
 const SOURCES = [
   {
     href: "https://www1.ac-grenoble.fr/cognisciences-121593",
@@ -34,6 +36,7 @@ export const SourcesFooter: React.FC = () => (
           </a>
         </li>
       ))}
+      <li className="font-mono text-stone-600">Fluence v{APP_VERSION}</li>
     </ul>
   </footer>
 );

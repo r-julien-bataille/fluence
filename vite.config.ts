@@ -1,9 +1,14 @@
+import fs from "node:fs";
 import path from "node:path";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+
+const packageJson = JSON.parse(
+  fs.readFileSync(path.resolve(import.meta.dirname, "./package.json"), "utf8")
+) as { version: string };
 
 const basePath = process.env.BASE_PATH;
 const base =
@@ -36,6 +41,9 @@ export default defineConfig({
         },
       },
     },
+  },
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(packageJson.version),
   },
   plugins: [
     react(),

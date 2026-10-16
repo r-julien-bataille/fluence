@@ -1,0 +1,16 @@
+#!/bin/sh
+# Verify that pushes to main carry a bumped semver version in package.json.
+
+while read local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    NEW_VERSION=$(node scripts/bump-version.mjs --if-needed)
+    if [ -n "$NEW_VERSION" ]; then
+      git add package.json
+      git commit --amend --no-edit --no-verify
+      echo "[fluence] Auto-bumped version to v$NEW_VERSION on HEAD. Re-running push..."
+      git push --no-verify
+      exit 0
+    fi
+  fi
+done
+exit 0

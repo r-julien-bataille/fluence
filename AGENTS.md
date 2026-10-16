@@ -37,11 +37,21 @@ Each training session follows a 3-step pedagogical workflow managed by `src/comp
 Always verify changes using the following commands before finishing a task:
 
 ```bash
-pnpm typecheck   # Runs `tsc -b` (TypeScript 7 native Go typechecker)
-pnpm build       # Runs `tsc -b && vite build` (Rolldown production bundle)
-pnpm dev         # Starts local Vite dev server
-pnpm preview     # Serves the production build from dist/
+pnpm typecheck      # Runs `tsc -b` (TypeScript 7 native Go typechecker)
+pnpm build          # Runs `tsc -b && vite build` (Rolldown production bundle)
+pnpm dev            # Starts local Vite dev server
+pnpm preview        # Serves the production build from dist/
+pnpm version:bump   # Increments patch SemVer in package.json
 ```
+
+---
+
+## Versioning & Release Contract (SemVer)
+
+- The application's SemVer version lives in `package.json` (`"version"`) and is injected at build time via `import.meta.env.VITE_APP_VERSION` (`src/lib/version.ts`), displayed in `Header.tsx`, `SettingsModal.tsx`, and `SourcesFooter.tsx`.
+- **Every push to `main` MUST increment the SemVer version** in `package.json`.
+- Tracked Git hooks in `.githooks/` (`core.hooksPath = .githooks`) automatically bump the patch version (`node scripts/bump-version.mjs --if-needed`) when committing, merging, or pushing on `main` if `package.json`'s version has not yet been incremented relative to `origin/main`.
+- For minor or major releases, manually update `"version"` in `package.json` before committing.
 
 ---
 

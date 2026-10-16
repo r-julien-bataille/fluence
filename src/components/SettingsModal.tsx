@@ -16,6 +16,7 @@ import {
   testApiKey,
 } from "@/lib/gemini/client";
 import type { ThemeId } from "@/lib/theme";
+import { APP_VERSION } from "@/lib/version";
 import { ThemeSelector } from "./ThemeSelector";
 
 interface SettingsModalProps {
@@ -121,7 +122,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               Réglages de l'application
             </h2>
             <p className="font-sans text-stone-600 text-xs">
-              Clé API Gemini (BYOK) & Ambiance visuelle scolaire
+              Clé API Gemini (BYOK) & Ambiance visuelle scolaire ·{" "}
+              <span className="font-mono font-semibold">v{APP_VERSION}</span>
             </p>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { BookOpen, History, Settings, Type } from "lucide-react";
 import type React from "react";
 
 import { hasStoredApiKey } from "@/lib/gemini/client";
+import { APP_VERSION } from "@/lib/version";
 
 import type { StudentProfile } from "./StudentSelector";
 import { StudentSelector } from "./StudentSelector";
@@ -42,6 +43,12 @@ export const Header: React.FC<HeaderProps> = ({
               <h1 className="font-black font-fun text-stone-900 text-xl tracking-tight">
                 Fluence
               </h1>
+              <span
+                className="rounded-full border border-stone-200 bg-cream px-2 py-0.5 font-bold font-mono text-[10px] text-stone-600"
+                title={`Version ${APP_VERSION}`}
+              >
+                v{APP_VERSION}
+              </span>
             </div>
             <p className="hidden font-sans text-[11px] text-stone-600 sm:block">
               Évaluation et entraînement de lecture du CE1 au CM2

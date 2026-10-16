@@ -1,0 +1,12 @@
+#!/bin/sh
+# Automatically bump patch version in package.json when committing on main
+# if the version has not yet been incremented relative to origin/main.
+
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+if [ "$BRANCH" = "main" ]; then
+  NEW_VERSION=$(node scripts/bump-version.mjs --if-needed)
+  if [ -n "$NEW_VERSION" ]; then
+    git add package.json
+    echo "[fluence] Bumped app version to v$NEW_VERSION in package.json"
+  fi
+fi
