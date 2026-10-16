@@ -479,14 +479,15 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       {/* Barre d'outils d'accessibilité de lecture */}
       {!showResults && (
         <div className="mb-4 flex items-center justify-between border-stone-100 border-b pb-3 text-xs">
-          <span className="hidden font-medium text-stone-400 sm:inline">
+          <span className="hidden font-medium text-stone-600 sm:inline">
             Repères de mots cumulés en marge droite (protocole ELFE)
           </span>
           <button
+            aria-pressed={bicolorSyllables}
             className={`flex cursor-pointer items-center gap-2 rounded-xl px-3 py-1.5 font-bold transition-all ${
               bicolorSyllables
                 ? "border border-primary-200 bg-primary-100 text-primary-900 shadow-2xs"
-                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                : "bg-stone-100 text-stone-700 hover:bg-stone-200"
             }`}
             onClick={() => setBicolorSyllables(!bicolorSyllables)}
             title="Affiche les syllabes en couleurs alternées pour faciliter le décodage dyslexique"
@@ -497,7 +498,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
               className={`h-2 w-2 rounded-full transition-colors ${
                 bicolorSyllables
                   ? "bg-primary-600 ring-2 ring-primary-300"
-                  : "bg-stone-300"
+                  : "bg-stone-400"
               }`}
             />
           </button>
@@ -534,7 +535,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
               {/* Repère de mots cumulés en marge droite (norme ELFE) */}
               <div className="w-12 shrink-0 select-none pt-1 text-right sm:w-16">
-                <span className="inline-block rounded-md bg-stone-100 px-2 py-0.5 font-bold font-mono text-stone-500 text-xs sm:text-sm">
+                <span className="inline-block rounded-md bg-stone-100 px-2 py-0.5 font-bold font-mono text-stone-600 text-xs sm:text-sm">
                   {line.cumulativeCount}
                 </span>
               </div>

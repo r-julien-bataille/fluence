@@ -5,6 +5,7 @@ interface CircularTimerProps {
   size?: number;
   timeLeft: number;
   totalTime?: number;
+  variant?: "default" | "inverse";
 }
 
 export const CircularTimer: React.FC<CircularTimerProps> = ({
@@ -12,6 +13,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
   totalTime = 60,
   isRecording,
   size = 84,
+  variant = "default",
 }) => {
   const radius = 34;
   const circumference = 2 * Math.PI * radius;
@@ -20,20 +22,25 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
 
   const isCritical = timeLeft <= 10 && isRecording;
   const isWarning = timeLeft <= 20 && !isCritical && isRecording;
+  const isInverse = variant === "inverse";
 
-  let strokeColor = "text-stone-300";
-  let textColor = "text-stone-800";
+  let strokeColor = isInverse ? "text-white/40" : "text-stone-300";
+  let textColor = isInverse ? "text-white" : "text-stone-800";
+  const trackColor = isInverse ? "stroke-white/20" : "stroke-stone-200";
+  const unitColor = isInverse ? "text-primary-100" : "text-stone-600";
 
   if (isRecording) {
     if (isCritical) {
-      strokeColor = "text-rose-500";
-      textColor = "text-rose-600 animate-pulse";
+      strokeColor = isInverse ? "text-rose-300" : "text-rose-500";
+      textColor = isInverse
+        ? "text-rose-200 animate-pulse"
+        : "text-rose-600 animate-pulse";
     } else if (isWarning) {
-      strokeColor = "text-amber-500";
-      textColor = "text-amber-600";
+      strokeColor = isInverse ? "text-amber-300" : "text-amber-500";
+      textColor = isInverse ? "text-amber-200" : "text-amber-600";
     } else {
-      strokeColor = "text-primary-600";
-      textColor = "text-primary-600";
+      strokeColor = isInverse ? "text-amber-300" : "text-primary-600";
+      textColor = isInverse ? "text-white" : "text-primary-600";
     }
   }
 
@@ -50,7 +57,7 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
         <title>Minuteur circulaire</title>
         {/* Piste de fond */}
         <circle
-          className="stroke-stone-200"
+          className={trackColor}
           cx="42"
           cy="42"
           r={radius}
@@ -78,7 +85,9 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
         >
           {timeLeft}
         </span>
-        <span className="mt-0.5 font-bold text-[10px] text-stone-400 uppercase tracking-tighter">
+        <span
+          className={`mt-0.5 font-bold text-[10px] uppercase tracking-tighter ${unitColor}`}
+        >
           sec
         </span>
       </div>

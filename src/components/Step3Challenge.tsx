@@ -320,6 +320,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
             size={76}
             timeLeft={timeLeft}
             totalTime={60}
+            variant="inverse"
           />
 
           <div className="mx-1 h-12 w-px bg-paper/20" />
@@ -436,7 +437,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
                     ? `+${delta} mots par minute !`
                     : `${delta} MCLM`}
                 </h4>
-                <p className="text-emerald-700 text-xs">
+                <p className="text-emerald-800 text-xs">
                   {delta !== null && delta > 0
                     ? `Bravo ${studentName}, le travail sur les mots difficiles a payé !`
                     : "Bel effort ! La régularité de l’entraînement fait la différence."}
@@ -455,7 +456,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-1.5 text-stone-500 text-xs">
+            <div className="flex items-center gap-1.5 text-stone-600 text-xs">
               <Headphones className="h-4 w-4 text-primary-600" />
               <span>
                 Clique sur un mot ci-dessous pour sauter à son horodatage et
@@ -469,7 +470,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       {/* Zone du texte avec lecteur audio en sticky header */}
       <div className="space-y-4">
         {alignmentResult && recordedAudioUrl && (
-          <div className="sticky top-[79px] z-30 bg-cream/95 py-2 backdrop-blur-sm">
+          <div className="sticky top-18 z-30 bg-cream/95 py-2 backdrop-blur-sm sm:top-20">
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}
@@ -495,7 +496,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
       {!(alignmentResult || isRecording) && (
         <div className="pt-2 text-center">
           <button
-            className="cursor-pointer font-medium text-stone-400 text-xs underline transition-colors hover:text-primary-600"
+            className="cursor-pointer font-medium text-stone-600 text-xs underline transition-colors hover:text-primary-700"
             onClick={handleSimulateChallenge}
             type="button"
           >

@@ -310,7 +310,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
             <span className="rounded-full bg-primary-100 px-3 py-1 font-bold text-primary-700 text-xs">
               Étape 1 sur 3
             </span>
-            <span className="font-semibold text-stone-500 text-xs">
+            <span className="font-semibold text-stone-600 text-xs">
               Première lecture chronométrée
             </span>
           </div>
@@ -393,7 +393,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           <h3 className="font-bold font-fun text-lg text-primary-950">
             {isAutoStopped
               ? "60 secondes écoulées ! Analyse en cours..."
-              : "Analyse de la lecture avec Gemini 3.5 Transcribe..."}
+              : "Analyse de la lecture avec Google Gemini..."}
           </h3>
           <p className="mx-auto max-w-md text-primary-700 text-xs">
             Détection verbatim des mots prononcés, des hésitations et calcul de
@@ -437,7 +437,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
           <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
             <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-400 text-xs uppercase">
+              <div className="font-semibold text-stone-600 text-xs uppercase">
                 Mots tentés
               </div>
               <div className="mt-1 font-bold font-fun text-2xl text-stone-800">
@@ -446,16 +446,16 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
             </div>
 
             <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-400 text-xs uppercase">
+              <div className="font-semibold text-stone-600 text-xs uppercase">
                 Mots justes (MCLM)
               </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-emerald-600">
+              <div className="mt-1 font-bold font-fun text-2xl text-emerald-700">
                 {alignmentResult.mclm}
               </div>
             </div>
 
             <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-400 text-xs uppercase">
+              <div className="font-semibold text-stone-600 text-xs uppercase">
                 Erreurs / Omissions
               </div>
               <div className="mt-1 font-bold font-fun text-2xl text-rose-600">
@@ -464,17 +464,17 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
             </div>
 
             <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-400 text-xs uppercase">
+              <div className="font-semibold text-stone-600 text-xs uppercase">
                 Mots à travailler
               </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-amber-600">
+              <div className="mt-1 font-bold font-fun text-2xl text-amber-700">
                 {alignmentResult.attempt.stumbledWords.length}
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-1.5 text-stone-500 text-xs">
+            <div className="flex items-center gap-1.5 text-stone-600 text-xs">
               <Headphones className="h-4 w-4 text-primary-600" />
               <span>
                 Clique sur un mot ci-dessous pour sauter à son horodatage et
@@ -497,7 +497,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       {/* Zone du texte avec lecteur audio en sticky header */}
       <div className="space-y-4">
         {alignmentResult && recordedAudioUrl && (
-          <div className="sticky top-[79px] z-30 bg-cream/95 py-2 backdrop-blur-sm">
+          <div className="sticky top-18 z-30 bg-cream/95 py-2 backdrop-blur-sm sm:top-20">
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}
@@ -525,7 +525,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       {!(alignmentResult || isRecording) && (
         <div className="pt-2 text-center">
           <button
-            className="cursor-pointer font-medium text-stone-400 text-xs underline transition-colors hover:text-primary-600"
+            className="cursor-pointer font-medium text-stone-600 text-xs underline transition-colors hover:text-primary-700"
             onClick={handleSimulateReading}
             type="button"
           >

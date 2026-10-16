@@ -114,28 +114,43 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
   };
 
   return (
-    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
-      <div className="relative my-8 w-full max-w-2xl rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8">
+    <div
+      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/60 p-4 backdrop-blur-xs duration-200"
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        aria-labelledby="story-generator-modal-title"
+        aria-modal="true"
+        className="relative my-8 w-full max-w-2xl rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8"
+        role="dialog"
+      >
         <button
           aria-label="Fermer la fenêtre"
-          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
           onClick={onClose}
           title="Fermer"
           type="button"
         >
-          <X className="h-5 w-5" />
+          <X aria-hidden="true" className="h-5 w-5" />
         </button>
 
         <div className="mb-6 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
-            <Wand2 className="h-6 w-6" />
+            <Wand2 aria-hidden="true" className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold font-fun text-stone-900 text-xl">
+            <h2
+              className="font-bold font-fun text-stone-900 text-xl"
+              id="story-generator-modal-title"
+            >
               Créer une histoire sur mesure
-            </h3>
-            <p className="font-sans text-stone-500 text-xs">
-              Généré par Gemini 3.8 Flash selon les normes pédagogiques Éduscol
+            </h2>
+            <p className="font-sans text-stone-600 text-xs">
+              Généré par Google Gemini selon les normes pédagogiques Éduscol
             </p>
           </div>
         </div>
@@ -148,13 +163,13 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
                 <span className="rounded-full bg-primary-100 px-2.5 py-0.5 font-bold text-primary-700 text-xs">
                   {previewStory.level} · {previewStory.wordCount} mots
                 </span>
-                <span className="text-stone-400 text-xs">
+                <span className="font-medium text-stone-600 text-xs">
                   Cible : {previewStory.targetMclm} MCLM
                 </span>
               </div>
-              <h4 className="mb-2 font-bold font-fun text-lg text-stone-900">
+              <h3 className="mb-2 font-bold font-fun text-lg text-stone-900">
                 {previewStory.title}
-              </h4>
+              </h3>
               <p className="max-h-48 overflow-y-auto pr-2 text-sm text-stone-700 leading-relaxed">
                 {previewStory.content}
               </p>
@@ -163,8 +178,8 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             {previewStory.comprehensionQuestions.length > 0 && (
               <div className="rounded-2xl border border-primary-100/60 bg-primary-50/50 p-4">
                 <div className="mb-2 flex items-center gap-1.5 font-bold text-primary-800 text-xs uppercase tracking-wide">
-                  <BookOpen className="h-3.5 w-3.5" /> Questions de
-                  compréhension
+                  <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />{" "}
+                  Questions de compréhension
                 </div>
                 <div className="space-y-2 text-stone-700 text-xs">
                   {previewStory.comprehensionQuestions.map((q, i) => (
@@ -175,7 +190,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
                       <div className="font-semibold text-stone-900">
                         Q{i + 1} : {q.question}
                       </div>
-                      <div className="mt-0.5 text-stone-500 italic">
+                      <div className="mt-0.5 text-stone-600 italic">
                         Réponse attendue : {q.answer}
                       </div>
                     </div>

@@ -85,7 +85,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200">
+    <div
+      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200"
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div
         aria-labelledby="settings-modal-title"
         aria-modal="true"
@@ -160,8 +167,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <p className="mt-1.5 flex items-center justify-between text-stone-600 text-xs">
               <span>
-                Utilise <code>gemini-3.5-transcribe</code> et{" "}
-                <code>gemini-3.8-flash</code>
+                Transcription vocale et génération d’histoires propulsées par
+                Google Gemini
               </span>
               <a
                 className="inline-flex items-center gap-1 font-medium text-primary-600 underline hover:text-primary-800"

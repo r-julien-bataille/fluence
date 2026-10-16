@@ -41,7 +41,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                 <span className="block font-bold font-fun text-sm text-stone-900">
                   {theme.name}
                 </span>
-                <p className="font-medium font-sans text-[11px] text-stone-500">
+                <p className="font-medium font-sans text-[11px] text-stone-600">
                   {theme.tagline}
                 </p>
               </div>

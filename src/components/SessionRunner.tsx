@@ -97,21 +97,21 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setCurrentStep("step1");
   };
 
-  let step1Class = "text-stone-400";
+  let step1Class = "text-stone-600";
   if (currentStep === "step1") {
     step1Class = "bg-primary-600 text-white shadow-xs";
   } else if (step1Attempt) {
     step1Class = "bg-emerald-50 text-emerald-800";
   }
 
-  let step2Class = "text-stone-400";
+  let step2Class = "text-stone-600";
   if (currentStep === "step2") {
     step2Class = "bg-primary-600 text-white shadow-xs";
   } else if (currentStep === "step3" || currentStep === "summary") {
     step2Class = "bg-emerald-50 text-emerald-800";
   }
 
-  let step3Class = "text-stone-400";
+  let step3Class = "text-stone-600";
   if (currentStep === "step3") {
     step3Class = "bg-primary-600 text-white shadow-xs";
   } else if (step3Attempt) {
@@ -122,20 +122,20 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
       {/* Barre de navigation d'étape si une séance est en cours */}
       {currentStep !== "selection" && selectedText && (
-        <div className="mb-8">
+        <div className="no-print mb-8">
           <div className="mb-4 flex items-center justify-between">
             <button
-              className="inline-flex items-center gap-1.5 font-semibold text-stone-500 text-xs transition-colors hover:text-stone-800 sm:text-sm"
+              className="inline-flex cursor-pointer items-center gap-1.5 font-semibold text-stone-600 text-xs transition-colors hover:text-stone-900 sm:text-sm"
               onClick={handleResetToSelection}
               type="button"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
               <span>Changer d’histoire</span>
             </button>
 
-            <div className="font-bold text-stone-500 text-xs">
+            <div className="font-bold text-stone-600 text-xs">
               Texte :{" "}
-              <span className="font-extrabold text-primary-600">
+              <span className="font-extrabold text-primary-700">
                 {selectedText.title}
               </span>{" "}
               ({selectedText.level})
@@ -143,43 +143,50 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
           </div>
 
           {/* Stepper de progression */}
-          <div className="grid grid-cols-4 gap-2 rounded-2xl border border-stone-200/80 bg-paper p-3 text-center text-xs shadow-2xs">
+          <nav
+            aria-label="Progression de la séance"
+            className="grid grid-cols-4 gap-2 rounded-2xl border border-stone-200/80 bg-paper p-3 text-center text-xs shadow-2xs"
+          >
             <div
+              aria-current={currentStep === "step1" ? "step" : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step1Class}`}
             >
-              <Clock className="h-3.5 w-3.5" />
+              <Clock aria-hidden="true" className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">1.</span>{" "}
               <span>Lecture 60s</span>
             </div>
 
             <div
+              aria-current={currentStep === "step2" ? "step" : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step2Class}`}
             >
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">2.</span>{" "}
               <span>Remédiation</span>
             </div>
 
             <div
+              aria-current={currentStep === "step3" ? "step" : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step3Class}`}
             >
-              <Trophy className="h-3.5 w-3.5" />
+              <Trophy aria-hidden="true" className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">3.</span>{" "}
               <span>Défi Record</span>
             </div>
 
             <div
+              aria-current={currentStep === "summary" ? "step" : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${
                 currentStep === "summary"
                   ? "bg-primary-600 text-white shadow-xs"
-                  : "text-stone-400"
+                  : "text-stone-600"
               }`}
             >
-              <CheckCircle2 className="h-3.5 w-3.5" />
+              <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">4.</span>{" "}
               <span>Bilan & Victoire</span>
             </div>
-          </div>
+          </nav>
         </div>
       )}
 

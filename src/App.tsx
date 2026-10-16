@@ -147,9 +147,8 @@ export const App: React.FC = () => {
                 />
                 <span>
                   <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
-                  Studio pour activer la transcription{" "}
-                  <code>gemini-3.5-transcribe</code> et le générateur
-                  d’histoires.
+                  Studio pour activer la transcription vocale Gemini et le
+                  générateur d’histoires.
                 </span>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -179,6 +178,7 @@ export const App: React.FC = () => {
           <SessionRunner
             currentStudent={currentStudent}
             dyslexicMode={dyslexicMode}
+            key={`${currentStudent.name}-${currentStudent.level}`}
             onOpenHistory={() => setIsHistoryOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
           />

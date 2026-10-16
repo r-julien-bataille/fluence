@@ -62,14 +62,14 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
     <div className="rounded-3xl border border-stone-100 bg-paper p-6 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="font-bold text-stone-400 text-xs uppercase tracking-wider">
+          <span className="font-bold text-stone-600 text-xs uppercase tracking-wider">
             Score de Fluence ELFE
           </span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-black font-fun text-4xl text-stone-900 sm:text-5xl">
               {mclm}
             </span>
-            <span className="font-medium text-sm text-stone-500 sm:text-base">
+            <span className="font-medium text-sm text-stone-600 sm:text-base">
               MCLM
             </span>
             {delta !== null && (
@@ -99,12 +99,12 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
           />
         </div>
 
-        <div className="flex items-center justify-between px-1 font-medium text-stone-500 text-xs">
+        <div className="flex items-center justify-between px-1 font-medium text-stone-600 text-xs">
           <span>0</span>
           <span className="font-semibold text-stone-600">
             Repère min : {min}
           </span>
-          <span className="font-bold text-primary-600">
+          <span className="font-bold text-primary-700">
             Cible {level} : {target}
           </span>
         </div>
@@ -113,10 +113,12 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
       {showComparison && previousMclm !== undefined && (
         <div className="mt-4 grid grid-cols-2 gap-4 border-stone-100 border-t pt-4 text-center">
           <div className="rounded-2xl bg-cream p-3">
-            <div className="text-stone-400 text-xs">1ère lecture</div>
-            <div className="mt-0.5 font-bold font-fun text-2xl text-stone-700">
+            <div className="font-medium text-stone-600 text-xs">
+              1ère lecture
+            </div>
+            <div className="mt-0.5 font-bold font-fun text-2xl text-stone-800">
               {previousMclm}{" "}
-              <span className="font-sans text-stone-400 text-xs">MCLM</span>
+              <span className="font-sans text-stone-600 text-xs">MCLM</span>
             </div>
           </div>
           <div className="rounded-2xl bg-primary-50/60 p-3">
@@ -125,7 +127,7 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
             </div>
             <div className="mt-0.5 font-bold font-fun text-2xl text-primary-700">
               {mclm}{" "}
-              <span className="font-sans text-primary-600 text-xs">MCLM</span>
+              <span className="font-sans text-primary-700 text-xs">MCLM</span>
             </div>
           </div>
         </div>

@@ -146,7 +146,7 @@ html[data-theme="corail"] {
 }
 
 .dys-mode .reading-text-flow {
-  font-family: "Open Dyslexic", "Lexend", sans-serif;
+  font-family: var(--font-reading);
   line-height: 2.5;
   word-spacing: 0.25em;
   letter-spacing: 0.08em;
@@ -158,6 +158,7 @@ html[data-theme="corail"] {
   }
   header,
   nav,
+  footer,
   button,
   .no-print {
     display: none !important;

@@ -90,7 +90,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
           <div className="font-bold text-stone-800 text-xs leading-tight">
             {currentStudent.name}
           </div>
-          <div className="font-medium text-[10px] text-stone-500">
+          <div className="font-medium text-[10px] text-stone-600">
             Niveau {currentStudent.level}
           </div>
         </div>
@@ -98,7 +98,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
 
       {isOpen && (
         <div className="fade-in zoom-in-95 absolute top-full left-0 z-50 mt-2 w-64 animate-in rounded-2xl border border-stone-100 bg-paper p-2 shadow-xl duration-150 sm:right-0 sm:left-auto">
-          <div className="px-3 py-1.5 font-bold text-[10px] text-stone-400 uppercase tracking-wider">
+          <div className="px-3 py-1.5 font-bold text-[10px] text-stone-600 uppercase tracking-wider">
             Changer d’élève
           </div>
 

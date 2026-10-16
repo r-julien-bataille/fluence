@@ -135,12 +135,12 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
         </div>
 
         <button
-          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-primary-600 px-6 py-3.5 font-bold text-sm text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700"
+          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-amber-300 bg-paper px-5 py-3 font-bold text-stone-800 text-xs shadow-2xs transition-all hover:bg-amber-50 sm:text-sm"
           onClick={handleProceedToStep3}
           type="button"
         >
-          <Sparkles className="h-5 w-5 text-amber-300" />
-          <span>Prêt pour le Défi Record (60s) !</span>
+          <Sparkles className="h-4 w-4 text-amber-600" />
+          <span>Passer au Défi Record (60s)</span>
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -156,7 +156,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                 maîtrisés)
               </span>
             </h3>
-            <span className="text-stone-500 text-xs">
+            <span className="text-stone-600 text-xs">
               Écoute la prononciation en français et repère les syllabes
             </span>
           </div>

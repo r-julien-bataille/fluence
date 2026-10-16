@@ -118,182 +118,190 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
 
   return (
     <div className="zoom-in-95 mx-auto max-w-3xl animate-in space-y-8 duration-400">
-      {/* Carte de félicitations */}
-      <div className="relative overflow-hidden rounded-3xl bg-linear-to-b from-primary-600 via-primary-700 to-primary-800 p-8 text-center text-white shadow-2xl sm:p-10">
-        <div className="mb-4 inline-flex rounded-2xl bg-paper/20 p-3 text-amber-300 shadow-inner backdrop-blur-md">
-          <Trophy className="h-12 w-12" />
+      <div className="no-print space-y-8">
+        {/* Carte de félicitations */}
+        <div className="relative overflow-hidden rounded-3xl bg-linear-to-b from-primary-600 via-primary-700 to-primary-800 p-8 text-center text-white shadow-2xl sm:p-10">
+          <div className="mb-4 inline-flex rounded-2xl bg-paper/20 p-3 text-amber-300 shadow-inner backdrop-blur-md">
+            <Trophy className="h-12 w-12" />
+          </div>
+
+          <h2 className="mb-2 font-black font-fun text-3xl tracking-wide sm:text-4xl">
+            Bravo {studentName} !
+          </h2>
+          <p className="mx-auto max-w-lg text-primary-100 text-sm sm:text-base">
+            Tu as complété ton cycle d’entraînement de fluence sur <br />
+            <strong className="font-bold text-white">« {text.title} »</strong>
+          </p>
+
+          {/* Badge de progression */}
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 font-extrabold text-base text-primary-900 shadow-lg shadow-primary-950/30">
+            <TrendingUp className="h-5 w-5 text-emerald-600" />
+            <span>{progressText}</span>
+          </div>
+
+          {isSaved && (
+            <div className="mt-4 flex items-center justify-center gap-1.5 text-primary-100 text-xs">
+              <BookmarkCheck className="h-4 w-4 text-emerald-300" />
+              <span>Séance enregistrée dans ton historique local</span>
+            </div>
+          )}
         </div>
 
-        <h2 className="mb-2 font-black font-fun text-3xl tracking-wide sm:text-4xl">
-          Bravo {studentName} !
-        </h2>
-        <p className="mx-auto max-w-lg text-primary-100 text-sm sm:text-base">
-          Tu as complété ton cycle d’entraînement de fluence sur <br />
-          <strong className="font-bold text-white">« {text.title} »</strong>
-        </p>
+        {/* Histogramme comparatif : Lecture 1 vs Lecture 3 vs Cible du niveau */}
+        <div className="space-y-6 rounded-3xl border border-stone-200/90 bg-paper p-6 shadow-sm sm:p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold font-fun text-stone-900 text-xl">
+                Histogramme comparatif des scores
+              </h3>
+              <p className="text-stone-600 text-xs">
+                Mots Correctement Lus en 60s (MCLM) selon le protocole ELFE
+              </p>
+            </div>
+            <span className="rounded-full bg-primary-50 px-3 py-1 font-bold text-primary-700 text-xs">
+              Niveau {text.level}
+            </span>
+          </div>
 
-        {/* Badge de progression */}
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 font-extrabold text-base text-primary-900 shadow-lg shadow-primary-950/30">
-          <TrendingUp className="h-5 w-5 text-emerald-600" />
-          <span>{progressText}</span>
+          {/* Barres du graphique */}
+          <div className="flex h-64 items-end justify-around gap-4 border-stone-100 border-b px-4 pt-8 pb-4 sm:px-12">
+            {/* Barre 1 : 1ère lecture */}
+            <div className="group flex h-full flex-1 flex-col items-center justify-end">
+              <div className="mb-2 font-bold font-fun text-sm text-stone-600">
+                {step1.mclm}
+              </div>
+              <div
+                className="w-full max-w-[80px] rounded-t-2xl bg-stone-300 transition-all duration-700 group-hover:bg-stone-400"
+                style={{ height: `${Math.max(10, hStep1)}%` }}
+              />
+              <div className="mt-3 text-center font-bold text-stone-600 text-xs">
+                1ère Lecture
+              </div>
+            </div>
+
+            {/* Barre 2 : Défi Record */}
+            <div className="group flex h-full flex-1 flex-col items-center justify-end">
+              <div className="mb-2 flex items-center gap-1 font-black font-fun text-base text-primary-600">
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                <span>{step3.mclm}</span>
+              </div>
+              <div
+                className="w-full max-w-[80px] rounded-t-2xl bg-linear-to-t from-primary-600 to-primary-500 shadow-lg shadow-primary-200 transition-all duration-700 group-hover:brightness-110"
+                style={{ height: `${Math.max(10, hStep3)}%` }}
+              />
+              <div className="mt-3 text-center font-black text-primary-700 text-xs">
+                Défi Record
+              </div>
+            </div>
+
+            {/* Barre 3 : Cible du niveau */}
+            <div className="group flex h-full flex-1 flex-col items-center justify-end">
+              <div className="mb-2 font-bold font-fun text-emerald-700 text-sm">
+                {target}
+              </div>
+              <div
+                className="w-full max-w-[80px] rounded-t-2xl border-2 border-emerald-400 border-dashed bg-emerald-200 transition-all duration-700"
+                style={{ height: `${Math.max(10, hTarget)}%` }}
+              />
+              <div className="mt-3 text-center font-bold text-emerald-800 text-xs">
+                Cible {text.level}
+              </div>
+            </div>
+          </div>
+
+          {/* Détails chiffrés */}
+          <div className="grid grid-cols-1 gap-4 pt-2 text-center text-xs sm:grid-cols-3">
+            <div className="rounded-2xl bg-cream p-3">
+              <span className="font-medium text-stone-600">
+                Erreurs évitées
+              </span>
+              <div className="mt-0.5 font-bold font-fun text-lg text-stone-800">
+                {Math.max(0, step1.errorsCount - step3.errorsCount)} erreur(s)
+                en moins
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-primary-50/60 p-3">
+              <span className="font-medium text-primary-700">
+                Mots supplémentaires lus
+              </span>
+              <div className="mt-0.5 font-bold font-fun text-lg text-primary-700">
+                +{Math.max(0, step3.wordsAttempted - step1.wordsAttempted)} mots
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-emerald-50 p-3">
+              <span className="font-medium text-emerald-800">
+                Statut officiel
+              </span>
+              <div className="mt-0.5 font-bold font-fun text-emerald-900 text-lg">
+                {step3.mclm >= target
+                  ? "Objectif validé !"
+                  : "En belle progression"}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {isSaved && (
-          <div className="mt-4 flex items-center justify-center gap-1.5 text-primary-200 text-xs opacity-80">
-            <BookmarkCheck className="h-4 w-4 text-emerald-400" />
-            <span>Séance enregistrée dans ton historique local</span>
+        {/* Mots travaillés durant la session */}
+        {step1.stumbledWords && step1.stumbledWords.length > 0 && (
+          <div className="rounded-3xl border border-amber-200/80 bg-amber-50/60 p-6">
+            <h4 className="mb-2 flex items-center gap-2 font-bold font-fun text-amber-900 text-sm">
+              <Star className="h-4 w-4 text-amber-500" />
+              <span>Mots consolidés pendant cette séance :</span>
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {step1.stumbledWords.map((word, idx) => (
+                <span
+                  className="rounded-xl border border-amber-200 bg-paper px-3 py-1 font-semibold text-amber-900 text-xs shadow-2xs"
+                  key={idx}
+                >
+                  {word}
+                </span>
+              ))}
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Histogramme comparatif : Lecture 1 vs Lecture 3 vs Cible du niveau */}
-      <div className="space-y-6 rounded-3xl border border-stone-200/90 bg-paper p-6 shadow-sm sm:p-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-bold font-fun text-stone-900 text-xl">
-              Histogramme comparatif des scores
-            </h3>
-            <p className="text-stone-500 text-xs">
-              Mots Correctement Lus en 60s (MCLM) selon le protocole ELFE
-            </p>
-          </div>
-          <span className="rounded-full bg-primary-50 px-3 py-1 font-bold text-primary-700 text-xs">
-            Niveau {text.level}
-          </span>
+        {/* Actions de fin de session */}
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <button
+            className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 shadow-xs transition-colors hover:bg-cream"
+            onClick={() => window.print()}
+            title="Génère un PDF ou imprime la fiche officielle ELFE / Éduscol"
+            type="button"
+          >
+            <Printer className="h-4 w-4 text-primary-600" />
+            <span>Imprimer la fiche ELFE (PDF)</span>
+          </button>
+
+          <button
+            className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 transition-colors hover:bg-cream"
+            onClick={onRestartSameText}
+            type="button"
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span>Recommencer ce texte</span>
+          </button>
+
+          <button
+            className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 transition-colors hover:bg-cream"
+            onClick={onOpenHistory}
+            type="button"
+          >
+            <BookmarkCheck className="h-4 w-4 text-primary-600" />
+            <span>Voir l’historique complet</span>
+          </button>
+
+          <button
+            className="flex cursor-pointer items-center gap-2 rounded-2xl bg-primary-600 px-8 py-3.5 font-bold text-sm text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700"
+            onClick={onNewSession}
+            type="button"
+          >
+            <span>Choisir une autre histoire</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
-
-        {/* Barres du graphique */}
-        <div className="flex h-64 items-end justify-around gap-4 border-stone-100 border-b px-4 pt-8 pb-4 sm:px-12">
-          {/* Barre 1 : 1ère lecture */}
-          <div className="group flex h-full flex-1 flex-col items-center justify-end">
-            <div className="mb-2 font-bold font-fun text-sm text-stone-600">
-              {step1.mclm}
-            </div>
-            <div
-              className="w-full max-w-[80px] rounded-t-2xl bg-stone-300 transition-all duration-700 group-hover:bg-stone-400"
-              style={{ height: `${Math.max(10, hStep1)}%` }}
-            />
-            <div className="mt-3 text-center font-bold text-stone-500 text-xs">
-              1ère Lecture
-            </div>
-          </div>
-
-          {/* Barre 2 : Défi Record */}
-          <div className="group flex h-full flex-1 flex-col items-center justify-end">
-            <div className="mb-2 flex items-center gap-1 font-black font-fun text-base text-primary-600">
-              <Sparkles className="h-4 w-4 text-amber-500" />
-              <span>{step3.mclm}</span>
-            </div>
-            <div
-              className="w-full max-w-[80px] rounded-t-2xl bg-linear-to-t from-primary-600 to-primary-500 shadow-lg shadow-primary-200 transition-all duration-700 group-hover:brightness-110"
-              style={{ height: `${Math.max(10, hStep3)}%` }}
-            />
-            <div className="mt-3 text-center font-black text-primary-700 text-xs">
-              Défi Record
-            </div>
-          </div>
-
-          {/* Barre 3 : Cible du niveau */}
-          <div className="group flex h-full flex-1 flex-col items-center justify-end">
-            <div className="mb-2 font-bold font-fun text-emerald-600 text-sm">
-              {target}
-            </div>
-            <div
-              className="w-full max-w-[80px] rounded-t-2xl border-2 border-emerald-400 border-dashed bg-emerald-200 transition-all duration-700"
-              style={{ height: `${Math.max(10, hTarget)}%` }}
-            />
-            <div className="mt-3 text-center font-bold text-emerald-700 text-xs">
-              Cible {text.level}
-            </div>
-          </div>
-        </div>
-
-        {/* Détails chiffrés */}
-        <div className="grid grid-cols-1 gap-4 pt-2 text-center text-xs sm:grid-cols-3">
-          <div className="rounded-2xl bg-cream p-3">
-            <span className="text-stone-400">Erreurs évitées</span>
-            <div className="mt-0.5 font-bold font-fun text-lg text-stone-800">
-              {Math.max(0, step1.errorsCount - step3.errorsCount)} erreur(s) en
-              moins
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-primary-50/60 p-3">
-            <span className="text-primary-700">Mots supplémentaires lus</span>
-            <div className="mt-0.5 font-bold font-fun text-lg text-primary-700">
-              +{Math.max(0, step3.wordsAttempted - step1.wordsAttempted)} mots
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-emerald-50 p-3">
-            <span className="text-emerald-500">Statut officiel</span>
-            <div className="mt-0.5 font-bold font-fun text-emerald-800 text-lg">
-              {step3.mclm >= target
-                ? "Objectif validé !"
-                : "En belle progression"}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mots travaillés durant la session */}
-      {step1.stumbledWords && step1.stumbledWords.length > 0 && (
-        <div className="rounded-3xl border border-amber-200/80 bg-amber-50/60 p-6">
-          <h4 className="mb-2 flex items-center gap-2 font-bold font-fun text-amber-900 text-sm">
-            <Star className="h-4 w-4 text-amber-500" />
-            <span>Mots consolidés pendant cette séance :</span>
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {step1.stumbledWords.map((word, idx) => (
-              <span
-                className="rounded-xl border border-amber-200 bg-paper px-3 py-1 font-semibold text-amber-900 text-xs shadow-2xs"
-                key={idx}
-              >
-                {word}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Actions de fin de session */}
-      <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-        <button
-          className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 shadow-xs transition-colors hover:bg-cream"
-          onClick={() => window.print()}
-          title="Génère un PDF ou imprime la fiche officielle ELFE / Éduscol"
-          type="button"
-        >
-          <Printer className="h-4 w-4 text-primary-600" />
-          <span>Imprimer la fiche ELFE (PDF)</span>
-        </button>
-
-        <button
-          className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 transition-colors hover:bg-cream"
-          onClick={onRestartSameText}
-          type="button"
-        >
-          <RotateCcw className="h-4 w-4" />
-          <span>Recommencer ce texte</span>
-        </button>
-
-        <button
-          className="flex cursor-pointer items-center gap-2 rounded-2xl border border-stone-200 bg-paper px-6 py-3.5 font-bold text-sm text-stone-700 transition-colors hover:bg-cream"
-          onClick={onOpenHistory}
-          type="button"
-        >
-          <BookmarkCheck className="h-4 w-4 text-primary-600" />
-          <span>Voir l’historique complet</span>
-        </button>
-
-        <button
-          className="flex cursor-pointer items-center gap-2 rounded-2xl bg-primary-600 px-8 py-3.5 font-bold text-sm text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700"
-          onClick={onNewSession}
-          type="button"
-        >
-          <span>Choisir une autre histoire</span>
-          <ArrowRight className="h-4 w-4" />
-        </button>
       </div>
 
       {/* FICHE OFFICIELLE D'ÉVALUATION ELFE (Visible uniquement à l'impression / PDF) */}
