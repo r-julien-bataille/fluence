@@ -91,7 +91,29 @@ export const App: React.FC = () => {
   }, [dyslexicMode]);
 
   const handleAddStudent = (newStudent: StudentProfile) => {
-    setStudents((prev) => [...prev, newStudent]);
+    setStudents((prev) => {
+      const exists = prev.some(
+        (s) =>
+          s.name.trim().toLocaleLowerCase("fr-FR") ===
+          newStudent.name.trim().toLocaleLowerCase("fr-FR")
+      );
+      return exists ? prev : [...prev, newStudent];
+    });
+  };
+
+  const handleStudentImported = (importedStudent: StudentProfile) => {
+    setStudents((prev) => {
+      const existing = prev.find(
+        (s) =>
+          s.name.trim().toLocaleLowerCase("fr-FR") ===
+          importedStudent.name.trim().toLocaleLowerCase("fr-FR")
+      );
+      if (existing) {
+        return prev;
+      }
+      return [...prev, importedStudent];
+    });
+    setCurrentStudent(importedStudent);
   };
 
   const handleKeySaved = () => {
@@ -206,7 +228,9 @@ export const App: React.FC = () => {
           <HistoryDrawer
             isOpen={isHistoryOpen}
             onClose={() => setIsHistoryOpen(false)}
+            onStudentImported={handleStudentImported}
             selectedStudent={currentStudent.name}
+            selectedStudentLevel={currentStudent.level}
           />
         </Suspense>
       )}

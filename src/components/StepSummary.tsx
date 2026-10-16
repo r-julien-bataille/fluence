@@ -75,17 +75,19 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
     }
     hasSavedRef.current = true;
 
-    // Sauvegarde automatique et idempotente dans Dexie
+    // Sauvegarde automatique et idempotente dans Dexie (sans les Blobs audio éphémères)
     const saveSession = async () => {
       try {
+        const { audioBlob: _b1, audioUrl: _u1, ...cleanStep1 } = step1;
+        const { audioBlob: _b3, audioUrl: _u3, ...cleanStep3 } = step3;
         // ID déterministe basé sur l'horodatage initial de l'étape 1
         const sessionId = `session-${step1.timestamp || Date.now()}-${studentName}-${text.id}`;
         const session: FluencySession = {
           date: step3.timestamp || Date.now(),
           id: sessionId,
           progressionDelta: delta,
-          step1,
-          step3,
+          step1: cleanStep1,
+          step3: cleanStep3,
           studentName,
           textId: text.id,
         };
