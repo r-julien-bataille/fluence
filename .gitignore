@@ -49,3 +49,8 @@ Thumbs.db
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Firebase local cache
+.firebase/
+firebase-debug.log*
+

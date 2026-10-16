@@ -1,0 +1,43 @@
+{
+  "hosting": {
+    "cleanUrls": true,
+    "headers": [
+      {
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ],
+        "source": "/assets/**"
+      },
+      {
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ],
+        "source": "**/*.@(html|json|webmanifest)"
+      },
+      {
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ],
+        "source": "/@(sw.js|registerSW.js)"
+      }
+    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "public": "dist",
+    "rewrites": [
+      {
+        "destination": "/index.html",
+        "source": "**"
+      }
+    ],
+    "trailingSlash": false
+  }
+}
