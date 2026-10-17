@@ -1,6 +1,6 @@
 import { ArrowLeft, Check } from "lucide-react";
 import type React from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 
 import type { ExerciseText, FluencyAttempt } from "@/db/db";
 
@@ -30,11 +30,20 @@ const StoryGeneratorModal = lazy(async () => {
 
 export type SessionStep = "selection" | "step1" | "step2" | "step3" | "summary";
 
+export interface SessionStateInfo {
+  isActive: boolean;
+  step: SessionStep;
+  textTitle: string | null;
+}
+
 interface SessionRunnerProps {
   currentStudent: StudentProfile;
   dyslexicMode: boolean;
   onOpenHistory: () => void;
   onOpenSettings: () => void;
+  onRequestInterrupt?: () => void;
+  onSessionStateChange?: (state: SessionStateInfo) => void;
+  resetSessionSignal?: number;
 }
 
 export const SessionRunner: React.FC<SessionRunnerProps> = ({
@@ -42,6 +51,9 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
   onOpenSettings,
   onOpenHistory,
   dyslexicMode,
+  onRequestInterrupt,
+  onSessionStateChange,
+  resetSessionSignal,
 }) => {
   const [currentStep, setCurrentStep] = useState<SessionStep>("selection");
   const [selectedText, setSelectedText] = useState<ExerciseText | null>(null);
@@ -55,6 +67,33 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
         window.scrollTo({ behavior: "instant", top: 0 });
     }
   }, [currentStep]);
+
+  const isSessionActive =
+    (currentStep === "step1" ||
+      currentStep === "step2" ||
+      currentStep === "step3") &&
+    Boolean(selectedText);
+
+  useEffect(() => {
+    onSessionStateChange?.({
+      isActive: isSessionActive,
+      step: currentStep,
+      textTitle: selectedText?.title ?? null,
+    });
+  }, [isSessionActive, currentStep, selectedText, onSessionStateChange]);
+
+  const handleResetToSelection = useCallback(() => {
+    setSelectedText(null);
+    setStep1Attempt(null);
+    setStep3Attempt(null);
+    setCurrentStep("selection");
+  }, []);
+
+  useEffect(() => {
+    if (resetSessionSignal && resetSessionSignal > 0) {
+      handleResetToSelection();
+    }
+  }, [resetSessionSignal, handleResetToSelection]);
 
   const handleSelectText = (text: ExerciseText) => {
     setSelectedText(text);
@@ -77,17 +116,18 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setCurrentStep("summary");
   };
 
-  const handleResetToSelection = () => {
-    setSelectedText(null);
-    setStep1Attempt(null);
-    setStep3Attempt(null);
-    setCurrentStep("selection");
-  };
-
   const handleRestartSameText = () => {
     setStep1Attempt(null);
     setStep3Attempt(null);
     setCurrentStep("step1");
+  };
+
+  const handleBackToTextsClick = () => {
+    if (isSessionActive && onRequestInterrupt) {
+      onRequestInterrupt();
+      return;
+    }
+    handleResetToSelection();
   };
 
   const canGoStep2 = Boolean(step1Attempt);
@@ -117,7 +157,7 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
         <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-paper px-3.5 py-2.5">
           <button
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream hover:text-stone-900"
-            onClick={handleResetToSelection}
+            onClick={handleBackToTextsClick}
             type="button"
           >
             <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />

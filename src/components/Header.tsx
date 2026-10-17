@@ -11,6 +11,7 @@ interface HeaderProps {
   dyslexicMode: boolean;
   onAddStudent: (student: StudentProfile) => void;
   onDeleteStudent?: (student: StudentProfile) => void;
+  onGoHome?: () => void;
   onOpenHistory: () => void;
   onOpenSettings: () => void;
   onSelectStudent: (student: StudentProfile) => void;
@@ -24,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectStudent,
   onAddStudent,
   onDeleteStudent,
+  onGoHome,
   onOpenSettings,
   onOpenHistory,
   dyslexicMode,
@@ -34,14 +36,19 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/95 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur-md sm:px-6">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white">
+        <button
+          aria-label="Retourner à l'accueil"
+          className="group -m-1.5 flex cursor-pointer items-center gap-2.5 rounded-xl p-1.5 text-left transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-primary-500 focus-visible:outline-offset-2"
+          onClick={onGoHome}
+          type="button"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white shadow-xs transition-transform group-hover:scale-105">
             <BookOpen aria-hidden="true" className="h-4 w-4" />
           </div>
           <span className="font-bold font-fun text-lg text-stone-900 tracking-tight">
             Fluence
           </span>
-        </div>
+        </button>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <StudentSelector
