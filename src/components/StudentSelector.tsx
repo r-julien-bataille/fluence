@@ -1,6 +1,14 @@
-import { Check, ChevronDown, Plus, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import type { FluencyLevel } from "@/db/db";
 
@@ -28,6 +36,9 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [newLevel, setNewLevel] = useState<FluencyLevel>("CM2");
+  const [studentPendingDelete, setStudentPendingDelete] =
+    useState<StudentProfile | null>(null);
+  const [confirmInput, setConfirmInput] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,6 +71,24 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!studentPendingDelete) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setStudentPendingDelete(null);
+        setConfirmInput("");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [studentPendingDelete]);
+
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) {
@@ -74,6 +103,32 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
     setNewName("");
     setIsAdding(false);
     setIsOpen(false);
+  };
+
+  const openDeleteModal = (student: StudentProfile) => {
+    setIsOpen(false);
+    setIsAdding(false);
+    setConfirmInput("");
+    setStudentPendingDelete(student);
+  };
+
+  const closeDeleteModal = () => {
+    setStudentPendingDelete(null);
+    setConfirmInput("");
+  };
+
+  const isConfirmMatch =
+    studentPendingDelete !== null &&
+    confirmInput.trim().toLocaleLowerCase("fr-FR") ===
+      studentPendingDelete.name.trim().toLocaleLowerCase("fr-FR");
+
+  const handleConfirmDelete = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!(studentPendingDelete && isConfirmMatch && onDeleteStudent)) {
+      return;
+    }
+    onDeleteStudent(studentPendingDelete);
+    closeDeleteModal();
   };
 
   return (
@@ -106,7 +161,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               const isSelected = currentStudent.name === s.name;
               return (
                 <div
-                  className={`flex items-center justify-between rounded-lg px-2 py-1 text-xs transition-colors ${
+                  className={`flex items-center justify-between gap-1 rounded-lg px-2 py-1 text-xs transition-colors ${
                     isSelected
                       ? "bg-primary-50 font-bold text-primary-900"
                       : "text-stone-700 hover:bg-cream"
@@ -133,7 +188,10 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                     <button
                       aria-label={`Supprimer le profil ${s.name}`}
                       className="cursor-pointer rounded p-1 text-stone-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
-                      onClick={() => onDeleteStudent(s)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openDeleteModal(s);
+                      }}
                       title={`Supprimer ${s.name}`}
                       type="button"
                     >
@@ -203,6 +261,96 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
           )}
         </div>
       )}
+
+      {studentPendingDelete &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
+            onPointerDown={(e) => {
+              if (e.target === e.currentTarget) {
+                closeDeleteModal();
+              }
+            }}
+          >
+            <div
+              aria-labelledby="delete-student-modal-title"
+              aria-modal="true"
+              className="relative w-full max-w-sm rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
+              role="dialog"
+            >
+              <div className="mb-4 flex items-center justify-between border-stone-100 border-b pb-3">
+                <div className="flex items-center gap-2 text-rose-700">
+                  <AlertTriangle
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0"
+                  />
+                  <h2
+                    className="font-bold font-fun text-base text-stone-900"
+                    id="delete-student-modal-title"
+                  >
+                    Supprimer le profil élève
+                  </h2>
+                </div>
+                <button
+                  aria-label="Fermer la fenêtre"
+                  className="cursor-pointer rounded-lg p-1 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+                  onClick={closeDeleteModal}
+                  type="button"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form className="space-y-4" onSubmit={handleConfirmDelete}>
+                <p className="text-stone-700 text-xs leading-relaxed">
+                  Pour confirmer la suppression du profil{" "}
+                  <strong className="font-bold text-stone-900">
+                    {studentPendingDelete.name}
+                  </strong>{" "}
+                  ({studentPendingDelete.level}), tapez son nom ci-dessous :
+                </p>
+
+                <div>
+                  <label
+                    className="mb-1.5 block font-semibold text-stone-700 text-xs"
+                    htmlFor="confirm-delete-student-input"
+                  >
+                    Tapez « {studentPendingDelete.name} »
+                  </label>
+                  <input
+                    autoComplete="off"
+                    autoFocus
+                    className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2 text-stone-900 text-xs focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-rose-500"
+                    id="confirm-delete-student-input"
+                    onChange={(e) => setConfirmInput(e.target.value)}
+                    placeholder={studentPendingDelete.name}
+                    type="text"
+                    value={confirmInput}
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <button
+                    className="cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+                    onClick={closeDeleteModal}
+                    type="button"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2 font-bold text-white text-xs transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!isConfirmMatch}
+                    type="submit"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
