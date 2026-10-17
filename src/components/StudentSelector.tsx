@@ -1,4 +1,4 @@
-import { Check, Plus } from "lucide-react";
+import { Check, ChevronDown, Plus, Trash2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -12,6 +12,7 @@ export interface StudentProfile {
 interface StudentSelectorProps {
   currentStudent: StudentProfile;
   onAddStudent: (student: StudentProfile) => void;
+  onDeleteStudent?: (student: StudentProfile) => void;
   onSelectStudent: (student: StudentProfile) => void;
   students: StudentProfile[];
 }
@@ -21,6 +22,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
   students,
   onSelectStudent,
   onAddStudent,
+  onDeleteStudent,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -79,60 +81,77 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
       <button
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-paper px-3 py-2 text-left shadow-2xs transition-all hover:bg-cream"
+        className="flex cursor-pointer items-center gap-2 rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-cream"
         onClick={() => setIsOpen(!isOpen)}
         type="button"
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-100 font-bold text-primary-700 text-xs">
-          {currentStudent.name.slice(0, 2).toUpperCase()}
-        </div>
-        <div className="hidden sm:block">
-          <div className="font-bold text-stone-800 text-xs leading-tight">
-            {currentStudent.name}
-          </div>
-          <div className="font-medium text-[10px] text-stone-600">
-            Niveau {currentStudent.level}
-          </div>
-        </div>
+        <span className="font-bold text-stone-900">{currentStudent.name}</span>
+        <span className="rounded bg-primary-100 px-1.5 py-0.5 font-bold text-[10px] text-primary-800">
+          {currentStudent.level}
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className="h-3.5 w-3.5 text-stone-500"
+        />
       </button>
 
       {isOpen && (
-        <div className="fade-in zoom-in-95 absolute top-full left-0 z-50 mt-2 w-64 animate-in rounded-2xl border border-stone-100 bg-paper p-2 shadow-xl duration-150 sm:right-0 sm:left-auto">
-          <div className="px-3 py-1.5 font-bold text-[10px] text-stone-600 uppercase tracking-wider">
-            Changer d’élève
+        <div className="fade-in zoom-in-95 absolute top-full right-0 z-50 mt-1.5 w-60 animate-in rounded-xl border border-stone-200 bg-paper p-1.5 shadow-lg duration-150">
+          <div className="px-2.5 py-1 font-semibold text-[11px] text-stone-600">
+            Élèves
           </div>
 
-          <div className="max-h-48 space-y-1 overflow-y-auto">
-            {students.map((s, idx) => (
-              <button
-                className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 font-medium text-xs transition-colors ${
-                  currentStudent.name === s.name
-                    ? "bg-primary-50 font-bold text-primary-900"
-                    : "text-stone-700 hover:bg-cream"
-                }`}
-                key={idx}
-                onClick={() => {
-                  onSelectStudent(s);
-                  setIsOpen(false);
-                }}
-                type="button"
-              >
-                <span>
-                  {s.name} ({s.level})
-                </span>
-                {currentStudent.name === s.name && (
-                  <Check className="h-3.5 w-3.5 text-primary-600" />
-                )}
-              </button>
-            ))}
+          <div className="max-h-52 space-y-0.5 overflow-y-auto">
+            {students.map((s) => {
+              const isSelected = currentStudent.name === s.name;
+              return (
+                <div
+                  className={`flex items-center justify-between rounded-lg px-2 py-1 text-xs transition-colors ${
+                    isSelected
+                      ? "bg-primary-50 font-bold text-primary-900"
+                      : "text-stone-700 hover:bg-cream"
+                  }`}
+                  key={`${s.name}-${s.level}`}
+                >
+                  <button
+                    className="flex flex-1 cursor-pointer items-center justify-between py-1 text-left"
+                    onClick={() => {
+                      onSelectStudent(s);
+                      setIsOpen(false);
+                    }}
+                    type="button"
+                  >
+                    <span>
+                      {s.name}{" "}
+                      <span className="text-stone-600">({s.level})</span>
+                    </span>
+                    {isSelected && (
+                      <Check className="mr-1 h-3.5 w-3.5 text-primary-600" />
+                    )}
+                  </button>
+                  {onDeleteStudent && students.length > 1 && (
+                    <button
+                      aria-label={`Supprimer le profil ${s.name}`}
+                      className="cursor-pointer rounded p-1 text-stone-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                      onClick={() => onDeleteStudent(s)}
+                      title={`Supprimer ${s.name}`}
+                      type="button"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {isAdding ? (
             <form
-              className="mt-2 space-y-2 border-stone-100 border-t p-1 pt-2"
+              className="mt-1.5 space-y-2 border-stone-100 border-t p-1.5 pt-2"
               onSubmit={handleCreate}
             >
               <input
+                aria-label="Prénom de l'élève"
                 autoFocus
                 className="w-full rounded-lg border border-stone-200 bg-cream px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-primary-500"
                 onChange={(e) => setNewName(e.target.value)}
@@ -158,7 +177,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               </div>
               <div className="flex gap-1 pt-1">
                 <button
-                  className="flex-1 cursor-pointer rounded bg-stone-100 py-1 text-[11px] text-stone-600 hover:bg-stone-200"
+                  className="flex-1 cursor-pointer rounded bg-stone-100 py-1 text-[11px] text-stone-700 hover:bg-stone-200"
                   onClick={() => setIsAdding(false)}
                   type="button"
                 >
@@ -168,18 +187,18 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                   className="flex-1 cursor-pointer rounded bg-primary-600 py-1 font-bold text-[11px] text-white hover:bg-primary-700"
                   type="submit"
                 >
-                  Valider
+                  Ajouter
                 </button>
               </div>
             </form>
           ) : (
             <button
-              className="mt-2 flex w-full cursor-pointer items-center gap-2 rounded-xl border-stone-100 border-t px-3 py-1.5 pt-2 font-semibold text-primary-600 text-xs transition-colors hover:bg-primary-50"
+              className="mt-1 flex w-full cursor-pointer items-center gap-1.5 rounded-lg border-stone-100 border-t px-2.5 py-1.5 pt-2 font-semibold text-primary-700 text-xs transition-colors hover:bg-primary-50"
               onClick={() => setIsAdding(true)}
               type="button"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Ajouter un élève</span>
+              <span>Nouvel élève</span>
             </button>
           )}
         </div>

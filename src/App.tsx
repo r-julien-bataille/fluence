@@ -1,4 +1,4 @@
-import { Key, WifiOff, X } from "lucide-react";
+import { WifiOff } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Header } from "./components/Header";
@@ -6,7 +6,6 @@ import { SessionRunner } from "./components/SessionRunner";
 import { SourcesFooter } from "./components/SourcesFooter";
 import type { StudentProfile } from "./components/StudentSelector";
 import { seedDatabaseIfEmpty } from "./db/seeds";
-import { hasStoredApiKey } from "./lib/gemini/client";
 import { applyTheme, getStoredTheme, type ThemeId } from "./lib/theme";
 
 const SettingsModal = lazy(async () => {
@@ -44,8 +43,6 @@ export const App: React.FC = () => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [hasKey, setHasKey] = useState(hasStoredApiKey());
-  const [dismissBanner, setDismissBanner] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean>(() =>
     typeof navigator === "undefined" ? true : navigator.onLine
   );
@@ -101,6 +98,27 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleDeleteStudent = (studentToDelete: StudentProfile) => {
+    setStudents((prev) => {
+      if (prev.length <= 1) {
+        return prev;
+      }
+      const next = prev.filter(
+        (s) =>
+          s.name.trim().toLocaleLowerCase("fr-FR") !==
+          studentToDelete.name.trim().toLocaleLowerCase("fr-FR")
+      );
+      if (
+        currentStudent.name.trim().toLocaleLowerCase("fr-FR") ===
+          studentToDelete.name.trim().toLocaleLowerCase("fr-FR") &&
+        next[0]
+      ) {
+        setCurrentStudent(next[0]);
+      }
+      return next;
+    });
+  };
+
   const handleStudentImported = (importedStudent: StudentProfile) => {
     setStudents((prev) => {
       const existing = prev.find(
@@ -116,23 +134,19 @@ export const App: React.FC = () => {
     setCurrentStudent(importedStudent);
   };
 
-  const handleKeySaved = () => {
-    setHasKey(hasStoredApiKey());
-  };
-
   const isOverlayOpen = isSettingsOpen || isHistoryOpen;
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream font-sans">
+    <div className="flex min-h-screen flex-col bg-cream font-sans text-stone-900">
       <div
         className="flex flex-1 flex-col"
         inert={isOverlayOpen ? true : undefined}
       >
-        {/* Header global */}
         <Header
           currentStudent={currentStudent}
           dyslexicMode={dyslexicMode}
           onAddStudent={handleAddStudent}
+          onDeleteStudent={handleDeleteStudent}
           onOpenHistory={() => setIsHistoryOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
           onSelectStudent={setCurrentStudent}
@@ -140,7 +154,6 @@ export const App: React.FC = () => {
           students={students}
         />
 
-        {/* Alerte si passage hors ligne */}
         {!isOnline && (
           <div
             aria-live="polite"
@@ -152,51 +165,13 @@ export const App: React.FC = () => {
               className="h-3.5 w-3.5 shrink-0 text-amber-700"
             />
             <span>
-              Mode hors-ligne : Les textes, le chronomètre et l'historique
-              restent 100% disponibles.
+              Mode hors-ligne : les textes, le chronomètre et l’historique
+              restent disponibles.
             </span>
           </div>
         )}
 
-        {/* Alerte discrète si pas de clé configurée */}
-        {!(hasKey || dismissBanner) && (
-          <div className="flex items-center justify-between bg-amber-500 px-4 py-2.5 font-semibold text-stone-950 text-xs shadow-xs sm:text-sm">
-            <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Key
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-stone-950"
-                />
-                <span>
-                  <strong>Modèle BYOK :</strong> Ajoutez votre clé Google AI
-                  Studio pour activer la transcription vocale Gemini et le
-                  générateur d’histoires.
-                </span>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  className="cursor-pointer rounded-xl bg-stone-950 px-3 py-1 font-bold text-white text-xs transition-colors hover:bg-stone-800"
-                  onClick={() => setIsSettingsOpen(true)}
-                  type="button"
-                >
-                  Renseigner ma clé
-                </button>
-                <button
-                  aria-label="Fermer le bandeau d'information"
-                  className="cursor-pointer p-1.5 text-stone-900 hover:text-black"
-                  onClick={() => setDismissBanner(true)}
-                  title="Fermer ce message"
-                  type="button"
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Contenu principal / Machine à états */}
-        <main className="flex-1 pb-16">
+        <main className="flex-1 pb-12">
           <SessionRunner
             currentStudent={currentStudent}
             dyslexicMode={dyslexicMode}
@@ -209,20 +184,17 @@ export const App: React.FC = () => {
         <SourcesFooter />
       </div>
 
-      {/* Modal Réglages Clé API & Ambiances */}
       {isSettingsOpen && (
         <Suspense fallback={null}>
           <SettingsModal
             currentTheme={theme}
             isOpen={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
-            onKeySaved={handleKeySaved}
             onSelectTheme={setTheme}
           />
         </Suspense>
       )}
 
-      {/* Tiroir Historique des séances */}
       {isHistoryOpen && (
         <Suspense fallback={null}>
           <HistoryDrawer

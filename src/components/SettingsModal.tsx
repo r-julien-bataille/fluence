@@ -1,12 +1,4 @@
-import {
-  AlertCircle,
-  CheckCircle2,
-  ExternalLink,
-  Shield,
-  SlidersHorizontal,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, ExternalLink, X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 
@@ -87,7 +79,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs duration-200"
+      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -97,130 +89,90 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div
         aria-labelledby="settings-modal-title"
         aria-modal="true"
-        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8"
+        className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
         role="dialog"
       >
-        <button
-          aria-label="Fermer les réglages"
-          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
-          onClick={onClose}
-          title="Fermer"
-          type="button"
-        >
-          <X aria-hidden="true" className="h-5 w-5" />
-        </button>
-
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
-            <SlidersHorizontal aria-hidden="true" className="h-6 w-6" />
-          </div>
-          <div>
-            <h2
-              className="font-bold font-fun text-stone-900 text-xl"
-              id="settings-modal-title"
-            >
-              Réglages de l'application
-            </h2>
-            <p className="font-sans text-stone-600 text-xs">
-              Clé API Gemini (BYOK) & Ambiance visuelle scolaire ·{" "}
-              <span className="font-mono font-semibold">v{APP_VERSION}</span>
-            </p>
-          </div>
+        <div className="mb-5 flex items-center justify-between border-stone-100 border-b pb-3">
+          <h2
+            className="font-bold font-fun text-lg text-stone-900"
+            id="settings-modal-title"
+          >
+            Réglages
+          </h2>
+          <button
+            aria-label="Fermer les réglages"
+            className="cursor-pointer rounded-lg p-1.5 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+            onClick={onClose}
+            type="button"
+          >
+            <X aria-hidden="true" className="h-4 w-4" />
+          </button>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-2xl border border-primary-200 bg-primary-50 p-4 text-primary-800 text-xs">
-            <Shield
-              aria-hidden="true"
-              className="mt-0.5 h-5 w-5 shrink-0 text-primary-600"
-            />
-            <div>
-              <p className="mb-1 font-semibold">Confidentialité garantie</p>
-              <p>
-                Votre clé Google AI Studio est stockée exclusivement dans le{" "}
-                <code className="rounded bg-primary-100 px-1 py-0.5 font-mono">
-                  localStorage
-                </code>{" "}
-                de votre navigateur. Aucune donnée n’est envoyée à un serveur
-                tiers.
-              </p>
-            </div>
-          </div>
-
+        <div className="space-y-5">
           <div>
-            <label
-              className="mb-1.5 block font-semibold text-sm text-stone-700"
-              htmlFor="gemini-api-key-input"
-            >
-              Clé Google AI Studio (Gemini)
-            </label>
-            <div className="relative">
-              <input
-                className="w-full rounded-xl border border-stone-200 bg-cream px-4 py-3 font-mono text-sm text-stone-800 transition-all focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
-                id="gemini-api-key-input"
-                onChange={(e) => {
-                  setApiKey(e.target.value);
-                  setTestResult(null);
-                }}
-                placeholder="AIzaSy..."
-                type="password"
-                value={apiKey}
-              />
-            </div>
-            <p className="mt-1.5 flex items-center justify-between text-stone-600 text-xs">
-              <span>
-                Transcription vocale et génération d’histoires propulsées par
-                Google Gemini
-              </span>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label
+                className="font-semibold text-stone-800 text-xs"
+                htmlFor="gemini-api-key-input"
+              >
+                Clé API Google Gemini
+              </label>
               <a
-                className="inline-flex items-center gap-1 font-medium text-primary-600 underline hover:text-primary-800"
+                className="inline-flex items-center gap-1 font-medium text-primary-700 text-xs underline hover:text-primary-900"
                 href="https://aistudio.google.com/app/apikey"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Obtenir une clé gratuite{" "}
+                Obtenir une clé{" "}
                 <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
+            </div>
+            <input
+              className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2.5 font-mono text-stone-800 text-xs transition-colors focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+              id="gemini-api-key-input"
+              onChange={(e) => {
+                setApiKey(e.target.value);
+                setTestResult(null);
+              }}
+              placeholder="AIzaSy..."
+              type="password"
+              value={apiKey}
+            />
+            <p className="mt-1.5 text-[11px] text-stone-600">
+              Stockée uniquement dans votre navigateur pour la transcription
+              audio et la création de textes.
             </p>
           </div>
 
           {testResult && (
             <div
-              className={`flex items-start gap-2.5 rounded-xl p-3.5 text-sm ${
+              className={`flex items-start gap-2 rounded-xl border p-3 text-xs ${
                 testResult.success
-                  ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
-                  : "border border-rose-200 bg-rose-50 text-rose-800"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                  : "border-rose-200 bg-rose-50 text-rose-900"
               }`}
               role="status"
             >
               {testResult.success ? (
                 <CheckCircle2
                   aria-hidden="true"
-                  className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600"
                 />
               ) : (
                 <AlertCircle
                   aria-hidden="true"
-                  className="mt-0.5 h-5 w-5 shrink-0 text-rose-600"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-rose-600"
                 />
               )}
-              <span className="text-xs leading-relaxed">
-                {testResult.message}
-              </span>
+              <span>{testResult.message}</span>
             </div>
           )}
 
-          {/* Section Ambiances scolaires */}
           {currentTheme && onSelectTheme && (
             <div className="border-stone-100 border-t pt-4">
-              <div className="mb-3">
-                <h3 className="font-bold font-fun text-sm text-stone-900">
-                  Ambiance visuelle scolaire
-                </h3>
-                <p className="font-sans text-stone-600 text-xs">
-                  4 palettes lumineuses et stimulantes pensées pour la classe,
-                  conformes aux normes WCAG AA.
-                </p>
+              <div className="mb-2.5 font-semibold text-stone-800 text-xs">
+                Couleur d’accentuation
               </div>
               <ThemeSelector
                 currentTheme={currentTheme}
@@ -229,23 +181,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
 
-          <div className="flex items-center gap-3 pt-3">
-            <button
-              className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={isTesting || !apiKey.trim()}
-              onClick={handleTest}
-              type="button"
-            >
-              <Sparkles aria-hidden="true" className="h-4 w-4 text-amber-500" />
-              {isTesting ? "Vérification..." : "Tester la clé"}
-            </button>
-            <button
-              className="flex-1 cursor-pointer rounded-xl bg-primary-600 px-4 py-2.5 font-semibold text-sm text-white shadow-md shadow-primary-200 transition-all hover:bg-primary-700"
-              onClick={handleSave}
-              type="button"
-            >
-              Enregistrer
-            </button>
+          <div className="flex items-center justify-between border-stone-100 border-t pt-4">
+            <span className="font-mono text-[11px] text-stone-600">
+              v{APP_VERSION}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                className="cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream disabled:opacity-50"
+                disabled={isTesting || !apiKey.trim()}
+                onClick={handleTest}
+                type="button"
+              >
+                {isTesting ? "Vérification..." : "Tester la clé"}
+              </button>
+              <button
+                className="cursor-pointer rounded-xl bg-primary-600 px-4 py-2 font-bold text-white text-xs transition-colors hover:bg-primary-700"
+                onClick={handleSave}
+                type="button"
+              >
+                Enregistrer
+              </button>
+            </div>
           </div>
         </div>
       </div>

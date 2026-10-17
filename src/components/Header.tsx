@@ -2,7 +2,6 @@ import { BookOpen, History, Settings, Type } from "lucide-react";
 import type React from "react";
 
 import { hasStoredApiKey } from "@/lib/gemini/client";
-import { APP_VERSION } from "@/lib/version";
 
 import type { StudentProfile } from "./StudentSelector";
 import { StudentSelector } from "./StudentSelector";
@@ -11,6 +10,7 @@ interface HeaderProps {
   currentStudent: StudentProfile;
   dyslexicMode: boolean;
   onAddStudent: (student: StudentProfile) => void;
+  onDeleteStudent?: (student: StudentProfile) => void;
   onOpenHistory: () => void;
   onOpenSettings: () => void;
   onSelectStudent: (student: StudentProfile) => void;
@@ -23,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   students,
   onSelectStudent,
   onAddStudent,
+  onDeleteStudent,
   onOpenSettings,
   onOpenHistory,
   dyslexicMode,
@@ -31,95 +32,71 @@ export const Header: React.FC<HeaderProps> = ({
   const hasKey = hasStoredApiKey();
 
   return (
-    <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/80 px-4 pt-[max(0.875rem,env(safe-area-inset-top))] pb-3.5 backdrop-blur-md transition-all sm:px-8">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-        {/* Logo & Titre */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-md shadow-primary-200">
-            <BookOpen aria-hidden="true" className="h-5 w-5" />
+    <header className="sticky top-0 z-40 border-stone-200/80 border-b bg-paper/95 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur-md sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white">
+            <BookOpen aria-hidden="true" className="h-4 w-4" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-black font-fun text-stone-900 text-xl tracking-tight">
-                Fluence
-              </h1>
-              <span
-                className="rounded-full border border-stone-200 bg-cream px-2 py-0.5 font-bold font-mono text-[10px] text-stone-600"
-                title={`Version ${APP_VERSION}`}
-              >
-                v{APP_VERSION}
-              </span>
-            </div>
-            <p className="hidden font-sans text-[11px] text-stone-600 sm:block">
-              Évaluation et entraînement de lecture du CE1 au CM2
-            </p>
-          </div>
+          <span className="font-bold font-fun text-lg text-stone-900 tracking-tight">
+            Fluence
+          </span>
         </div>
 
-        {/* Actions à droite */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Sélecteur de profil élève */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <StudentSelector
             currentStudent={currentStudent}
             onAddStudent={onAddStudent}
+            onDeleteStudent={onDeleteStudent}
             onSelectStudent={onSelectStudent}
             students={students}
           />
 
-          {/* Bouton bascule police Dyslexie / Confort de lecture */}
           <button
             aria-label="Activer le mode confort de lecture"
             aria-pressed={dyslexicMode}
-            className={`flex cursor-pointer items-center gap-1.5 rounded-2xl border p-2.5 font-bold text-xs transition-colors ${
+            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1.5 font-semibold text-xs transition-colors ${
               dyslexicMode
                 ? "border-amber-300 bg-amber-100 text-amber-900"
-                : "border-stone-200 bg-paper text-stone-600 hover:bg-cream"
+                : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
             }`}
             onClick={onToggleDyslexicMode}
-            title="Activer la police adaptée à la dyslexie et espacement renforcé"
+            title="Espacement renforcé et repères de lecture"
             type="button"
           >
-            <Type aria-hidden="true" className="h-4 w-4" />
-            <span className="hidden md:inline">Dys-confort</span>
+            <Type aria-hidden="true" className="h-3.5 w-3.5" />
+            <span>Dys</span>
           </button>
 
-          {/* Bouton Historique */}
           <button
             aria-label="Historique des séances"
-            className="cursor-pointer rounded-2xl border border-stone-200 bg-paper p-2.5 text-stone-600 transition-colors hover:bg-cream hover:text-stone-900"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-1.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream hover:text-stone-900"
             onClick={onOpenHistory}
             title="Historique des séances"
             type="button"
           >
-            <History aria-hidden="true" className="h-4 w-4" />
+            <History aria-hidden="true" className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Historique</span>
           </button>
 
-          {/* Bouton Réglages Clé API & Ambiances */}
           <button
             aria-label={
               hasKey
                 ? "Réglages de l'application"
-                : "Réglages : Clé API Google requise"
+                : "Réglages : clé API Google non configurée"
             }
-            className={`relative cursor-pointer rounded-2xl border p-2.5 transition-colors ${
-              hasKey
-                ? "border-stone-200 bg-paper text-stone-600 hover:bg-cream hover:text-stone-900"
-                : "animate-pulse border-amber-300 bg-amber-50 text-amber-700"
-            }`}
+            className="relative flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-1.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream hover:text-stone-900"
             onClick={onOpenSettings}
-            title={
-              hasKey
-                ? "Réglages de l'application"
-                : "Réglages : Clé API Google requise"
-            }
+            title="Réglages (Clé Gemini & Thème)"
             type="button"
           >
-            <Settings aria-hidden="true" className="h-4 w-4" />
+            <Settings aria-hidden="true" className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">Réglages</span>
             {!hasKey && (
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500" />
-              </span>
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 rounded-full bg-amber-500"
+              />
             )}
           </button>
         </div>

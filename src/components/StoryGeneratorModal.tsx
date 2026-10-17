@@ -1,12 +1,4 @@
-import {
-  AlertCircle,
-  BookOpen,
-  CheckCircle2,
-  Loader2,
-  Sparkles,
-  Wand2,
-  X,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, X } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 
@@ -23,17 +15,16 @@ interface StoryGeneratorModalProps {
   onStoryCreated: (text: ExerciseText) => void;
   studentName?: string;
 }
-const EMOJI_PREFIX_REGEX = /^[\p{Emoji}\s]+/u;
 
 const THEME_SUGGESTIONS = [
   "Voyage dans les étoiles",
   "Animaux extraordinaires",
   "Mystère et détectives",
-  "Monde sous-marin secret",
+  "Monde sous-marin",
   "Forêt enchantée",
   "Championnat sportif",
-  "Château magique",
-  "Les dinosaures curieux",
+  "Château médiéval",
+  "Les dinosaures",
 ];
 
 export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
@@ -45,7 +36,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
   onOpenSettings,
 }) => {
   const [level, setLevel] = useState<FluencyLevel>(defaultLevel);
-  const [theme, setTheme] = useState("Mystère & Détectives");
+  const [theme, setTheme] = useState("Mystère et détectives");
   const [customTheme, setCustomTheme] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -77,7 +68,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
   const handleGenerate = async () => {
     if (!hasStoredApiKey()) {
       setErrorMessage(
-        "Clé API Google requise. Veuillez renseigner votre clé dans les réglages."
+        "Clé API Google requise. Ajoutez votre clé dans les réglages."
       );
       return;
     }
@@ -115,7 +106,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
   return (
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/60 p-4 backdrop-blur-xs duration-200"
+      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -125,112 +116,88 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
       <div
         aria-labelledby="story-generator-modal-title"
         aria-modal="true"
-        className="relative my-8 w-full max-w-2xl rounded-3xl border border-stone-100 bg-paper p-6 shadow-2xl sm:p-8"
+        className="relative my-8 w-full max-w-xl rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
         role="dialog"
       >
-        <button
-          aria-label="Fermer la fenêtre"
-          className="absolute top-5 right-5 cursor-pointer rounded-full p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
-          onClick={onClose}
-          title="Fermer"
-          type="button"
-        >
-          <X aria-hidden="true" className="h-5 w-5" />
-        </button>
-
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 shadow-inner">
-            <Wand2 aria-hidden="true" className="h-6 w-6" />
-          </div>
-          <div>
-            <h2
-              className="font-bold font-fun text-stone-900 text-xl"
-              id="story-generator-modal-title"
-            >
-              Créer une histoire sur mesure
-            </h2>
-            <p className="font-sans text-stone-600 text-xs">
-              Généré par Google Gemini selon les normes pédagogiques Éduscol
-            </p>
-          </div>
+        <div className="mb-5 flex items-center justify-between border-stone-100 border-b pb-3">
+          <h2
+            className="font-bold font-fun text-lg text-stone-900"
+            id="story-generator-modal-title"
+          >
+            Nouvelle histoire sur mesure
+          </h2>
+          <button
+            aria-label="Fermer la fenêtre"
+            className="cursor-pointer rounded-lg p-1.5 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+            onClick={onClose}
+            type="button"
+          >
+            <X aria-hidden="true" className="h-4 w-4" />
+          </button>
         </div>
 
         {previewStory ? (
-          /* Prévisualisation de l'histoire générée */
-          <div className="fade-in animate-in space-y-5">
-            <div className="rounded-2xl border border-stone-200 bg-cream p-5">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="rounded-full bg-primary-100 px-2.5 py-0.5 font-bold text-primary-700 text-xs">
+          <div className="space-y-4">
+            <div className="rounded-xl border border-stone-200 bg-cream p-4">
+              <div className="mb-1.5 flex items-center justify-between text-stone-600 text-xs">
+                <span className="font-bold text-primary-800">
                   {previewStory.level} · {previewStory.wordCount} mots
                 </span>
-                <span className="font-medium text-stone-600 text-xs">
-                  Cible : {previewStory.targetMclm} MCLM
-                </span>
+                <span>Cible : {previewStory.targetMclm} MCLM</span>
               </div>
               <h3 className="mb-2 font-bold font-fun text-lg text-stone-900">
                 {previewStory.title}
               </h3>
-              <p className="max-h-48 overflow-y-auto pr-2 text-sm text-stone-700 leading-relaxed">
+              <p className="max-h-48 overflow-y-auto pr-2 text-stone-700 text-xs leading-relaxed sm:text-sm">
                 {previewStory.content}
               </p>
             </div>
 
             {previewStory.comprehensionQuestions.length > 0 && (
-              <div className="rounded-2xl border border-primary-100/60 bg-primary-50/50 p-4">
-                <div className="mb-2 flex items-center gap-1.5 font-bold text-primary-800 text-xs uppercase tracking-wide">
-                  <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />{" "}
-                  Questions de compréhension
+              <div className="space-y-1.5 rounded-xl border border-stone-200 bg-paper p-3.5 text-xs">
+                <div className="font-semibold text-stone-700">
+                  Questions de compréhension (
+                  {previewStory.comprehensionQuestions.length})
                 </div>
-                <div className="space-y-2 text-stone-700 text-xs">
-                  {previewStory.comprehensionQuestions.map((q, i) => (
-                    <div
-                      className="rounded-xl border border-primary-50 bg-paper/80 p-2.5"
-                      key={i}
-                    >
-                      <div className="font-semibold text-stone-900">
-                        Q{i + 1} : {q.question}
-                      </div>
-                      <div className="mt-0.5 text-stone-600 italic">
-                        Réponse attendue : {q.answer}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {previewStory.comprehensionQuestions.map((q, i) => (
+                  <div className="text-stone-600" key={i}>
+                    {i + 1}. {q.question}
+                  </div>
+                ))}
               </div>
             )}
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 pt-1">
               <button
-                className="flex-1 rounded-xl border border-stone-200 px-4 py-3 font-semibold text-sm text-stone-700 transition-colors hover:bg-cream"
+                className="flex-1 cursor-pointer rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
                 onClick={() => setPreviewStory(null)}
                 type="button"
               >
-                Générer une autre
+                Autre proposition
               </button>
               <button
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-bold text-sm text-white shadow-emerald-200 shadow-md transition-all hover:bg-emerald-700"
+                className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700"
                 onClick={handleSaveAndUse}
                 type="button"
               >
-                <CheckCircle2 className="h-5 w-5" />
-                <span>Commencer cette histoire</span>
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Lire cette histoire</span>
               </button>
             </div>
           </div>
         ) : (
-          <div className="space-y-5">
-            {/* Choix du niveau */}
+          <div className="space-y-4">
             <div>
-              <span className="mb-2 block font-semibold text-sm text-stone-700">
-                Niveau scolaire
+              <span className="mb-1.5 block font-semibold text-stone-800 text-xs">
+                Niveau
               </span>
               <div className="grid grid-cols-4 gap-2">
                 {(["CE1", "CE2", "CM1", "CM2"] as FluencyLevel[]).map((lvl) => (
                   <button
-                    className={`rounded-xl border py-2.5 font-bold text-sm transition-all ${
+                    className={`cursor-pointer rounded-lg border py-2 font-bold text-xs transition-colors ${
                       level === lvl
-                        ? "border-primary-600 bg-primary-600 text-white shadow-md shadow-primary-200"
-                        : "border-stone-200 bg-cream text-stone-700 hover:bg-stone-100"
+                        ? "border-primary-600 bg-primary-600 text-white"
+                        : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
                     }`}
                     key={lvl}
                     onClick={() => setLevel(lvl)}
@@ -242,45 +209,40 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
               </div>
             </div>
 
-            {/* Suggestions de thèmes */}
             <div>
-              <span className="mb-2 block font-semibold text-sm text-stone-700">
-                Idées de thèmes
+              <span className="mb-1.5 block font-semibold text-stone-800 text-xs">
+                Thème suggéré
               </span>
-              <div className="flex flex-wrap gap-2">
-                {THEME_SUGGESTIONS.map((sug) => {
-                  const label = sug.replace(EMOJI_PREFIX_REGEX, "").trim();
-                  return (
-                    <button
-                      className={`rounded-xl border px-3 py-1.5 font-medium text-xs transition-colors ${
-                        theme === label && !customTheme
-                          ? "border-amber-300 bg-amber-100 font-semibold text-amber-900"
-                          : "border-stone-200 bg-cream text-stone-600 hover:bg-stone-100"
-                      }`}
-                      key={sug}
-                      onClick={() => {
-                        setTheme(label);
-                        setCustomTheme("");
-                      }}
-                      type="button"
-                    >
-                      {sug}
-                    </button>
-                  );
-                })}
+              <div className="flex flex-wrap gap-1.5">
+                {THEME_SUGGESTIONS.map((sug) => (
+                  <button
+                    className={`cursor-pointer rounded-lg border px-2.5 py-1.5 font-medium text-xs transition-colors ${
+                      theme === sug && !customTheme
+                        ? "border-primary-500 bg-primary-50 font-semibold text-primary-900"
+                        : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
+                    }`}
+                    key={sug}
+                    onClick={() => {
+                      setTheme(sug);
+                      setCustomTheme("");
+                    }}
+                    type="button"
+                  >
+                    {sug}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Thème libre */}
             <div>
               <label
-                className="mb-1.5 block font-semibold text-sm text-stone-700"
+                className="mb-1.5 block font-semibold text-stone-800 text-xs"
                 htmlFor="custom-story-theme-input"
               >
-                Ou saisis ton propre thème
+                Ou sujet libre
               </label>
               <input
-                className="w-full rounded-xl border border-stone-200 bg-cream px-4 py-2.5 text-sm text-stone-800 focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2 text-stone-800 text-xs focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
                 id="custom-story-theme-input"
                 onChange={(e) => setCustomTheme(e.target.value)}
                 placeholder="Ex : Un dauphin qui explore une épave de pirate..."
@@ -290,7 +252,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             </div>
 
             {errorMessage && (
-              <div className="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800 text-xs">
+              <div className="flex items-start justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-rose-800 text-xs">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{errorMessage}</span>
@@ -298,32 +260,29 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
                 {!hasStoredApiKey() && (
                   <button
-                    className="shrink-0 font-bold text-rose-900 underline hover:text-rose-950"
+                    className="shrink-0 cursor-pointer font-bold text-rose-900 underline"
                     onClick={onOpenSettings}
                     type="button"
                   >
-                    Régler la clé
+                    Configurer la clé
                   </button>
                 )}
               </div>
             )}
 
             <button
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary-600 py-3.5 font-bold text-white shadow-lg shadow-primary-200 transition-all hover:bg-primary-700 disabled:opacity-60"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 font-bold text-white text-xs transition-colors hover:bg-primary-700 disabled:opacity-60 sm:text-sm"
               disabled={isGenerating}
               onClick={handleGenerate}
               type="button"
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Création de l’histoire en cours...</span>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Rédaction en cours...</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="h-5 w-5 text-amber-300" />
-                  <span>Générer l’histoire ({level})</span>
-                </>
+                <span>Créer l’histoire ({level})</span>
               )}
             </button>
           </div>

@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, Clock, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import type React from "react";
 import { lazy, Suspense, useEffect, useState } from "react";
 
@@ -49,7 +49,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
   const [step3Attempt, setStep3Attempt] = useState<FluencyAttempt | null>(null);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
-  // Remonter en haut de page à chaque changement d'étape
   useEffect(() => {
     switch (currentStep) {
       default:
@@ -57,7 +56,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     }
   }, [currentStep]);
 
-  // Lancement d'une séance avec un texte sélectionné
   const handleSelectText = (text: ExerciseText) => {
     setSelectedText(text);
     setStep1Attempt(null);
@@ -65,24 +63,20 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setCurrentStep("step1");
   };
 
-  // Fin de l'étape 1 (Première lecture 60s)
   const handleCompleteStep1 = (attempt: FluencyAttempt) => {
     setStep1Attempt(attempt);
     setCurrentStep("step2");
   };
 
-  // Prêt pour l'étape 3 après la remédiation
   const handleReadyForStep3 = () => {
     setCurrentStep("step3");
   };
 
-  // Fin de l'étape 3 (Défi record 60s)
   const handleCompleteStep3 = (attempt: FluencyAttempt) => {
     setStep3Attempt(attempt);
     setCurrentStep("summary");
   };
 
-  // Réinitialiser vers le choix de texte
   const handleResetToSelection = () => {
     setSelectedText(null);
     setStep1Attempt(null);
@@ -90,107 +84,133 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
     setCurrentStep("selection");
   };
 
-  // Recommencer le même texte
   const handleRestartSameText = () => {
     setStep1Attempt(null);
     setStep3Attempt(null);
     setCurrentStep("step1");
   };
 
-  let step1Class = "text-stone-600";
-  if (currentStep === "step1") {
-    step1Class = "bg-primary-600 text-white shadow-xs";
-  } else if (step1Attempt) {
-    step1Class = "bg-emerald-50 text-emerald-800";
-  }
+  const canGoStep2 = Boolean(step1Attempt);
+  const canGoStep3 = Boolean(step1Attempt);
+  const canGoSummary = Boolean(step1Attempt && step3Attempt);
 
-  let step2Class = "text-stone-600";
-  if (currentStep === "step2") {
-    step2Class = "bg-primary-600 text-white shadow-xs";
-  } else if (currentStep === "step3" || currentStep === "summary") {
-    step2Class = "bg-emerald-50 text-emerald-800";
-  }
-
-  let step3Class = "text-stone-600";
-  if (currentStep === "step3") {
-    step3Class = "bg-primary-600 text-white shadow-xs";
-  } else if (step3Attempt) {
-    step3Class = "bg-emerald-50 text-emerald-800";
-  }
+  const getStepButtonClass = (
+    step: SessionStep,
+    isCompleted: boolean,
+    isEnabled: boolean
+  ) => {
+    if (currentStep === step) {
+      return "bg-primary-600 text-white shadow-2xs";
+    }
+    if (isCompleted) {
+      return "border border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100/80";
+    }
+    if (isEnabled) {
+      return "text-stone-700 hover:bg-stone-100";
+    }
+    return "cursor-not-allowed text-stone-500 opacity-60";
+  };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
-      {/* Barre de navigation d'étape si une séance est en cours */}
+    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       {currentStep !== "selection" && selectedText && (
-        <div className="no-print mb-8">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-paper px-3.5 py-2.5">
+          <button
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream hover:text-stone-900"
+            onClick={handleResetToSelection}
+            type="button"
+          >
+            <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />
+            <span>Textes</span>
+          </button>
+
+          <nav
+            aria-label="Étapes de la séance"
+            className="flex flex-wrap items-center gap-1 text-xs"
+          >
             <button
-              className="inline-flex cursor-pointer items-center gap-1.5 font-semibold text-stone-600 text-xs transition-colors hover:text-stone-900 sm:text-sm"
-              onClick={handleResetToSelection}
+              aria-current={currentStep === "step1" ? "step" : undefined}
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-colors ${getStepButtonClass(
+                "step1",
+                Boolean(step1Attempt),
+                true
+              )}`}
+              onClick={() => setCurrentStep("step1")}
               type="button"
             >
-              <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-              <span>Changer d’histoire</span>
+              {step1Attempt && currentStep !== "step1" && (
+                <Check aria-hidden="true" className="h-3 w-3" />
+              )}
+              <span>1. Lecture 1</span>
             </button>
 
-            <div className="font-bold text-stone-600 text-xs">
-              Texte :{" "}
-              <span className="font-extrabold text-primary-700">
-                {selectedText.title}
-              </span>{" "}
-              ({selectedText.level})
-            </div>
-          </div>
+            <span aria-hidden="true" className="text-stone-400">
+              ›
+            </span>
 
-          {/* Stepper de progression */}
-          <nav
-            aria-label="Progression de la séance"
-            className="grid grid-cols-4 gap-2 rounded-2xl border border-stone-200/80 bg-paper p-3 text-center text-xs shadow-2xs"
-          >
-            <div
-              aria-current={currentStep === "step1" ? "step" : undefined}
-              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step1Class}`}
-            >
-              <Clock aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">1.</span>{" "}
-              <span>Lecture 60s</span>
-            </div>
-
-            <div
+            <button
               aria-current={currentStep === "step2" ? "step" : undefined}
-              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step2Class}`}
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-colors ${getStepButtonClass(
+                "step2",
+                currentStep === "step3" || currentStep === "summary",
+                canGoStep2
+              )}`}
+              disabled={!canGoStep2}
+              onClick={() => setCurrentStep("step2")}
+              type="button"
             >
-              <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">2.</span>{" "}
-              <span>Remédiation</span>
-            </div>
+              {(currentStep === "step3" || currentStep === "summary") && (
+                <Check aria-hidden="true" className="h-3 w-3" />
+              )}
+              <span>2. Entraînement</span>
+            </button>
 
-            <div
+            <span aria-hidden="true" className="text-stone-400">
+              ›
+            </span>
+
+            <button
               aria-current={currentStep === "step3" ? "step" : undefined}
-              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${step3Class}`}
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-colors ${getStepButtonClass(
+                "step3",
+                Boolean(step3Attempt),
+                canGoStep3
+              )}`}
+              disabled={!canGoStep3}
+              onClick={() => setCurrentStep("step3")}
+              type="button"
             >
-              <Trophy aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">3.</span>{" "}
-              <span>Défi Record</span>
-            </div>
+              {step3Attempt && currentStep !== "step3" && (
+                <Check aria-hidden="true" className="h-3 w-3" />
+              )}
+              <span>3. Défi 60s</span>
+            </button>
 
-            <div
+            <span aria-hidden="true" className="text-stone-400">
+              ›
+            </span>
+
+            <button
               aria-current={currentStep === "summary" ? "step" : undefined}
-              className={`flex items-center justify-center gap-1.5 rounded-xl p-2 font-bold transition-all ${
-                currentStep === "summary"
-                  ? "bg-primary-600 text-white shadow-xs"
-                  : "text-stone-600"
-              }`}
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-colors ${getStepButtonClass(
+                "summary",
+                false,
+                canGoSummary
+              )}`}
+              disabled={!canGoSummary}
+              onClick={() => setCurrentStep("summary")}
+              type="button"
             >
-              <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">4.</span>{" "}
-              <span>Bilan & Victoire</span>
-            </div>
+              <span>4. Bilan</span>
+            </button>
           </nav>
+
+          <div className="hidden font-semibold text-stone-600 text-xs md:block">
+            {selectedText.title} ({selectedText.level})
+          </div>
         </div>
       )}
 
-      {/* Vue 1 : Choix du texte & Génération */}
       {currentStep === "selection" && (
         <StepSelection
           onOpenGenerator={() => setIsGeneratorOpen(true)}
@@ -201,7 +221,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
       )}
 
       <Suspense fallback={null}>
-        {/* Vue 2 : Étape 1 - Première lecture chronométrée (60 secondes) */}
         {currentStep === "step1" && selectedText && (
           <Step1Reading
             dyslexicMode={dyslexicMode}
@@ -212,7 +231,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
           />
         )}
 
-        {/* Vue 3 : Étape 2 - Remédiation & Répétition (Sans chronomètre) */}
         {currentStep === "step2" && selectedText && step1Attempt && (
           <Step2Remediation
             attempt1={step1Attempt}
@@ -222,7 +240,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
           />
         )}
 
-        {/* Vue 4 : Étape 3 - Défi Record (60 secondes) */}
         {currentStep === "step3" && selectedText && step1Attempt && (
           <Step3Challenge
             attempt1={step1Attempt}
@@ -234,7 +251,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
           />
         )}
 
-        {/* Vue 5 : Écran Bilan & Victoire */}
         {currentStep === "summary" &&
           selectedText &&
           step1Attempt &&
@@ -250,7 +266,6 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
             />
           )}
 
-        {/* Modal Générateur d'histoires sur mesure */}
         {isGeneratorOpen && (
           <StoryGeneratorModal
             defaultLevel={currentStudent.level}

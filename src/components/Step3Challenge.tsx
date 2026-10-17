@@ -1,14 +1,10 @@
 import {
   AlertCircle,
   ArrowRight,
-  Clock,
-  Headphones,
   Loader2,
   Mic,
   RotateCcw,
   Square,
-  TrendingUp,
-  Trophy,
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -141,7 +137,9 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
 
   const startReading = async () => {
     if (!hasStoredApiKey()) {
-      setAnalysisError("Clé API Google requise pour l'évaluation vocale.");
+      setAnalysisError(
+        "Ajoutez votre clé Google Gemini dans les réglages ou utilisez le mode démo."
+      );
       return;
     }
 
@@ -213,7 +211,7 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
         "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA=="
       );
       setIsAnalyzing(false);
-    }, 1200);
+    }, 800);
   };
 
   const handleOverrideWordStatus = (
@@ -273,61 +271,39 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
     }
   };
 
-  const delta = alignmentResult ? alignmentResult.mclm - attempt1.mclm : null;
+  const hesitationsCount =
+    alignmentResult?.alignedTokens.filter((t) => t.status === "hesitation")
+      .length ?? 0;
 
   return (
-    <div className="fade-in animate-in space-y-6 duration-300">
-      {/* Alerte si les 60 secondes sont écoulées */}
-      {isAutoStopped && (
-        <div className="zoom-in-95 flex animate-in items-center justify-between gap-3 rounded-2xl bg-amber-500 px-5 py-3.5 font-bold text-stone-950 shadow-lg duration-200">
-          <div className="flex items-center gap-2.5">
-            <Clock className="h-5 w-5 shrink-0 text-stone-950" />
-            <span className="text-sm">
-              <strong>60 secondes écoulées !</strong> Défi Record terminé,
-              calcul du nouveau score en cours...
-            </span>
-          </div>
-          <span className="shrink-0 rounded-xl bg-stone-950 px-2.5 py-1 font-mono text-white text-xs">
-            T = 60s
-          </span>
-        </div>
-      )}
-
-      {/* En-tête de l'étape 3 */}
-      <div className="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-primary-700 via-primary-700 to-primary-800 p-6 text-white shadow-xl sm:p-8 md:flex-row">
-        <div className="relative z-10">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-amber-400 px-3 py-1 font-extrabold text-stone-900 text-xs">
-              <Trophy className="h-3.5 w-3.5" /> Étape 3 sur 3 : Défi Record
-            </span>
-            <span className="font-semibold text-primary-200 text-xs">
-              Battre son premier score ({attempt1.mclm} MCLM)
-            </span>
-          </div>
-          <h2 className="font-extrabold font-fun text-2xl sm:text-3xl">
-            À toi de jouer pour le record !
-          </h2>
-          <p className="mt-1 max-w-lg text-primary-100 text-xs sm:text-sm">
-            Applique ce que tu as appris sur les mots difficiles. Lis vite et
-            avec précision ! L’enregistrement s’arrête automatiquement à 60s.
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
+        <div>
+          <h1 className="font-bold font-fun text-stone-900 text-xl sm:text-2xl">
+            {text.title}
+          </h1>
+          <p className="text-stone-600 text-xs">
+            2e lecture chronométrée (60s) · Score à battre :{" "}
+            <strong className="font-bold text-stone-800">
+              {attempt1.mclm} MCLM
+            </strong>{" "}
+            ({studentName})
           </p>
         </div>
 
-        {/* Compteur chrono visuel avec anneau SVG */}
-        <div className="relative z-10 flex items-center gap-4 rounded-3xl border border-white/20 bg-paper/10 p-3 backdrop-blur-md sm:p-4">
-          <CircularTimer
-            isRecording={isRecording}
-            size={76}
-            timeLeft={timeLeft}
-            totalTime={60}
-            variant="inverse"
-          />
-
-          <div className="mx-1 h-12 w-px bg-paper/20" />
+        <div className="flex items-center gap-3">
+          {!alignmentResult && (
+            <CircularTimer
+              isRecording={isRecording}
+              size={52}
+              timeLeft={timeLeft}
+              totalTime={60}
+            />
+          )}
 
           {alignmentResult && (
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-2xl bg-paper/20 px-4 py-3 font-semibold text-white text-xs transition-colors hover:bg-paper/30"
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
               onClick={() => {
                 setAlignmentResult(null);
                 setRecordedAudioUrl(null);
@@ -336,141 +312,120 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
               }}
               type="button"
             >
-              <RotateCcw className="h-4 w-4" />
-              <span>Recommencer</span>
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Refaire le défi</span>
             </button>
           )}
+
           {!alignmentResult && isRecording && (
             <button
-              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-rose-500 px-6 py-4 font-black text-base text-white shadow-lg transition-all hover:scale-105 hover:bg-rose-600"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-rose-700"
               onClick={() => stopReading(false)}
-              title="Arrêter avant les 60s"
+              title="Arrêter l'enregistrement"
               type="button"
             >
-              <Square className="h-6 w-6 fill-white" />
-              <span>Terminer</span>
+              <Square className="h-4 w-4 fill-white" />
+              <span>Arrêter</span>
             </button>
           )}
+
           {!(alignmentResult || isRecording) && (
-            <button
-              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-amber-400 px-6 py-4 font-black text-base text-stone-950 shadow-amber-950/20 shadow-lg transition-all hover:scale-105 hover:bg-amber-300 disabled:opacity-50"
-              disabled={isAnalyzing}
-              onClick={startReading}
-              type="button"
-            >
-              <Mic className="h-6 w-6 animate-pulse-subtle" />
-              <span>Top Départ !</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-2 font-semibold text-stone-600 text-xs transition-colors hover:bg-cream hover:text-stone-900"
+                disabled={isAnalyzing}
+                onClick={handleSimulateChallenge}
+                title="Simuler une 2e lecture sans microphone"
+                type="button"
+              >
+                Démo
+              </button>
+              <button
+                className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+                disabled={isAnalyzing}
+                onClick={startReading}
+                type="button"
+              >
+                <Mic className="h-4 w-4" />
+                <span>Lancer le défi (60s)</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
 
       {isRecording && (
-        <div className="fade-in animate-in py-2 text-center">
-          <p className="mb-2 font-semibold text-primary-600 text-xs">
-            Enregistrement en direct · Donne tout !
-          </p>
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50/60 px-4 py-2">
+          <span className="font-semibold text-primary-800 text-xs">
+            Microphone actif
+          </span>
           <AudioVisualizer audioLevel={audioLevel} isRecording={isRecording} />
         </div>
       )}
 
       {isAnalyzing && (
-        <div className="fade-in animate-in space-y-3 rounded-3xl border border-primary-200 bg-primary-50 p-8 text-center">
-          <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary-600" />
-          <h3 className="font-bold font-fun text-lg text-primary-950">
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-primary-900 text-xs">
+          <Loader2 className="h-4 w-4 animate-spin text-primary-600" />
+          <span className="font-semibold">
             {isAutoStopped
-              ? "60 secondes écoulées ! Calcul de ton nouveau record..."
-              : "Calcul de ton nouveau record de fluence..."}
-          </h3>
-          <p className="text-primary-700 text-xs">
-            Comparaison entre la 1ère lecture et ton nouveau score.
-          </p>
+              ? "60 secondes écoulées — calcul du nouveau score..."
+              : "Calcul du nouveau score de fluence..."}
+          </span>
         </div>
       )}
 
       {analysisError && (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-rose-900 text-xs">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{analysisError}</span>
           </div>
           <div className="flex items-center gap-2">
             {!hasStoredApiKey() && (
               <button
-                className="font-bold text-rose-900 underline"
+                className="cursor-pointer font-bold text-rose-900 underline"
                 onClick={onOpenSettings}
                 type="button"
               >
-                Régler la clé
+                Configurer la clé
               </button>
             )}
             <button
-              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-3 py-1 font-bold text-rose-900 transition-colors hover:bg-rose-100"
+              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-2.5 py-1 font-bold text-rose-900 hover:bg-rose-100"
               onClick={handleSimulateChallenge}
               type="button"
             >
-              Tester le record en mode démo
+              Simuler le défi
             </button>
           </div>
         </div>
       )}
 
-      {/* Résultat du Défi Record */}
       {alignmentResult && (
-        <div className="slide-in-from-bottom animate-in space-y-6 duration-300">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
           <MclmGauge
+            errorsCount={alignmentResult.errorsCount}
+            hesitationsCount={hesitationsCount}
             level={text.level}
             mclm={alignmentResult.mclm}
             previousMclm={attempt1.mclm}
-            showComparison={true}
+            wordsAttempted={alignmentResult.wordsAttempted}
           />
 
-          <div className="flex items-center justify-between rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 font-bold text-white text-xl shadow-md">
-                <TrendingUp className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-extrabold font-fun text-emerald-950 text-lg">
-                  Progression :{" "}
-                  {delta !== null && delta > 0
-                    ? `+${delta} mots par minute !`
-                    : `${delta} MCLM`}
-                </h4>
-                <p className="text-emerald-800 text-xs">
-                  {delta !== null && delta > 0
-                    ? `Bravo ${studentName}, le travail sur les mots difficiles a payé !`
-                    : "Bel effort ! La régularité de l’entraînement fait la différence."}
-                </p>
-              </div>
-            </div>
-
-            <button
-              className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3.5 font-bold text-sm text-white shadow-emerald-200 shadow-lg transition-all hover:scale-105 hover:bg-emerald-700"
-              onClick={handleNext}
-              type="button"
-            >
-              <span>Voir le Bilan & Victoire</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-1.5 text-stone-600 text-xs">
-              <Headphones className="h-4 w-4 text-primary-600" />
-              <span>
-                Clique sur un mot ci-dessous pour sauter à son horodatage et
-                vérifier la prononciation
-              </span>
-            </div>
-          </div>
+          <button
+            className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-emerald-700 sm:text-sm"
+            onClick={handleNext}
+            type="button"
+          >
+            <span>Voir le bilan</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       )}
 
-      {/* Zone du texte avec lecteur audio en sticky header */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {alignmentResult && recordedAudioUrl && (
-          <div className="sticky top-18 z-30 bg-cream/95 py-2 backdrop-blur-sm sm:top-20">
+          <div className="sticky top-14 z-30 bg-cream/95 py-1.5 backdrop-blur-sm">
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}
@@ -492,18 +447,6 @@ export const Step3Challenge: React.FC<Step3ChallengeProps> = ({
           showResults={Boolean(alignmentResult)}
         />
       </div>
-
-      {!(alignmentResult || isRecording) && (
-        <div className="pt-2 text-center">
-          <button
-            className="cursor-pointer font-medium text-stone-600 text-xs underline transition-colors hover:text-primary-700"
-            onClick={handleSimulateChallenge}
-            type="button"
-          >
-            Tester rapidement le record sans micro (simulation)
-          </button>
-        </div>
-      )}
     </div>
   );
 };

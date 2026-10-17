@@ -1,8 +1,6 @@
 import {
   AlertCircle,
   ArrowRight,
-  Clock,
-  Headphones,
   Loader2,
   Mic,
   RotateCcw,
@@ -66,7 +64,6 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
     Promise.resolve()
   );
 
-  // Initialisation du recorder
   useEffect(() => {
     recorderRef.current = new AudioRecorder((level) => {
       setAudioLevel(level);
@@ -108,12 +105,10 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
         const audioUrl = URL.createObjectURL(audioBlob);
         setRecordedAudioUrl(audioUrl);
 
-        // Appel à gemini-3.5-transcribe
         const transcription = await transcribeAudioWithGemini(
           audioBlob,
           text.tokens
         );
-        // Alignement et calcul MCLM
         const result = alignFluencyReading(text.tokens, transcription.words, {
           maxDurationMs: 60_000,
         });
@@ -128,7 +123,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       setAnalysisError(
         error instanceof Error
           ? error.message
-          : "Erreur lors de la transcription. Vous pouvez réessayer ou simuler une lecture."
+          : "Erreur lors de la transcription. Vous pouvez réessayer ou tester en mode démo."
       );
     }
     setIsAnalyzing(false);
@@ -140,7 +135,9 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
   const startReading = async () => {
     if (!hasStoredApiKey()) {
-      setAnalysisError("Clé API Google requise pour l'évaluation vocale.");
+      setAnalysisError(
+        "Ajoutez votre clé Google Gemini dans les réglages ou utilisez le mode démo."
+      );
       return;
     }
 
@@ -173,7 +170,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
     } catch (error: unknown) {
       console.error(error);
       setAnalysisError(
-        "Impossible d'accéder au micro. Vérifiez les autorisations de votre navigateur."
+        "Impossible d'accéder au microphone. Vérifiez les autorisations du navigateur."
       );
       isRecordingRef.current = false;
       setIsRecording(false);
@@ -224,10 +221,9 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
         "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA=="
       );
       setIsAnalyzing(false);
-    }, 1200);
+    }, 800);
   };
 
-  // Permet à l'enseignant de corriger un mot (ex: vrai positif pris pour une erreur ou inversement)
   const handleOverrideWordStatus = (
     expectedIndexes: number[],
     newStatus: "correct" | "error"
@@ -285,60 +281,35 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
     }
   };
 
-  return (
-    <div className="fade-in animate-in space-y-6 duration-300">
-      {/* Alerte si les 60 secondes sont écoulées */}
-      {isAutoStopped && (
-        <div className="zoom-in-95 flex animate-in items-center justify-between gap-3 rounded-2xl bg-amber-500 px-5 py-3.5 font-bold text-stone-950 shadow-lg duration-200">
-          <div className="flex items-center gap-2.5">
-            <Clock className="h-5 w-5 shrink-0 text-stone-950" />
-            <span className="text-sm">
-              <strong>60 secondes écoulées !</strong> L’enregistrement s’est
-              arrêté automatiquement.
-            </span>
-          </div>
-          <span className="shrink-0 rounded-xl bg-stone-950 px-2.5 py-1 font-mono text-white text-xs">
-            T = 60s
-          </span>
-        </div>
-      )}
+  const hesitationsCount =
+    alignmentResult?.alignedTokens.filter((t) => t.status === "hesitation")
+      .length ?? 0;
 
-      {/* En-tête de l'étape 1 */}
-      <div className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-stone-200/90 bg-paper p-6 shadow-sm sm:p-8 md:flex-row">
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
         <div>
-          <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-full bg-primary-100 px-3 py-1 font-bold text-primary-700 text-xs">
-              Étape 1 sur 3
-            </span>
-            <span className="font-semibold text-stone-600 text-xs">
-              Première lecture chronométrée
-            </span>
-          </div>
-          <h2 className="font-extrabold font-fun text-2xl text-stone-900 sm:text-3xl">
+          <h1 className="font-bold font-fun text-stone-900 text-xl sm:text-2xl">
             {text.title}
-          </h2>
-          <p className="mt-1 text-stone-600 text-xs sm:text-sm">
-            À toi de jouer, {studentName} ! Lis le texte à voix haute pendant 60
-            secondes. L’enregistrement s’arrête automatiquement à la fin du
-            chrono !
+          </h1>
+          <p className="text-stone-600 text-xs">
+            1re lecture chronométrée (60s) · {studentName} ({text.level})
           </p>
         </div>
 
-        {/* Compteur chrono visuel avec anneau SVG */}
-        <div className="flex items-center gap-4 rounded-3xl border border-stone-100 bg-cream p-3 sm:p-4">
-          <CircularTimer
-            isRecording={isRecording}
-            size={76}
-            timeLeft={timeLeft}
-            totalTime={60}
-          />
+        <div className="flex items-center gap-3">
+          {!alignmentResult && (
+            <CircularTimer
+              isRecording={isRecording}
+              size={52}
+              timeLeft={timeLeft}
+              totalTime={60}
+            />
+          )}
 
-          <div className="mx-1 h-12 w-px bg-stone-200" />
-
-          {/* Bouton Enregistrement */}
           {alignmentResult && (
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-2xl bg-stone-100 px-4 py-3 font-semibold text-stone-700 text-xs transition-colors hover:bg-stone-200"
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
               onClick={() => {
                 setAlignmentResult(null);
                 setRecordedAudioUrl(null);
@@ -347,72 +318,78 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
               }}
               type="button"
             >
-              <RotateCcw className="h-4 w-4" />
-              <span>Recommencer</span>
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Refaire la lecture</span>
             </button>
           )}
+
           {!alignmentResult && isRecording && (
             <button
-              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-rose-600 px-6 py-4 font-bold text-base text-white shadow-lg shadow-rose-200 transition-all hover:scale-105 hover:bg-rose-700"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-rose-700"
               onClick={() => stopReading(false)}
-              title="Arrêter avant les 60s si tu as fini de lire le texte"
+              title="Arrêter l'enregistrement"
               type="button"
             >
-              <Square className="h-6 w-6 fill-white" />
+              <Square className="h-4 w-4 fill-white" />
               <span>Arrêter</span>
             </button>
           )}
+
           {!(alignmentResult || isRecording) && (
-            <button
-              className="flex cursor-pointer items-center gap-2.5 rounded-2xl bg-primary-600 px-6 py-4 font-bold text-base text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700 disabled:opacity-50"
-              disabled={isAnalyzing}
-              onClick={startReading}
-              type="button"
-            >
-              <Mic className="h-6 w-6 animate-pulse-subtle" />
-              <span>Commencer (60s)</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-2 font-semibold text-stone-600 text-xs transition-colors hover:bg-cream hover:text-stone-900"
+                disabled={isAnalyzing}
+                onClick={handleSimulateReading}
+                title="Simuler une lecture sans microphone"
+                type="button"
+              >
+                Démo
+              </button>
+              <button
+                className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+                disabled={isAnalyzing}
+                onClick={startReading}
+                type="button"
+              >
+                <Mic className="h-4 w-4" />
+                <span>Lancer (60s)</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Visualiseur audio pendant l'enregistrement */}
       {isRecording && (
-        <div className="fade-in animate-in py-2 text-center">
-          <p className="mb-2 font-semibold text-primary-600 text-xs">
-            Microphone actif · Parle à voix haute
-          </p>
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50/60 px-4 py-2">
+          <span className="font-semibold text-primary-800 text-xs">
+            Microphone actif
+          </span>
           <AudioVisualizer audioLevel={audioLevel} isRecording={isRecording} />
         </div>
       )}
 
-      {/* Analyse en cours */}
       {isAnalyzing && (
-        <div className="fade-in animate-in space-y-3 rounded-3xl border border-primary-200 bg-primary-50 p-8 text-center">
-          <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary-600" />
-          <h3 className="font-bold font-fun text-lg text-primary-950">
+        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-primary-900 text-xs">
+          <Loader2 className="h-4 w-4 animate-spin text-primary-600" />
+          <span className="font-semibold">
             {isAutoStopped
-              ? "60 secondes écoulées ! Analyse en cours..."
-              : "Analyse de la lecture avec Google Gemini..."}
-          </h3>
-          <p className="mx-auto max-w-md text-primary-700 text-xs">
-            Détection verbatim des mots prononcés, des hésitations et calcul de
-            la fluence selon une méthode inspirée du protocole ELFE.
-          </p>
+              ? "60 secondes écoulées — analyse de la lecture en cours..."
+              : "Analyse de la lecture en cours..."}
+          </span>
         </div>
       )}
 
-      {/* Erreur */}
       {analysisError && (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-rose-900 text-xs">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{analysisError}</span>
           </div>
           <div className="flex items-center gap-2">
             {!hasStoredApiKey() && (
               <button
-                className="font-bold text-rose-900 underline"
+                className="cursor-pointer font-bold text-rose-900 underline"
                 onClick={onOpenSettings}
                 type="button"
               >
@@ -420,84 +397,44 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
               </button>
             )}
             <button
-              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-3 py-1 font-bold text-rose-900 transition-colors hover:bg-rose-100"
+              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-2.5 py-1 font-bold text-rose-900 hover:bg-rose-100"
               onClick={handleSimulateReading}
               type="button"
             >
-              Tester en mode démo
+              Simuler une lecture
             </button>
           </div>
         </div>
       )}
 
-      {/* Résultats de l'étape 1 */}
       {alignmentResult && (
-        <div className="slide-in-from-bottom animate-in space-y-6 duration-300">
-          <MclmGauge level={text.level} mclm={alignmentResult.mclm} />
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
+          <MclmGauge
+            errorsCount={alignmentResult.errorsCount}
+            hesitationsCount={hesitationsCount}
+            level={text.level}
+            mclm={alignmentResult.mclm}
+            wordsAttempted={alignmentResult.wordsAttempted}
+          />
 
-          <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
-            <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-600 text-xs uppercase">
-                Mots tentés
-              </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-stone-800">
-                {alignmentResult.wordsAttempted}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-600 text-xs uppercase">
-                Mots justes (MCLM)
-              </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-emerald-700">
-                {alignmentResult.mclm}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-600 text-xs uppercase">
-                Erreurs / Omissions
-              </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-rose-600">
-                {alignmentResult.errorsCount}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-stone-200 bg-paper p-4">
-              <div className="font-semibold text-stone-600 text-xs uppercase">
-                Mots à travailler
-              </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-amber-700">
-                {alignmentResult.attempt.stumbledWords.length}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-1.5 text-stone-600 text-xs">
-              <Headphones className="h-4 w-4 text-primary-600" />
-              <span>
-                Clique sur un mot ci-dessous pour sauter à son horodatage et
-                vérifier la prononciation
-              </span>
-            </div>
-
-            <button
-              className="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-primary-600 px-6 py-3.5 font-bold text-sm text-white shadow-lg shadow-primary-200 transition-all hover:scale-105 hover:bg-primary-700"
-              onClick={handleNext}
-              type="button"
-            >
-              <span>Passer à l’étape 2 : Remédiation</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700 sm:text-sm"
+            onClick={handleNext}
+            type="button"
+          >
+            <span>
+              {alignmentResult.attempt.stumbledWords.length > 0
+                ? `Travailler les ${alignmentResult.attempt.stumbledWords.length} mots`
+                : "Passer à l’entraînement"}
+            </span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       )}
 
-      {/* Zone du texte avec lecteur audio en sticky header */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {alignmentResult && recordedAudioUrl && (
-          <div className="sticky top-18 z-30 bg-cream/95 py-2 backdrop-blur-sm sm:top-20">
+          <div className="sticky top-14 z-30 bg-cream/95 py-1.5 backdrop-blur-sm">
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}
@@ -507,7 +444,6 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           </div>
         )}
 
-        {/* Affichage du texte de lecture avec repères cumulés et synchronisation audio */}
         <FluencyTextDisplay
           annotatedTokens={alignmentResult?.alignedTokens}
           content={text.content}
@@ -520,19 +456,6 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           showResults={Boolean(alignmentResult)}
         />
       </div>
-
-      {/* Raccourci de test en bas si pas encore d'analyse */}
-      {!(alignmentResult || isRecording) && (
-        <div className="pt-2 text-center">
-          <button
-            className="cursor-pointer font-medium text-stone-600 text-xs underline transition-colors hover:text-primary-700"
-            onClick={handleSimulateReading}
-            type="button"
-          >
-            Tester rapidement sans micro (simulation de lecture élève)
-          </button>
-        </div>
-      )}
     </div>
   );
 };
