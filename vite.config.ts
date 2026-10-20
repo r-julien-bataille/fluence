@@ -10,15 +10,8 @@ const packageJson = JSON.parse(
   fs.readFileSync(path.resolve(import.meta.dirname, "./package.json"), "utf8")
 ) as { version: string };
 
-const basePath = process.env.BASE_PATH;
-const base =
-  basePath === undefined
-    ? process.env.GITHUB_ACTIONS
-      ? "/fluence/"
-      : "/"
-    : basePath.endsWith("/")
-      ? basePath
-      : `${basePath}/`;
+const basePath = process.env.BASE_PATH ?? "/";
+const base = basePath.endsWith("/") ? basePath : `${basePath}/`;
 
 // https://vite.dev/config/
 export default defineConfig({

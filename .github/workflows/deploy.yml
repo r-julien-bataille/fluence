@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages & Firebase Hosting
+name: Deploy to Firebase Hosting
 
 on:
   push:
@@ -8,63 +8,13 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  deploy-github-pages:
-    name: Deploy to GitHub Pages
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
-
-      - name: Build for GitHub Pages
-        run: |
-          pnpm build
-          cp dist/index.html dist/404.html
-          touch dist/.nojekyll
-        env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-  deploy-firebase:
+  deploy:
     name: Deploy to Firebase Hosting
     runs-on: ubuntu-latest
     steps:
@@ -88,10 +38,8 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Build for Firebase Hosting
+      - name: Build
         run: pnpm build
-        env:
-          BASE_PATH: /
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

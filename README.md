@@ -79,3 +79,7 @@ $$\text{MCLM} = \text{Mots Correctement Lus en 60 secondes} = \text{Mots Totaux 
   - **Génération & Compréhension :** `gemini-3.8-flash` avec JSON structuré pour générer des histoires adaptées au niveau (CE1, CE2, CM1, CM2) et des questions de compréhension.
 - **Alignement phonétique & temporel :** Algorithme par programmation dynamique (Needleman-Wunsch pondéré avec distance de Levenshtein) borné à $T \le 60\,000\text{ ms}$.
 
+
+## Licence
+
+Ce projet est sous licence [Apache 2.0](LICENSE).
