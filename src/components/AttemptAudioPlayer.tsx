@@ -175,7 +175,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
   return (
     <div
-      className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-paper px-3.5 py-2.5 shadow-2xs ${className}`}
+      className={`bg-paper flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 px-3.5 py-2.5 shadow-2xs ${className}`}
     >
       <audio
         onEnded={() => setIsPlaying(false)}
@@ -190,7 +190,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
       <div className="flex items-center gap-1.5">
         <button
           aria-label="Reculer de 3 secondes"
-          className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 p-1.5 text-stone-700 transition-colors hover:bg-cream"
+          className="bg-cream/60 hover:bg-cream cursor-pointer rounded-lg border border-stone-200 p-1.5 text-stone-700 transition-colors"
           onClick={() => handleSkip(-3)}
           title="Reculer de 3 secondes"
           type="button"
@@ -200,7 +200,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
         <button
           aria-label={isPlaying ? "Mettre en pause" : "Lire l’enregistrement"}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-primary-600 text-white transition-colors hover:bg-primary-700"
+          className="bg-primary-600 hover:bg-primary-700 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-white transition-colors"
           onClick={togglePlay}
           title={isPlaying ? "Pause" : "Réécouter l’enregistrement"}
           type="button"
@@ -214,7 +214,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
         <button
           aria-label="Avancer de 3 secondes"
-          className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 p-1.5 text-stone-700 transition-colors hover:bg-cream"
+          className="bg-cream/60 hover:bg-cream cursor-pointer rounded-lg border border-stone-200 p-1.5 text-stone-700 transition-colors"
           onClick={() => handleSkip(3)}
           title="Avancer de 3 secondes"
           type="button"
@@ -230,7 +230,7 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
 
         <input
           aria-label="Position de lecture audio"
-          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-stone-200 accent-primary-600"
+          className="accent-primary-600 h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-stone-200"
           max={durationSec || MAX_DURATION_SEC}
           min={0}
           onChange={handleSeekChange}
@@ -244,12 +244,12 @@ export const AttemptAudioPlayer: React.FC<AttemptAudioPlayerProps> = ({
         </span>
       </div>
 
-      <div className="flex items-center gap-1 rounded-lg border border-stone-200 bg-cream/60 p-0.5">
+      <div className="bg-cream/60 flex items-center gap-1 rounded-lg border border-stone-200 p-0.5">
         {[1, 0.8, 0.6].map((rate) => (
           <button
             aria-label={`Vitesse de lecture ${rate}x`}
             aria-pressed={playbackRate === rate}
-            className={`cursor-pointer rounded px-2 py-0.5 font-bold text-[11px] transition-colors ${
+            className={`cursor-pointer rounded px-2 py-0.5 text-[11px] font-bold transition-colors ${
               playbackRate === rate
                 ? "bg-primary-600 text-white"
                 : "text-stone-600 hover:text-stone-900"

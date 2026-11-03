@@ -104,7 +104,7 @@ export default defineConfig({
                 maxEntries: 10,
               },
             },
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/iu,
           },
           {
             handler: "CacheFirst",
@@ -118,7 +118,7 @@ export default defineConfig({
                 maxEntries: 20,
               },
             },
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/iu,
           },
         ],
       },

@@ -79,7 +79,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
+      className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -89,12 +89,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div
         aria-labelledby="settings-modal-title"
         aria-modal="true"
-        className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
+        className="bg-paper relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-stone-200 p-6 shadow-xl"
         role="dialog"
       >
-        <div className="mb-5 flex items-center justify-between border-stone-100 border-b pb-3">
+        <div className="mb-5 flex items-center justify-between border-b border-stone-100 pb-3">
           <h2
-            className="font-bold font-fun text-lg text-stone-900"
+            className="font-fun text-lg font-bold text-stone-900"
             id="settings-modal-title"
           >
             Réglages
@@ -113,13 +113,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <div>
             <div className="mb-1.5 flex items-center justify-between">
               <label
-                className="font-semibold text-stone-800 text-xs"
+                className="text-xs font-semibold text-stone-800"
                 htmlFor="gemini-api-key-input"
               >
                 Clé API Google Gemini
               </label>
               <a
-                className="inline-flex items-center gap-1 font-medium text-primary-700 text-xs underline hover:text-primary-900"
+                className="text-primary-700 hover:text-primary-900 inline-flex items-center gap-1 text-xs font-medium underline"
                 href="https://aistudio.google.com/app/apikey"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -129,7 +129,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </a>
             </div>
             <input
-              className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2.5 font-mono text-stone-800 text-xs transition-colors focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+              className="bg-cream focus:bg-paper focus:ring-primary-500 w-full rounded-xl border border-stone-200 px-3.5 py-2.5 font-mono text-xs text-stone-800 transition-colors focus:ring-2 focus:outline-hidden"
               id="gemini-api-key-input"
               onChange={(e) => {
                 setApiKey(e.target.value);
@@ -170,8 +170,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           )}
 
           {currentTheme && onSelectTheme && (
-            <div className="border-stone-100 border-t pt-4">
-              <div className="mb-2.5 font-semibold text-stone-800 text-xs">
+            <div className="border-t border-stone-100 pt-4">
+              <div className="mb-2.5 text-xs font-semibold text-stone-800">
                 Couleur d’accentuation
               </div>
               <ThemeSelector
@@ -181,13 +181,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
 
-          <div className="flex items-center justify-between border-stone-100 border-t pt-4">
+          <div className="flex items-center justify-between border-t border-stone-100 pt-4">
             <span className="font-mono text-[11px] text-stone-600">
               v{APP_VERSION}
             </span>
             <div className="flex items-center gap-2">
               <button
-                className="cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream disabled:opacity-50"
+                className="hover:bg-cream cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 text-xs font-semibold text-stone-700 transition-colors disabled:opacity-50"
                 disabled={isTesting || !apiKey.trim()}
                 onClick={handleTest}
                 type="button"
@@ -195,7 +195,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {isTesting ? "Vérification..." : "Tester la clé"}
               </button>
               <button
-                className="cursor-pointer rounded-xl bg-primary-600 px-4 py-2 font-bold text-white text-xs transition-colors hover:bg-primary-700"
+                className="bg-primary-600 hover:bg-primary-700 cursor-pointer rounded-xl px-4 py-2 text-xs font-bold text-white transition-colors"
                 onClick={handleSave}
                 type="button"
               >

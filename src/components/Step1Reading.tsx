@@ -14,7 +14,7 @@ import type { AlignmentResult } from "@/lib/alignment";
 import { alignFluencyReading } from "@/lib/alignment";
 import { AudioRecorder } from "@/lib/audio/recorder";
 import { playChimeSound } from "@/lib/audio/speech";
-import { hasStoredApiKey } from "@/lib/gemini/client";
+import { getGenAIClient, hasStoredApiKey } from "@/lib/gemini/client";
 import type { TranscribedWord } from "@/lib/gemini/transcribe";
 import { transcribeAudioWithGemini } from "@/lib/gemini/transcribe";
 
@@ -105,10 +105,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
         const audioUrl = URL.createObjectURL(audioBlob);
         setRecordedAudioUrl(audioUrl);
 
-        const transcription = await transcribeAudioWithGemini(
-          audioBlob,
-          text.tokens
-        );
+        const transcription = await transcribeAudioWithGemini(audioBlob);
         const result = alignFluencyReading(text.tokens, transcription.words, {
           maxDurationMs: 60_000,
         });
@@ -150,6 +147,8 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
     try {
       if (recorderRef.current) {
         await recorderRef.current.start();
+        // Pré-charger le SDK Gemini en arrière-plan pendant que l'élève lit
+        getGenAIClient().catch(console.debug);
         isRecordingRef.current = true;
         setIsRecording(true);
 
@@ -287,12 +286,12 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
+      <div className="bg-paper flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 px-4 py-3 sm:px-5">
         <div>
-          <h1 className="font-bold font-fun text-stone-900 text-xl sm:text-2xl">
+          <h1 className="font-fun text-xl font-bold text-stone-900 sm:text-2xl">
             {text.title}
           </h1>
-          <p className="text-stone-600 text-xs">
+          <p className="text-xs text-stone-600">
             1re lecture chronométrée (60s) · {studentName} ({text.level})
           </p>
         </div>
@@ -309,7 +308,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
           {alignmentResult && (
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+              className="bg-cream/60 hover:bg-cream flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 transition-colors"
               onClick={() => {
                 setAlignmentResult(null);
                 setRecordedAudioUrl(null);
@@ -325,7 +324,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
           {!alignmentResult && isRecording && (
             <button
-              className="flex cursor-pointer items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-rose-700"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-rose-700"
               onClick={() => stopReading(false)}
               title="Arrêter l'enregistrement"
               type="button"
@@ -338,7 +337,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           {!(alignmentResult || isRecording) && (
             <div className="flex items-center gap-2">
               <button
-                className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-2 font-semibold text-stone-600 text-xs transition-colors hover:bg-cream hover:text-stone-900"
+                className="bg-cream/60 hover:bg-cream cursor-pointer rounded-lg border border-stone-200 px-2.5 py-2 text-xs font-semibold text-stone-600 transition-colors hover:text-stone-900"
                 disabled={isAnalyzing}
                 onClick={handleSimulateReading}
                 title="Simuler une lecture sans microphone"
@@ -347,7 +346,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
                 Démo
               </button>
               <button
-                className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-sm text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+                className="bg-primary-600 hover:bg-primary-700 flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-colors disabled:opacity-50"
                 disabled={isAnalyzing}
                 onClick={startReading}
                 type="button"
@@ -361,8 +360,8 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       </div>
 
       {isRecording && (
-        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50/60 px-4 py-2">
-          <span className="font-semibold text-primary-800 text-xs">
+        <div className="border-primary-200 bg-primary-50/60 flex items-center justify-center gap-3 rounded-xl border px-4 py-2">
+          <span className="text-primary-800 text-xs font-semibold">
             Microphone actif
           </span>
           <AudioVisualizer audioLevel={audioLevel} isRecording={isRecording} />
@@ -370,8 +369,8 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       )}
 
       {isAnalyzing && (
-        <div className="flex items-center justify-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-primary-900 text-xs">
-          <Loader2 className="h-4 w-4 animate-spin text-primary-600" />
+        <div className="border-primary-200 bg-primary-50 text-primary-900 flex items-center justify-center gap-3 rounded-xl border px-4 py-3 text-xs">
+          <Loader2 className="text-primary-600 h-4 w-4 animate-spin" />
           <span className="font-semibold">
             {isAutoStopped
               ? "60 secondes écoulées — analyse de la lecture en cours..."
@@ -381,7 +380,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       )}
 
       {analysisError && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-rose-900 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs text-rose-900">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{analysisError}</span>
@@ -397,7 +396,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
               </button>
             )}
             <button
-              className="cursor-pointer rounded-lg border border-rose-200 bg-paper px-2.5 py-1 font-bold text-rose-900 hover:bg-rose-100"
+              className="bg-paper cursor-pointer rounded-lg border border-rose-200 px-2.5 py-1 font-bold text-rose-900 hover:bg-rose-100"
               onClick={handleSimulateReading}
               type="button"
             >
@@ -408,7 +407,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
       )}
 
       {alignmentResult && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
+        <div className="bg-paper flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 px-4 py-3 sm:px-5">
           <MclmGauge
             errorsCount={alignmentResult.errorsCount}
             hesitationsCount={hesitationsCount}
@@ -418,7 +417,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
           />
 
           <button
-            className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700 sm:text-sm"
+            className="bg-primary-600 hover:bg-primary-700 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold text-white transition-colors sm:text-sm"
             onClick={handleNext}
             type="button"
           >
@@ -434,7 +433,7 @@ export const Step1Reading: React.FC<Step1ReadingProps> = ({
 
       <div className="space-y-3">
         {alignmentResult && recordedAudioUrl && (
-          <div className="sticky top-14 z-30 bg-cream/95 py-1.5 backdrop-blur-sm">
+          <div className="bg-cream/95 sticky top-14 z-30 py-1.5 backdrop-blur-sm">
             <AttemptAudioPlayer
               audioUrl={recordedAudioUrl}
               onSeekHandled={() => setSeekToTimeMs(null)}

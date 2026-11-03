@@ -1,10 +1,20 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/type-aware"
+  ],
+  "files": {
+    "includes": ["!!**/.agents"]
+  },
   "linter": {
     "rules": {
       "complexity": {
         "noExcessiveCognitiveComplexity": "off"
+      },
+      "correctness": {
+        "noUnresolvedImports": "off"
       },
       "performance": {
         "noJsxPropsBind": "off"
@@ -22,7 +32,8 @@
       },
       "suspicious": {
         "noArrayIndexKey": "off",
-        "noLeakedRender": "off"
+        "noLeakedRender": "off",
+        "useBaseline": "off"
       }
     }
   }

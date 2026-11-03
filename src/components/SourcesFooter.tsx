@@ -14,7 +14,7 @@ const SOURCES = [
 ] as const;
 
 export const SourcesFooter: React.FC = () => (
-  <footer className="border-stone-200/80 border-t bg-paper/60 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-stone-600 text-xs">
+  <footer className="bg-paper/60 border-t border-stone-200/80 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-xs text-stone-600">
     <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         {SOURCES.map(({ href, label }) => (

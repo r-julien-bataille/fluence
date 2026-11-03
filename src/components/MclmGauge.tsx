@@ -37,15 +37,15 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
     <div className="flex flex-1 flex-col gap-2">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <div className="flex items-baseline gap-1.5">
-          <span className="font-bold font-fun text-2xl text-stone-900 sm:text-3xl">
+          <span className="font-fun text-2xl font-bold text-stone-900 sm:text-3xl">
             {mclm}
           </span>
-          <span className="font-semibold text-stone-600 text-xs">
+          <span className="text-xs font-semibold text-stone-600">
             MCLM (cible {level} : {target})
           </span>
           {delta !== null && (
             <span
-              className={`ml-1 rounded px-1.5 py-0.5 font-bold text-xs ${
+              className={`ml-1 rounded px-1.5 py-0.5 text-xs font-bold ${
                 delta > 0
                   ? "bg-emerald-100 text-emerald-800"
                   : delta === 0
@@ -59,7 +59,7 @@ export const MclmGauge: React.FC<MclmGaugeProps> = ({
         </div>
 
         {wordsAttempted !== undefined && (
-          <div className="flex flex-wrap items-center gap-2 text-stone-600 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600">
             <span>{wordsAttempted} mots lus</span>
             {errorsCount !== undefined && (
               <>

@@ -4,14 +4,18 @@ import fs from "node:fs";
 import path from "node:path";
 
 const pkgPath = path.resolve(import.meta.dirname, "../package.json");
-const SEMVER_REGEX = /^(\d+)\.(\d+)\.(\d+)/u;
+const SEMVER_REGEX = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)/u;
 
 function parseSemver(version) {
   const match = String(version).trim().match(SEMVER_REGEX);
-  if (!match) {
+  if (!match?.groups) {
     return [0, 0, 0];
   }
-  return [Number(match[1]), Number(match[2]), Number(match[3])];
+  return [
+    Number(match.groups.major),
+    Number(match.groups.minor),
+    Number(match.groups.patch),
+  ];
 }
 
 function compareSemver(a, b) {

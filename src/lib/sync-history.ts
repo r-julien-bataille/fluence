@@ -10,8 +10,8 @@ import { tokenizeFrenchText } from "@/lib/utils";
 
 const FORMAT_TAG = "fluence-sync" as const;
 const FORMAT_VERSION = 1 as const;
-const NON_ALPHANUMERIC_REGEX = /[^a-z0-9]+/gi;
-const EDGE_DASH_REGEX = /^-+|-+$/g;
+const NON_ALPHANUMERIC_REGEX = /[^a-z0-9]+/giu;
+const EDGE_DASH_REGEX = /^-+|-+$/gu;
 
 const STATUS_TO_CODE = {
   correct: 0,
@@ -505,7 +505,7 @@ export async function exportStudentHistoryToFile(options: {
   const safeName =
     options.studentName
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/gu, "")
       .replace(NON_ALPHANUMERIC_REGEX, "-")
       .replace(EDGE_DASH_REGEX, "")
       .toLowerCase() || "eleve";

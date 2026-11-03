@@ -171,7 +171,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
 
   return (
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in justify-end bg-stone-900/50 backdrop-blur-xs duration-150"
+      className="fade-in animate-in fixed inset-0 z-50 flex justify-end bg-stone-900/50 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -181,13 +181,13 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
       <div
         aria-labelledby="history-drawer-title"
         aria-modal="true"
-        className="slide-in-from-right flex h-full w-full max-w-md animate-in flex-col bg-paper p-5 shadow-xl duration-200"
+        className="slide-in-from-right animate-in bg-paper flex h-full w-full max-w-md flex-col p-5 shadow-xl duration-200"
         role="dialog"
       >
-        <div className="flex items-center justify-between border-stone-100 border-b pb-3.5">
+        <div className="flex items-center justify-between border-b border-stone-100 pb-3.5">
           <div>
             <h2
-              className="font-bold font-fun text-lg text-stone-900"
+              className="font-fun text-lg font-bold text-stone-900"
               id="history-drawer-title"
             >
               Historique de {selectedStudent}
@@ -206,7 +206,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
         <div className="mt-3.5 space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <button
-              className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream disabled:opacity-50"
+              className="bg-cream/60 hover:bg-cream flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 transition-colors disabled:opacity-50"
               disabled={
                 isSyncing || !filteredSessions || filteredSessions.length === 0
               }
@@ -218,7 +218,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
             </button>
 
             <button
-              className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-stone-200 bg-cream/60 px-3 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream disabled:opacity-50"
+              className="bg-cream/60 hover:bg-cream flex cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 transition-colors disabled:opacity-50"
               disabled={isSyncing}
               onClick={() => fileInputRef.current?.click()}
               type="button"
@@ -269,7 +269,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 aria-hidden="true"
                 className="mx-auto mb-2 h-8 w-8 opacity-40"
               />
-              <p className="font-semibold text-xs">
+              <p className="text-xs font-semibold">
                 Aucune séance enregistrée pour {selectedStudent}.
               </p>
             </div>
@@ -290,10 +290,10 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
 
               return (
                 <div
-                  className="relative rounded-xl border border-stone-200 bg-cream/50 p-3.5 pr-9"
+                  className="bg-cream/50 relative rounded-xl border border-stone-200 p-3.5 pr-9"
                   key={session.id}
                 >
-                  <div className="mb-1 flex items-center justify-between text-stone-600 text-xs">
+                  <div className="mb-1 flex items-center justify-between text-xs text-stone-600">
                     <span className="flex items-center gap-1">
                       <Calendar aria-hidden="true" className="h-3 w-3" />
                       {dateStr}
@@ -305,7 +305,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                     )}
                   </div>
 
-                  <h3 className="mb-2 font-bold text-sm text-stone-900">
+                  <h3 className="mb-2 text-sm font-bold text-stone-900">
                     {title}
                   </h3>
 

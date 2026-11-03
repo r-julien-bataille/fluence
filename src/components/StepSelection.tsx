@@ -55,10 +55,10 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
         <div className="flex flex-wrap items-center gap-1.5">
           {["Tous", "CE1", "CE2", "CM1", "CM2"].map((lvl) => (
             <button
-              className={`cursor-pointer rounded-lg px-3 py-1.5 font-bold text-xs transition-colors ${
+              className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
                 selectedFilter === lvl
                   ? "bg-stone-900 text-white"
-                  : "border border-stone-200 bg-paper text-stone-700 hover:bg-stone-100"
+                  : "bg-paper border border-stone-200 text-stone-700 hover:bg-stone-100"
               }`}
               key={lvl}
               onClick={() => setSelectedFilter(lvl)}
@@ -70,7 +70,7 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
         </div>
 
         <button
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-primary-600 bg-paper px-3.5 py-1.5 font-bold text-primary-700 text-xs transition-colors hover:bg-primary-50"
+          className="border-primary-600 bg-paper text-primary-700 hover:bg-primary-50 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3.5 py-1.5 text-xs font-bold transition-colors"
           onClick={onOpenGenerator}
           type="button"
         >
@@ -90,13 +90,13 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
 
           return (
             <div
-              className="group relative flex flex-col justify-between rounded-xl border border-stone-200 bg-paper p-5 transition-colors hover:border-primary-500"
+              className="group bg-paper hover:border-primary-500 relative flex flex-col justify-between rounded-xl border border-stone-200 p-5 transition-colors"
               key={text.id}
             >
               <div>
-                <div className="mb-2 flex items-center justify-between gap-2 text-stone-600 text-xs">
+                <div className="mb-2 flex items-center justify-between gap-2 text-xs text-stone-600">
                   <div className="flex items-center gap-2 font-semibold">
-                    <span className="rounded bg-primary-50 px-2 py-0.5 font-bold text-primary-800">
+                    <span className="bg-primary-50 text-primary-800 rounded px-2 py-0.5 font-bold">
                       {text.level}
                     </span>
                     <span>{text.theme}</span>
@@ -125,7 +125,7 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
                   </div>
                 </div>
 
-                <h2 className="mb-1.5 font-bold font-fun text-lg text-stone-900 transition-colors group-hover:text-primary-700">
+                <h2 className="font-fun group-hover:text-primary-700 mb-1.5 text-lg font-bold text-stone-900 transition-colors">
                   <button
                     className="cursor-pointer text-left before:absolute before:inset-0 focus:outline-hidden"
                     onClick={() => onSelectText(text)}
@@ -135,12 +135,12 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
                   </button>
                 </h2>
 
-                <p className="line-clamp-2 text-stone-600 text-xs leading-relaxed sm:text-sm">
+                <p className="line-clamp-2 text-xs leading-relaxed text-stone-600 sm:text-sm">
                   {text.content}
                 </p>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-stone-100 border-t pt-3 text-xs">
+              <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-3 text-xs">
                 {lastScore === null ? (
                   <span className="text-stone-600">
                     Non lu par {studentName}
@@ -151,7 +151,7 @@ export const StepSelection: React.FC<StepSelectionProps> = ({
                   </span>
                 )}
 
-                <span className="inline-flex items-center gap-1 font-bold text-primary-700">
+                <span className="text-primary-700 inline-flex items-center gap-1 font-bold">
                   <span>Lire ce texte</span>
                   <ArrowRight
                     aria-hidden="true"

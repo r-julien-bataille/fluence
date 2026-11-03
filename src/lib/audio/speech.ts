@@ -11,12 +11,15 @@ export function syllabifyFrenchWord(word: string): string[] {
   const consonants = "[bcçdfghjklmnpqrstvwxz]";
 
   // Séparer les doubles consonnes identiques (ex: ap-pel, vil-le)
-  let syll = clean.replaceAll(/([bcdfghjklmnpqrstvwxz])\1/gi, "$1-$1");
+  let syll = clean.replaceAll(
+    /(?<char>[bcdfghjklmnpqrstvwxz])\k<char>/giu,
+    "$<char>-$<char>"
+  );
 
   // Séparer consonne + consonne sauf liquides
   const regexCC = new RegExp(
     `(${vowels})(${consonants})(${consonants})(${vowels})`,
-    "gi"
+    "giu"
   );
   syll = syll.replace(regexCC, (_match, v1, c1, c2, v2) => {
     const pair = (c1 + c2).toLowerCase();
@@ -46,7 +49,7 @@ export function syllabifyFrenchWord(word: string): string[] {
   });
 
   // Séparer V-CV
-  const regexVCV = new RegExp(`(${vowels})(${consonants})(${vowels})`, "gi");
+  const regexVCV = new RegExp(`(${vowels})(${consonants})(${vowels})`, "giu");
   syll = syll.replace(regexVCV, "$1-$2$3");
 
   const parts = syll.split("-").filter(Boolean);

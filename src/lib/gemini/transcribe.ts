@@ -220,14 +220,18 @@ const extractTranscribedWordsFromResponse = (
           : part.text.trim();
       }
 
+      const countBefore = words.length;
       extractWordsFromAudioTranscription(
         part.audioTranscription || part.audio_transcription,
         words
       );
-      extractWordsFromAnnotations(
-        part.annotations || candidate.annotations,
-        words
-      );
+      if (words.length === countBefore) {
+        extractWordsFromAnnotations(part.annotations, words);
+      }
+    }
+
+    if (words.length === 0 && candidate.annotations) {
+      extractWordsFromAnnotations(candidate.annotations, words);
     }
   }
 
@@ -249,46 +253,28 @@ const extractTranscribedWordsFromResponse = (
   };
 };
 
-interface FallbackJsonWord {
-  endSec?: number;
-  startSec?: number;
-  word?: string;
-}
-
-interface FallbackJsonResponse {
-  fullTranscript?: string;
-  words?: FallbackJsonWord[];
-}
-
 /**
- * Fallback de transcription audio haute précision via gemini-3.8-flash avec timestamps JSON
+ * Transcrit l'enregistrement audio de l'élève avec gemini-3.5-transcribe
+ * Schéma officiel generateContent :
+ * audioTranscriptionConfig: { languageCodes: ['fr-FR'], wordTimestamp: true, diarization: false }
+ * Note : customVocabulary n'est pas utilisé car l'API interdit de le combiner avec wordTimestamp: true.
  */
-const fallbackTranscribeWithGeminiFlash = async (
-  base64Audio: string,
-  mimeType: string,
-  customVocabulary: string[]
+export const transcribeAudioWithGemini = async (
+  audioBlob: Blob
 ): Promise<TranscriptionResult> => {
-  const client = await getGenAIClient();
-  const vocabSample = customVocabulary.slice(0, 150);
-
-  const prompt = `Tu es un transcripteur phonétique rigoureux pour l'évaluation de lecture d'enfants (protocole de fluence ELFE).
-Transcris mot à mot tout ce qui a été prononcé dans cet enregistrement audio en français.
-Conserve toutes les hésitations, répétitions et erreurs de lecture (mode verbatim). Ne corrige pas les fautes de prononciation.
-Vocabulaire attendu dans le texte support (repères lexicaux) : ${vocabSample.join(", ")}.
-
-Retourne UNIQUEMENT un JSON strict avec la liste chronologique des mots prononcés et leurs timestamps en secondes :
-{
-  "fullTranscript": "le texte complet prononcé...",
-  "words": [
-    { "word": "Au", "startSec": 0.5, "endSec": 0.8 },
-    { "word": "sommet", "startSec": 0.9, "endSec": 1.4 }
-  ]
-}`;
+  const [client, base64Audio] = await Promise.all([
+    getGenAIClient(),
+    blobToBase64(audioBlob),
+  ]);
+  const mimeType = sanitizeAudioMimeType(audioBlob.type);
 
   const response = await client.models.generateContent({
     config: {
-      responseMimeType: "application/json",
-      temperature: 0.1,
+      audioTranscriptionConfig: {
+        diarization: false,
+        languageCodes: ["fr-FR"],
+        wordTimestamp: true,
+      },
     },
     contents: [
       {
@@ -297,104 +283,11 @@ Retourne UNIQUEMENT un JSON strict avec la liste chronologique des mots prononc�
           mimeType,
         },
       },
-      {
-        text: prompt,
-      },
     ],
-    model: "gemini-3.8-flash",
+    model: "gemini-3.5-transcribe",
   });
 
-  const text = response.text || "";
-  try {
-    const parsed = JSON.parse(text) as FallbackJsonResponse;
-    const words: TranscribedWord[] = (parsed.words || []).map(
-      (w, idx: number) => {
-        const rawWord = w.word || "";
-        const startMs =
-          typeof w.startSec === "number"
-            ? Math.round(w.startSec * 1000)
-            : idx * 500;
-        const endMs =
-          typeof w.endSec === "number"
-            ? Math.round(w.endSec * 1000)
-            : startMs + 400;
-        return {
-          cleanText: normalizeWord(rawWord),
-          endMs,
-          startMs,
-          text: rawWord,
-        };
-      }
-    );
-
-    const durationMs =
-      words.length > 0 ? (words.at(-1)?.endMs ?? 60_000) : 60_000;
-    return {
-      durationMs,
-      fullText: parsed.fullTranscript || words.map((w) => w.text).join(" "),
-      words,
-    };
-  } catch (error) {
-    console.error("Erreur de parsing fallback transcript:", error, text);
-    throw new Error("Impossible de décoder la transcription audio.", {
-      cause: error,
-    });
-  }
-};
-
-/**
- * Transcrit l'enregistrement audio de l'élève avec gemini-3.5-transcribe
- * Schéma officiel generateContent :
- * audioTranscriptionConfig: { languageCodes: ['fr-FR'], wordTimestamp: true }
- */
-export const transcribeAudioWithGemini = async (
-  audioBlob: Blob,
-  expectedTokens: string[] = []
-): Promise<TranscriptionResult> => {
-  const client = await getGenAIClient();
-  const base64Audio = await blobToBase64(audioBlob);
-  const mimeType = sanitizeAudioMimeType(audioBlob.type);
-
-  // 1. Tenter l'appel avec le modèle officiel gemini-3.5-transcribe
-  try {
-    // Configuration conforme aux spécifications de l'API Google generateContent
-    const transcribeConfig = {
-      audioTranscriptionConfig: {
-        languageCodes: ["fr-FR"],
-        wordTimestamp: true,
-      },
-    };
-
-    const response = await client.models.generateContent({
-      config: transcribeConfig,
-      contents: [
-        {
-          inlineData: {
-            data: base64Audio,
-            mimeType,
-          },
-        },
-      ],
-      model: "gemini-3.5-transcribe",
-    });
-
-    const parsed = extractTranscribedWordsFromResponse(
-      response as unknown as TranscriptionApiResponse
-    );
-    if (parsed.words.length > 0 || parsed.fullText.trim().length > 0) {
-      return parsed;
-    }
-  } catch (error: unknown) {
-    console.warn(
-      "Échec ou non-disponibilité directe de gemini-3.5-transcribe, bascule vers mode multimodal fallback :",
-      error
-    );
-  }
-
-  // 2. Fallback robuste via gemini-3.8-flash (audio multimodal avec sortie structurée timestamps)
-  return fallbackTranscribeWithGeminiFlash(
-    base64Audio,
-    mimeType,
-    expectedTokens
+  return extractTranscribedWordsFromResponse(
+    response as unknown as TranscriptionApiResponse
   );
 };

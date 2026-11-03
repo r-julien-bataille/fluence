@@ -154,9 +154,9 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
   return (
     <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       {currentStep !== "selection" && selectedText && (
-        <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-paper px-3.5 py-2.5">
+        <div className="no-print bg-paper mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 px-3.5 py-2.5">
           <button
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream hover:text-stone-900"
+            className="hover:bg-cream inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold text-stone-700 transition-colors hover:text-stone-900"
             onClick={handleBackToTextsClick}
             type="button"
           >
@@ -245,7 +245,7 @@ export const SessionRunner: React.FC<SessionRunnerProps> = ({
             </button>
           </nav>
 
-          <div className="hidden font-semibold text-stone-600 text-xs md:block">
+          <div className="hidden text-xs font-semibold text-stone-600 md:block">
             {selectedText.title} ({selectedText.level})
           </div>
         </div>

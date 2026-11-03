@@ -108,12 +108,12 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 sm:px-5">
+      <div className="bg-paper flex flex-wrap items-center justify-between gap-4 rounded-xl border border-stone-200 px-4 py-3 sm:px-5">
         <div>
-          <h1 className="font-bold font-fun text-stone-900 text-xl sm:text-2xl">
+          <h1 className="font-fun text-xl font-bold text-stone-900 sm:text-2xl">
             Entraînement sans chronomètre
           </h1>
-          <p className="text-stone-600 text-xs">
+          <p className="text-xs text-stone-600">
             {stumbledWords.length > 0
               ? `${stumbledWords.length} mot${stumbledWords.length > 1 ? "s" : ""} à retravailler (${masteredWords.size}/${stumbledWords.length} validé${masteredWords.size > 1 ? "s" : ""})`
               : "Aucun mot difficile détecté — relis le texte à ton rythme"}
@@ -121,7 +121,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
         </div>
 
         <button
-          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700 sm:text-sm"
+          className="bg-primary-600 hover:bg-primary-700 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold text-white transition-colors sm:text-sm"
           onClick={handleProceedToStep3}
           type="button"
         >
@@ -145,29 +145,29 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
 
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-bold font-fun text-base text-stone-900">
+          <h2 className="font-fun text-base font-bold text-stone-900">
             Relecture complète
           </h2>
 
           <div className="flex items-center gap-1.5">
             {audioState === "idle" && (
               <button
-                className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 bg-paper px-3 py-1.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+                className="bg-paper hover:bg-cream flex cursor-pointer items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-700 transition-colors"
                 onClick={handleStartFullSpeech}
                 type="button"
               >
-                <Volume2 className="h-3.5 w-3.5 text-primary-600" />
+                <Volume2 className="text-primary-600 h-3.5 w-3.5" />
                 <span>Écouter la lecture modèle</span>
               </button>
             )}
             {audioState === "playing" && (
               <>
-                <span className="mr-1 flex items-center gap-1 font-semibold text-primary-700 text-xs">
+                <span className="text-primary-700 mr-1 flex items-center gap-1 text-xs font-semibold">
                   <Volume2 className="h-3.5 w-3.5 animate-pulse" />
                   <span className="hidden sm:inline">Lecture...</span>
                 </span>
                 <button
-                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 font-bold text-amber-900 text-xs hover:bg-amber-100"
+                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-900 hover:bg-amber-100"
                   onClick={handlePauseSpeech}
                   type="button"
                 >
@@ -175,7 +175,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                   <span>Pause</span>
                 </button>
                 <button
-                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 font-bold text-rose-900 text-xs hover:bg-rose-100"
+                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-900 hover:bg-rose-100"
                   onClick={handleStopSpeech}
                   type="button"
                 >
@@ -186,12 +186,12 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
             )}
             {audioState === "paused" && (
               <>
-                <span className="mr-1 flex items-center gap-1 font-semibold text-amber-800 text-xs">
+                <span className="mr-1 flex items-center gap-1 text-xs font-semibold text-amber-800">
                   <VolumeX className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">En pause</span>
                 </span>
                 <button
-                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 font-bold text-emerald-900 text-xs hover:bg-emerald-100"
+                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-900 hover:bg-emerald-100"
                   onClick={handleResumeSpeech}
                   type="button"
                 >
@@ -199,7 +199,7 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                   <span>Reprendre</span>
                 </button>
                 <button
-                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 font-bold text-rose-900 text-xs hover:bg-rose-100"
+                  className="flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-900 hover:bg-rose-100"
                   onClick={handleStopSpeech}
                   type="button"
                 >
@@ -219,8 +219,8 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
 
       {text.comprehensionQuestions &&
         text.comprehensionQuestions.length > 0 && (
-          <div className="space-y-3 rounded-xl border border-stone-200 bg-paper p-5">
-            <h3 className="font-bold font-fun text-base text-stone-900">
+          <div className="bg-paper space-y-3 rounded-xl border border-stone-200 p-5">
+            <h3 className="font-fun text-base font-bold text-stone-900">
               Questions de compréhension
             </h3>
 
@@ -229,20 +229,20 @@ export const Step2Remediation: React.FC<Step2RemediationProps> = ({
                 const isRevealed = revealedQuestions.has(idx);
                 return (
                   <div
-                    className="flex flex-col justify-between rounded-lg border border-stone-200 bg-cream/60 p-3.5"
+                    className="bg-cream/60 flex flex-col justify-between rounded-lg border border-stone-200 p-3.5"
                     key={idx}
                   >
-                    <p className="mb-2.5 font-semibold text-stone-800 text-xs sm:text-sm">
+                    <p className="mb-2.5 text-xs font-semibold text-stone-800 sm:text-sm">
                       {idx + 1}. {q.question}
                     </p>
 
                     {isRevealed ? (
-                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-emerald-900 text-xs">
+                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-900">
                         {q.answer}
                       </div>
                     ) : (
                       <button
-                        className="cursor-pointer self-start rounded-lg border border-stone-200 bg-paper px-2.5 py-1 font-semibold text-stone-700 text-xs transition-colors hover:bg-stone-100"
+                        className="bg-paper cursor-pointer self-start rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-semibold text-stone-700 transition-colors hover:bg-stone-100"
                         onClick={() => handleToggleQuestion(idx)}
                         type="button"
                       >

@@ -23,12 +23,14 @@ export class AudioRecorder {
   async start(): Promise<void> {
     this.audioChunks = [];
 
-    // Demande d'accès au micro
+    // Demande d'accès au micro optimisée pour la reconnaissance vocale (16 kHz mono)
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         autoGainControl: true,
+        channelCount: 1,
         echoCancellation: true,
         noiseSuppression: true,
+        sampleRate: 16_000,
       },
     });
 
@@ -65,9 +67,11 @@ export class AudioRecorder {
       }
     }
 
-    this.mediaRecorder = selectedMime
-      ? new MediaRecorder(this.stream, { mimeType: selectedMime })
-      : new MediaRecorder(this.stream);
+    // 32 kbps mono suffit largement pour la voix et réduit la taille du payload Base64 par ~4
+    this.mediaRecorder = new MediaRecorder(this.stream, {
+      audioBitsPerSecond: 32_000,
+      ...(selectedMime ? { mimeType: selectedMime } : {}),
+    });
 
     this.mediaRecorder.ondataavailable = (event) => {
       if (event.data && event.data.size > 0) {
@@ -84,6 +88,7 @@ export class AudioRecorder {
       return;
     }
     const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    let lastLevel = -1;
 
     const update = () => {
       if (!this.analyser) {
@@ -97,7 +102,8 @@ export class AudioRecorder {
       const avg = sum / dataArray.length;
       // Normaliser entre 0 et 100 avec amplification pour bonne réactivité
       const level = Math.min(100, Math.round((avg / 128) * 100));
-      if (this.onLevelChange) {
+      if (this.onLevelChange && level !== lastLevel) {
+        lastLevel = level;
         this.onLevelChange(level);
       }
       this.animationFrameId = requestAnimationFrame(update);

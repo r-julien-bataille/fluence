@@ -9,7 +9,6 @@ All CLI flags can also be set in the config file. CLI flags override config file
 ## Flag Patterns
 
 CLI flag mapping rules:
-
 - `--foo` sets `foo: true`
 - `--no-foo` sets `foo: false`
 - `--foo.bar` sets `foo: { bar: true }`
@@ -223,10 +222,11 @@ Access as `import.meta.env.*` or `process.env.*`.
 
 ### `--env-file <file>`
 
-Load environment variables from file:
+Load environment variables from file. Repeat to load several files (later files win, missing files are skipped):
 
 ```bash
 tsdown --env-file .env.production
+tsdown --env-file .env --env-file .env.local
 ```
 
 ### `--env-prefix <prefix>`
@@ -259,7 +259,6 @@ tsdown --exe
 ```
 
 When enabled:
-
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported

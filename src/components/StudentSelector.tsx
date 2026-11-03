@@ -136,12 +136,12 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
       <button
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-cream"
+        className="bg-cream/60 hover:bg-cream flex cursor-pointer items-center gap-2 rounded-lg border border-stone-200 px-2.5 py-1.5 text-left text-xs transition-colors"
         onClick={() => setIsOpen(!isOpen)}
         type="button"
       >
         <span className="font-bold text-stone-900">{currentStudent.name}</span>
-        <span className="rounded bg-primary-100 px-1.5 py-0.5 font-bold text-[10px] text-primary-800">
+        <span className="bg-primary-100 text-primary-800 rounded px-1.5 py-0.5 text-[10px] font-bold">
           {currentStudent.level}
         </span>
         <ChevronDown
@@ -151,8 +151,8 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="fade-in zoom-in-95 absolute top-full right-0 z-50 mt-1.5 w-60 animate-in rounded-xl border border-stone-200 bg-paper p-1.5 shadow-lg duration-150">
-          <div className="px-2.5 py-1 font-semibold text-[11px] text-stone-600">
+        <div className="fade-in zoom-in-95 animate-in bg-paper absolute top-full right-0 z-50 mt-1.5 w-60 rounded-xl border border-stone-200 p-1.5 shadow-lg duration-150">
+          <div className="px-2.5 py-1 text-[11px] font-semibold text-stone-600">
             Élèves
           </div>
 
@@ -163,8 +163,8 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                 <div
                   className={`flex items-center justify-between gap-1 rounded-lg px-2 py-1 text-xs transition-colors ${
                     isSelected
-                      ? "bg-primary-50 font-bold text-primary-900"
-                      : "text-stone-700 hover:bg-cream"
+                      ? "bg-primary-50 text-primary-900 font-bold"
+                      : "hover:bg-cream text-stone-700"
                   }`}
                   key={`${s.name}-${s.level}`}
                 >
@@ -181,7 +181,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                       <span className="text-stone-600">({s.level})</span>
                     </span>
                     {isSelected && (
-                      <Check className="mr-1 h-3.5 w-3.5 text-primary-600" />
+                      <Check className="text-primary-600 mr-1 h-3.5 w-3.5" />
                     )}
                   </button>
                   {onDeleteStudent && students.length > 1 && (
@@ -205,13 +205,13 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
 
           {isAdding ? (
             <form
-              className="mt-1.5 space-y-2 border-stone-100 border-t p-1.5 pt-2"
+              className="mt-1.5 space-y-2 border-t border-stone-100 p-1.5 pt-2"
               onSubmit={handleCreate}
             >
               <input
                 aria-label="Prénom de l'élève"
                 autoFocus
-                className="w-full rounded-lg border border-stone-200 bg-cream px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-primary-500"
+                className="bg-cream focus:ring-primary-500 w-full rounded-lg border border-stone-200 px-2.5 py-1.5 text-xs focus:ring-1 focus:outline-hidden"
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Prénom de l'élève"
                 type="text"
@@ -220,7 +220,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               <div className="flex gap-1">
                 {(["CE1", "CE2", "CM1", "CM2"] as FluencyLevel[]).map((lvl) => (
                   <button
-                    className={`flex-1 cursor-pointer rounded py-1 font-bold text-[10px] ${
+                    className={`flex-1 cursor-pointer rounded py-1 text-[10px] font-bold ${
                       newLevel === lvl
                         ? "bg-primary-600 text-white"
                         : "bg-stone-100 text-stone-600 hover:bg-stone-200"
@@ -242,7 +242,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                   Annuler
                 </button>
                 <button
-                  className="flex-1 cursor-pointer rounded bg-primary-600 py-1 font-bold text-[11px] text-white hover:bg-primary-700"
+                  className="bg-primary-600 hover:bg-primary-700 flex-1 cursor-pointer rounded py-1 text-[11px] font-bold text-white"
                   type="submit"
                 >
                   Ajouter
@@ -251,7 +251,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
             </form>
           ) : (
             <button
-              className="mt-1 flex w-full cursor-pointer items-center gap-1.5 rounded-lg border-stone-100 border-t px-2.5 py-1.5 pt-2 font-semibold text-primary-700 text-xs transition-colors hover:bg-primary-50"
+              className="text-primary-700 hover:bg-primary-50 mt-1 flex w-full cursor-pointer items-center gap-1.5 rounded-lg border-t border-stone-100 px-2.5 py-1.5 pt-2 text-xs font-semibold transition-colors"
               onClick={() => setIsAdding(true)}
               type="button"
             >
@@ -266,7 +266,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
+            className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
             onPointerDown={(e) => {
               if (e.target === e.currentTarget) {
                 closeDeleteModal();
@@ -276,17 +276,17 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
             <div
               aria-labelledby="delete-student-modal-title"
               aria-modal="true"
-              className="relative w-full max-w-sm rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
+              className="bg-paper relative w-full max-w-sm rounded-2xl border border-stone-200 p-6 shadow-xl"
               role="dialog"
             >
-              <div className="mb-4 flex items-center justify-between border-stone-100 border-b pb-3">
+              <div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3">
                 <div className="flex items-center gap-2 text-rose-700">
                   <AlertTriangle
                     aria-hidden="true"
                     className="h-4 w-4 shrink-0"
                   />
                   <h2
-                    className="font-bold font-fun text-base text-stone-900"
+                    className="font-fun text-base font-bold text-stone-900"
                     id="delete-student-modal-title"
                   >
                     Supprimer le profil élève
@@ -303,7 +303,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
               </div>
 
               <form className="space-y-4" onSubmit={handleConfirmDelete}>
-                <p className="text-stone-700 text-xs leading-relaxed">
+                <p className="text-xs leading-relaxed text-stone-700">
                   Pour confirmer la suppression du profil{" "}
                   <strong className="font-bold text-stone-900">
                     {studentPendingDelete.name}
@@ -313,7 +313,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
 
                 <div>
                   <label
-                    className="mb-1.5 block font-semibold text-stone-700 text-xs"
+                    className="mb-1.5 block text-xs font-semibold text-stone-700"
                     htmlFor="confirm-delete-student-input"
                   >
                     Tapez « {studentPendingDelete.name} »
@@ -321,7 +321,7 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
                   <input
                     autoComplete="off"
                     autoFocus
-                    className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2 text-stone-900 text-xs focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-rose-500"
+                    className="bg-cream focus:bg-paper w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-stone-900 focus:ring-2 focus:ring-rose-500 focus:outline-hidden"
                     id="confirm-delete-student-input"
                     onChange={(e) => setConfirmInput(e.target.value)}
                     placeholder={studentPendingDelete.name}
@@ -332,14 +332,14 @@ export const StudentSelector: React.FC<StudentSelectorProps> = ({
 
                 <div className="flex items-center justify-end gap-2 pt-1">
                   <button
-                    className="cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+                    className="hover:bg-cream cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 text-xs font-semibold text-stone-700 transition-colors"
                     onClick={closeDeleteModal}
                     type="button"
                   >
                     Annuler
                   </button>
                   <button
-                    className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2 font-bold text-white text-xs transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
                     disabled={!isConfirmMatch}
                     type="submit"
                   >

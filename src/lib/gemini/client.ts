@@ -2,6 +2,9 @@ import type { GoogleGenAI } from "@google/genai";
 
 const API_KEY_STORAGE_KEY = "GOOGLE_AI_KEY";
 
+let cachedClient: GoogleGenAI | null = null;
+let cachedApiKey: string | null = null;
+
 export const getStoredApiKey = (): string => {
   const localKey = localStorage.getItem(API_KEY_STORAGE_KEY)?.trim();
   if (localKey) {
@@ -12,6 +15,8 @@ export const getStoredApiKey = (): string => {
 
 export const setStoredApiKey = (key: string): void => {
   const cleanKey = key.trim();
+  cachedClient = null;
+  cachedApiKey = null;
   if (cleanKey) {
     localStorage.setItem(API_KEY_STORAGE_KEY, cleanKey);
   } else {
@@ -22,7 +27,7 @@ export const setStoredApiKey = (key: string): void => {
 export const hasStoredApiKey = (): boolean => Boolean(getStoredApiKey());
 
 /**
- * Crée une instance du client SDK Google GenAI (chargé dynamiquement à la demande)
+ * Crée ou réutilise une instance du client SDK Google GenAI (chargé dynamiquement à la demande)
  */
 export const getGenAIClient = async (
   overrideKey?: string
@@ -33,8 +38,16 @@ export const getGenAIClient = async (
       "Clé API Google AI Studio manquante. Veuillez configurer votre clé dans les paramètres (icône d’engrenage)."
     );
   }
+  if (cachedClient && cachedApiKey === apiKey) {
+    return cachedClient;
+  }
   const { GoogleGenAI: GenAIConstructor } = await import("@google/genai");
-  return new GenAIConstructor({ apiKey });
+  const client = new GenAIConstructor({ apiKey });
+  if (!overrideKey) {
+    cachedClient = client;
+    cachedApiKey = apiKey;
+  }
+  return client;
 };
 
 /**

@@ -39,7 +39,7 @@ export const InterruptSessionModal: React.FC<InterruptSessionModalProps> = ({
 
   return createPortal(
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
+      className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onCancel();
@@ -50,14 +50,14 @@ export const InterruptSessionModal: React.FC<InterruptSessionModalProps> = ({
         aria-describedby="interrupt-session-modal-desc"
         aria-labelledby="interrupt-session-modal-title"
         aria-modal="true"
-        className="relative w-full max-w-sm rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
+        className="bg-paper relative w-full max-w-sm rounded-2xl border border-stone-200 p-6 shadow-xl"
         role="dialog"
       >
-        <div className="mb-4 flex items-center justify-between border-stone-100 border-b pb-3">
+        <div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3">
           <div className="flex items-center gap-2 text-amber-700">
             <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
             <h2
-              className="font-bold font-fun text-base text-stone-900"
+              className="font-fun text-base font-bold text-stone-900"
               id="interrupt-session-modal-title"
             >
               Interrompre la séance ?
@@ -74,7 +74,7 @@ export const InterruptSessionModal: React.FC<InterruptSessionModalProps> = ({
         </div>
 
         <div className="space-y-3" id="interrupt-session-modal-desc">
-          <p className="text-stone-700 text-xs leading-relaxed">
+          <p className="text-xs leading-relaxed text-stone-700">
             Une séance de lecture est actuellement en cours
             {textTitle ? (
               <>
@@ -84,23 +84,23 @@ export const InterruptSessionModal: React.FC<InterruptSessionModalProps> = ({
             ) : null}
             .
           </p>
-          <p className="text-stone-600 text-xs leading-relaxed">
+          <p className="text-xs leading-relaxed text-stone-600">
             Si vous quittez maintenant, l’enregistrement et la progression de
             cette séance seront perdus.
           </p>
         </div>
 
-        <div className="mt-5 flex items-center justify-end gap-2 border-stone-100 border-t pt-3">
+        <div className="mt-5 flex items-center justify-end gap-2 border-t border-stone-100 pt-3">
           <button
             autoFocus
-            className="cursor-pointer rounded-xl border border-stone-200 bg-cream/60 px-3.5 py-2 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+            className="bg-cream/60 hover:bg-cream cursor-pointer rounded-xl border border-stone-200 px-3.5 py-2 text-xs font-semibold text-stone-700 transition-colors"
             onClick={onCancel}
             type="button"
           >
             Continuer la séance
           </button>
           <button
-            className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2 font-bold text-white text-xs transition-colors hover:bg-rose-700"
+            className="cursor-pointer rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-rose-700"
             onClick={onConfirm}
             type="button"
           >

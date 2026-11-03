@@ -85,13 +85,13 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="no-print space-y-6">
-        <div className="rounded-2xl border border-stone-200 bg-paper p-6 sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4 border-stone-100 border-b pb-5">
+        <div className="bg-paper rounded-2xl border border-stone-200 p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-stone-100 pb-5">
             <div>
-              <h1 className="font-bold font-fun text-2xl text-stone-900 sm:text-3xl">
+              <h1 className="font-fun text-2xl font-bold text-stone-900 sm:text-3xl">
                 Bilan de {studentName}
               </h1>
-              <p className="mt-0.5 text-stone-600 text-xs sm:text-sm">
+              <p className="mt-0.5 text-xs text-stone-600 sm:text-sm">
                 « {text.title} » · Niveau {text.level}
                 {isSaved && " · Enregistré dans l’historique"}
               </p>
@@ -101,10 +101,10 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
               className={`rounded-xl border px-3.5 py-2 text-right ${
                 delta > 0
                   ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                  : "border-stone-200 bg-cream text-stone-800"
+                  : "bg-cream border-stone-200 text-stone-800"
               }`}
             >
-              <div className="font-bold font-fun text-xl">
+              <div className="font-fun text-xl font-bold">
                 {delta > 0 ? `+${delta} MCLM` : `${delta} MCLM`}
               </div>
               <div className="text-[11px] opacity-80">
@@ -116,11 +116,11 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
           </div>
 
           <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl border border-stone-200/80 bg-cream/60 p-4">
-              <div className="font-semibold text-stone-600 text-xs">
+            <div className="bg-cream/60 rounded-xl border border-stone-200/80 p-4">
+              <div className="text-xs font-semibold text-stone-600">
                 1re lecture
               </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-stone-900 sm:text-3xl">
+              <div className="font-fun mt-1 text-2xl font-bold text-stone-900 sm:text-3xl">
                 {step1.mclm}
               </div>
               <div className="mt-0.5 text-[11px] text-stone-600">
@@ -128,23 +128,23 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
               </div>
             </div>
 
-            <div className="rounded-xl border border-primary-200 bg-primary-50/60 p-4">
-              <div className="font-bold text-primary-800 text-xs">
+            <div className="border-primary-200 bg-primary-50/60 rounded-xl border p-4">
+              <div className="text-primary-800 text-xs font-bold">
                 2e lecture (Défi)
               </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-primary-700 sm:text-3xl">
+              <div className="font-fun text-primary-700 mt-1 text-2xl font-bold sm:text-3xl">
                 {step3.mclm}
               </div>
-              <div className="mt-0.5 text-[11px] text-primary-800">
+              <div className="text-primary-800 mt-0.5 text-[11px]">
                 {step3.wordsAttempted} lus · {step3.errorsCount} err.
               </div>
             </div>
 
             <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4">
-              <div className="font-semibold text-emerald-900 text-xs">
+              <div className="text-xs font-semibold text-emerald-900">
                 Attendu {text.level}
               </div>
-              <div className="mt-1 font-bold font-fun text-2xl text-emerald-800 sm:text-3xl">
+              <div className="font-fun mt-1 text-2xl font-bold text-emerald-800 sm:text-3xl">
                 {target}
               </div>
               <div className="mt-0.5 text-[11px] text-emerald-800">
@@ -153,56 +153,56 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
             </div>
           </div>
 
-          <div className="mt-6 flex h-44 items-end justify-around gap-4 rounded-xl border border-stone-100 bg-cream/40 px-6 pt-6 pb-3 sm:px-12">
+          <div className="bg-cream/40 mt-6 flex h-44 items-end justify-around gap-4 rounded-xl border border-stone-100 px-6 pt-6 pb-3 sm:px-12">
             <div className="flex h-full flex-1 flex-col items-center justify-end">
-              <div className="mb-1.5 font-bold font-fun text-stone-700 text-xs">
+              <div className="font-fun mb-1.5 text-xs font-bold text-stone-700">
                 {step1.mclm}
               </div>
               <div
                 className="w-full max-w-16 rounded-t-lg bg-stone-300 transition-all duration-500"
                 style={{ height: `${Math.max(10, hStep1)}%` }}
               />
-              <div className="mt-2 font-semibold text-[11px] text-stone-600">
+              <div className="mt-2 text-[11px] font-semibold text-stone-600">
                 Lecture 1
               </div>
             </div>
 
             <div className="flex h-full flex-1 flex-col items-center justify-end">
-              <div className="mb-1.5 font-bold font-fun text-primary-700 text-xs">
+              <div className="font-fun text-primary-700 mb-1.5 text-xs font-bold">
                 {step3.mclm}
               </div>
               <div
-                className="w-full max-w-16 rounded-t-lg bg-primary-600 transition-all duration-500"
+                className="bg-primary-600 w-full max-w-16 rounded-t-lg transition-all duration-500"
                 style={{ height: `${Math.max(10, hStep3)}%` }}
               />
-              <div className="mt-2 font-bold text-[11px] text-primary-800">
+              <div className="text-primary-800 mt-2 text-[11px] font-bold">
                 Défi 60s
               </div>
             </div>
 
             <div className="flex h-full flex-1 flex-col items-center justify-end">
-              <div className="mb-1.5 font-bold font-fun text-emerald-800 text-xs">
+              <div className="font-fun mb-1.5 text-xs font-bold text-emerald-800">
                 {target}
               </div>
               <div
-                className="w-full max-w-16 rounded-t-lg border border-emerald-500 border-dashed bg-emerald-200/80 transition-all duration-500"
+                className="w-full max-w-16 rounded-t-lg border border-dashed border-emerald-500 bg-emerald-200/80 transition-all duration-500"
                 style={{ height: `${Math.max(10, hTarget)}%` }}
               />
-              <div className="mt-2 font-semibold text-[11px] text-emerald-800">
+              <div className="mt-2 text-[11px] font-semibold text-emerald-800">
                 Cible {text.level}
               </div>
             </div>
           </div>
 
           {step1.stumbledWords && step1.stumbledWords.length > 0 && (
-            <div className="mt-5 border-stone-100 border-t pt-4">
-              <div className="mb-2 font-semibold text-stone-700 text-xs">
+            <div className="mt-5 border-t border-stone-100 pt-4">
+              <div className="mb-2 text-xs font-semibold text-stone-700">
                 Mots retravaillés pendant la séance :
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {step1.stumbledWords.map((word, idx) => (
                   <span
-                    className="rounded-lg border border-stone-200 bg-cream px-2.5 py-1 font-medium text-stone-800 text-xs"
+                    className="bg-cream rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-medium text-stone-800"
                     key={idx}
                   >
                     {word}
@@ -216,7 +216,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+              className="bg-paper hover:bg-cream flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 px-4 py-2.5 text-xs font-semibold text-stone-700 transition-colors"
               onClick={() => window.print()}
               type="button"
             >
@@ -225,7 +225,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
             </button>
 
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+              className="bg-paper hover:bg-cream flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 px-4 py-2.5 text-xs font-semibold text-stone-700 transition-colors"
               onClick={onRestartSameText}
               type="button"
             >
@@ -234,7 +234,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
             </button>
 
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+              className="bg-paper hover:bg-cream flex cursor-pointer items-center gap-1.5 rounded-xl border border-stone-200 px-4 py-2.5 text-xs font-semibold text-stone-700 transition-colors"
               onClick={onOpenHistory}
               type="button"
             >
@@ -244,7 +244,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
           </div>
 
           <button
-            className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700 sm:text-sm"
+            className="bg-primary-600 hover:bg-primary-700 flex cursor-pointer items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold text-white transition-colors sm:text-sm"
             onClick={onNewSession}
             type="button"
           >
@@ -255,10 +255,10 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
       </div>
 
       {/* FICHE OFFICIELLE D'ÉVALUATION ELFE (Visible uniquement à l'impression / PDF) */}
-      <div className="print-only mt-8 hidden space-y-6 rounded-lg border border-stone-300 bg-paper p-8 text-stone-900">
-        <div className="flex items-start justify-between border-stone-900 border-b-2 pb-4">
+      <div className="print-only bg-paper mt-8 hidden space-y-6 rounded-lg border border-stone-300 p-8 text-stone-900">
+        <div className="flex items-start justify-between border-b-2 border-stone-900 pb-4">
           <div>
-            <h2 className="font-black text-2xl uppercase tracking-tight">
+            <h2 className="text-2xl font-black tracking-tight uppercase">
               Fiche d’Évaluation de Fluence de Lecture
             </h2>
           </div>
@@ -268,28 +268,28 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 rounded-md border border-stone-200 bg-cream p-3 text-xs">
+        <div className="bg-cream grid grid-cols-3 gap-4 rounded-md border border-stone-200 p-3 text-xs">
           <div>
             <span className="font-semibold text-stone-500">Élève :</span>{" "}
-            <strong className="font-bold text-sm">{studentName}</strong>
+            <strong className="text-sm font-bold">{studentName}</strong>
           </div>
           <div>
             <span className="font-semibold text-stone-500">
               Niveau scolaire :
             </span>{" "}
-            <strong className="font-bold text-sm">{text.level}</strong>
+            <strong className="text-sm font-bold">{text.level}</strong>
           </div>
           <div>
             <span className="font-semibold text-stone-500">
               Texte support :
             </span>{" "}
-            <strong className="font-bold text-sm">« {text.title} »</strong> (
+            <strong className="text-sm font-bold">« {text.title} »</strong> (
             {text.wordCount} mots)
           </div>
         </div>
 
         <div>
-          <h3 className="mb-2 font-bold text-sm uppercase tracking-wider">
+          <h3 className="mb-2 text-sm font-bold tracking-wider uppercase">
             Résultats quantitatifs (MCLM = Mots Lus en 60s - Erreurs)
           </h3>
           <table className="w-full border-collapse border border-stone-300 text-xs">
@@ -324,7 +324,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
                 <td className="border border-stone-300 p-2 text-center font-bold text-rose-600">
                   {step1.errorsCount}
                 </td>
-                <td className="border border-stone-300 p-2 text-center font-black text-base">
+                <td className="border border-stone-300 p-2 text-center text-base font-black">
                   {step1.mclm}
                 </td>
                 <td className="border border-stone-300 p-2 text-center">
@@ -335,7 +335,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
                 </td>
               </tr>
               <tr className="bg-primary-50/50">
-                <td className="border border-stone-300 p-2 font-bold text-primary-900">
+                <td className="text-primary-900 border border-stone-300 p-2 font-bold">
                   2e Lecture (Défi Record)
                 </td>
                 <td className="border border-stone-300 p-2 text-center font-semibold">
@@ -344,7 +344,7 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
                 <td className="border border-stone-300 p-2 text-center font-bold text-rose-600">
                   {step3.errorsCount}
                 </td>
-                <td className="border border-stone-300 p-2 text-center font-black text-base text-primary-900">
+                <td className="text-primary-900 border border-stone-300 p-2 text-center text-base font-black">
                   {step3.mclm}
                 </td>
                 <td className="border border-stone-300 p-2 text-center">
@@ -360,24 +360,24 @@ export const StepSummary: React.FC<StepSummaryProps> = ({
 
         {step1.stumbledWords && step1.stumbledWords.length > 0 && (
           <div>
-            <h3 className="mb-1 font-bold text-sm uppercase tracking-wider">
+            <h3 className="mb-1 text-sm font-bold tracking-wider uppercase">
               Mots travaillés en remédiation syllabique
             </h3>
-            <p className="rounded border border-stone-200 bg-cream p-2 text-stone-700 text-xs">
+            <p className="bg-cream rounded border border-stone-200 p-2 text-xs text-stone-700">
               {step1.stumbledWords.join(", ")}
             </p>
           </div>
         )}
 
         <div className="rounded border border-stone-200 p-3">
-          <h3 className="mb-2 font-bold text-sm uppercase tracking-wider">
+          <h3 className="mb-2 text-sm font-bold tracking-wider uppercase">
             Observations de l’enseignant / de l’orthophoniste
           </h3>
-          <div className="mb-2 h-16 border-stone-300 border-b border-dashed" />
-          <div className="flex items-end justify-between pt-2 text-stone-500 text-xs">
+          <div className="mb-2 h-16 border-b border-dashed border-stone-300" />
+          <div className="flex items-end justify-between pt-2 text-xs text-stone-500">
             <span>Cachet / Signature de l’évaluateur :</span>
 
-            <div className="w-48 border-stone-400 border-b" />
+            <div className="w-48 border-b border-stone-400" />
           </div>
         </div>
       </div>

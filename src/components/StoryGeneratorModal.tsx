@@ -106,7 +106,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
   return (
     <div
-      className="fade-in fixed inset-0 z-50 flex animate-in items-center justify-center overflow-y-auto bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
+      className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-stone-900/50 p-4 backdrop-blur-xs duration-150"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -116,12 +116,12 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
       <div
         aria-labelledby="story-generator-modal-title"
         aria-modal="true"
-        className="relative my-8 w-full max-w-xl rounded-2xl border border-stone-200 bg-paper p-6 shadow-xl"
+        className="bg-paper relative my-8 w-full max-w-xl rounded-2xl border border-stone-200 p-6 shadow-xl"
         role="dialog"
       >
-        <div className="mb-5 flex items-center justify-between border-stone-100 border-b pb-3">
+        <div className="mb-5 flex items-center justify-between border-b border-stone-100 pb-3">
           <h2
-            className="font-bold font-fun text-lg text-stone-900"
+            className="font-fun text-lg font-bold text-stone-900"
             id="story-generator-modal-title"
           >
             Nouvelle histoire sur mesure
@@ -138,23 +138,23 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
         {previewStory ? (
           <div className="space-y-4">
-            <div className="rounded-xl border border-stone-200 bg-cream p-4">
-              <div className="mb-1.5 flex items-center justify-between text-stone-600 text-xs">
-                <span className="font-bold text-primary-800">
+            <div className="bg-cream rounded-xl border border-stone-200 p-4">
+              <div className="mb-1.5 flex items-center justify-between text-xs text-stone-600">
+                <span className="text-primary-800 font-bold">
                   {previewStory.level} · {previewStory.wordCount} mots
                 </span>
                 <span>Cible : {previewStory.targetMclm} MCLM</span>
               </div>
-              <h3 className="mb-2 font-bold font-fun text-lg text-stone-900">
+              <h3 className="font-fun mb-2 text-lg font-bold text-stone-900">
                 {previewStory.title}
               </h3>
-              <p className="max-h-48 overflow-y-auto pr-2 text-stone-700 text-xs leading-relaxed sm:text-sm">
+              <p className="max-h-48 overflow-y-auto pr-2 text-xs leading-relaxed text-stone-700 sm:text-sm">
                 {previewStory.content}
               </p>
             </div>
 
             {previewStory.comprehensionQuestions.length > 0 && (
-              <div className="space-y-1.5 rounded-xl border border-stone-200 bg-paper p-3.5 text-xs">
+              <div className="bg-paper space-y-1.5 rounded-xl border border-stone-200 p-3.5 text-xs">
                 <div className="font-semibold text-stone-700">
                   Questions de compréhension (
                   {previewStory.comprehensionQuestions.length})
@@ -169,14 +169,14 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
             <div className="flex items-center gap-2.5 pt-1">
               <button
-                className="flex-1 cursor-pointer rounded-xl border border-stone-200 px-4 py-2.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream"
+                className="hover:bg-cream flex-1 cursor-pointer rounded-xl border border-stone-200 px-4 py-2.5 text-xs font-semibold text-stone-700 transition-colors"
                 onClick={() => setPreviewStory(null)}
                 type="button"
               >
                 Autre proposition
               </button>
               <button
-                className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2.5 font-bold text-white text-xs transition-colors hover:bg-primary-700"
+                className="bg-primary-600 hover:bg-primary-700 flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold text-white transition-colors"
                 onClick={handleSaveAndUse}
                 type="button"
               >
@@ -188,16 +188,16 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
         ) : (
           <div className="space-y-4">
             <div>
-              <span className="mb-1.5 block font-semibold text-stone-800 text-xs">
+              <span className="mb-1.5 block text-xs font-semibold text-stone-800">
                 Niveau
               </span>
               <div className="grid grid-cols-4 gap-2">
                 {(["CE1", "CE2", "CM1", "CM2"] as FluencyLevel[]).map((lvl) => (
                   <button
-                    className={`cursor-pointer rounded-lg border py-2 font-bold text-xs transition-colors ${
+                    className={`cursor-pointer rounded-lg border py-2 text-xs font-bold transition-colors ${
                       level === lvl
                         ? "border-primary-600 bg-primary-600 text-white"
-                        : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
+                        : "bg-cream/60 hover:bg-cream border-stone-200 text-stone-700"
                     }`}
                     key={lvl}
                     onClick={() => setLevel(lvl)}
@@ -210,16 +210,16 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             </div>
 
             <div>
-              <span className="mb-1.5 block font-semibold text-stone-800 text-xs">
+              <span className="mb-1.5 block text-xs font-semibold text-stone-800">
                 Thème suggéré
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {THEME_SUGGESTIONS.map((sug) => (
                   <button
-                    className={`cursor-pointer rounded-lg border px-2.5 py-1.5 font-medium text-xs transition-colors ${
+                    className={`cursor-pointer rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                       theme === sug && !customTheme
-                        ? "border-primary-500 bg-primary-50 font-semibold text-primary-900"
-                        : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
+                        ? "border-primary-500 bg-primary-50 text-primary-900 font-semibold"
+                        : "bg-cream/60 hover:bg-cream border-stone-200 text-stone-700"
                     }`}
                     key={sug}
                     onClick={() => {
@@ -236,13 +236,13 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
 
             <div>
               <label
-                className="mb-1.5 block font-semibold text-stone-800 text-xs"
+                className="mb-1.5 block text-xs font-semibold text-stone-800"
                 htmlFor="custom-story-theme-input"
               >
                 Ou sujet libre
               </label>
               <input
-                className="w-full rounded-xl border border-stone-200 bg-cream px-3.5 py-2 text-stone-800 text-xs focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                className="bg-cream focus:bg-paper focus:ring-primary-500 w-full rounded-xl border border-stone-200 px-3.5 py-2 text-xs text-stone-800 focus:ring-2 focus:outline-hidden"
                 id="custom-story-theme-input"
                 onChange={(e) => setCustomTheme(e.target.value)}
                 placeholder="Ex : Un dauphin qui explore une épave de pirate..."
@@ -252,7 +252,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             </div>
 
             {errorMessage && (
-              <div className="flex items-start justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-rose-800 text-xs">
+              <div className="flex items-start justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{errorMessage}</span>
@@ -271,7 +271,7 @@ export const StoryGeneratorModal: React.FC<StoryGeneratorModalProps> = ({
             )}
 
             <button
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 font-bold text-white text-xs transition-colors hover:bg-primary-700 disabled:opacity-60 sm:text-sm"
+              className="bg-primary-600 hover:bg-primary-700 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold text-white transition-colors disabled:opacity-60 sm:text-sm"
               disabled={isGenerating}
               onClick={handleGenerate}
               type="button"

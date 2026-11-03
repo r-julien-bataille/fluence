@@ -27,19 +27,19 @@ export const Flashcard: React.FC<FlashcardProps> = ({
 
   return (
     <div
-      className={`flex flex-col justify-between rounded-xl border bg-paper p-4 transition-colors ${
+      className={`bg-paper flex flex-col justify-between rounded-xl border p-4 transition-colors ${
         isMastered
           ? "border-emerald-300 bg-emerald-50/40"
-          : "border-stone-200 hover:border-primary-300"
+          : "hover:border-primary-300 border-stone-200"
       }`}
     >
       <div className="py-3 text-center">
-        <div className="mb-2 font-bold font-fun text-2xl text-stone-900 sm:text-3xl">
+        <div className="font-fun mb-2 text-2xl font-bold text-stone-900 sm:text-3xl">
           {word}
         </div>
 
         {syllables.length > 1 && (
-          <div className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-cream px-2.5 py-1 font-semibold text-stone-800 text-xs">
+          <div className="bg-cream inline-flex items-center gap-1 rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-semibold text-stone-800">
             {syllables.map((s, idx) => (
               <Fragment key={idx}>
                 <span
@@ -58,9 +58,9 @@ export const Flashcard: React.FC<FlashcardProps> = ({
         )}
       </div>
 
-      <div className="mt-3 flex items-center gap-1.5 border-stone-100 border-t pt-3">
+      <div className="mt-3 flex items-center gap-1.5 border-t border-stone-100 pt-3">
         <button
-          className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-primary-600 px-2.5 py-1.5 font-bold text-white text-xs transition-colors hover:bg-primary-700 disabled:opacity-50"
+          className="bg-primary-600 hover:bg-primary-700 flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-colors disabled:opacity-50"
           disabled={isPlaying}
           onClick={() => handleSpeak(false)}
           title="Écouter la prononciation"
@@ -75,7 +75,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({
         </button>
 
         <button
-          className="cursor-pointer rounded-lg border border-stone-200 bg-cream/60 px-2.5 py-1.5 font-semibold text-stone-700 text-xs transition-colors hover:bg-cream disabled:opacity-50"
+          className="bg-cream/60 hover:bg-cream cursor-pointer rounded-lg border border-stone-200 px-2.5 py-1.5 text-xs font-semibold text-stone-700 transition-colors disabled:opacity-50"
           disabled={isPlaying}
           onClick={() => handleSpeak(true)}
           title="Écouter au ralenti"
@@ -90,10 +90,10 @@ export const Flashcard: React.FC<FlashcardProps> = ({
               isMastered ? "Marqué comme lu" : "Marquer ce mot comme maîtrisé"
             }
             aria-pressed={isMastered}
-            className={`flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-2.5 py-1.5 font-bold text-xs transition-colors ${
+            className={`flex cursor-pointer items-center justify-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-colors ${
               isMastered
                 ? "border-emerald-600 bg-emerald-600 text-white"
-                : "border-stone-200 bg-paper text-stone-700 hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900"
+                : "bg-paper border-stone-200 text-stone-700 hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900"
             }`}
             onClick={() => onMastered(word)}
             title="Marquer comme maîtrisé"

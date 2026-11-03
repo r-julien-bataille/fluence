@@ -259,7 +259,7 @@ export const App: React.FC = () => {
   const isOverlayOpen = isSettingsOpen || isHistoryOpen || isInterruptModalOpen;
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream font-sans text-stone-900">
+    <div className="bg-cream flex min-h-screen flex-col font-sans text-stone-900">
       <div
         className="flex flex-1 flex-col"
         inert={isOverlayOpen ? true : undefined}
@@ -283,7 +283,7 @@ export const App: React.FC = () => {
             className="pointer-events-none fixed top-16 left-1/2 z-50 -translate-x-1/2 transition-transform"
             style={{ transform: `translate(-50%, ${pullDistance}px)` }}
           >
-            <div className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-paper/95 px-3 py-1 font-medium text-stone-700 text-xs shadow-md backdrop-blur-xs">
+            <div className="bg-paper/95 flex items-center gap-1.5 rounded-full border border-stone-200 px-3 py-1 text-xs font-medium text-stone-700 shadow-md backdrop-blur-xs">
               <RotateCcw
                 className={`h-3.5 w-3.5 transition-transform ${
                   pullDistance >= 45
@@ -303,7 +303,7 @@ export const App: React.FC = () => {
         {!isOnline && (
           <div
             aria-live="polite"
-            className="flex items-center justify-center gap-2 border-amber-300 border-b bg-amber-100 px-4 py-1.5 font-medium text-amber-900 text-xs"
+            className="flex items-center justify-center gap-2 border-b border-amber-300 bg-amber-100 px-4 py-1.5 text-xs font-medium text-amber-900"
             role="status"
           >
             <WifiOff

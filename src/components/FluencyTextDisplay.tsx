@@ -8,7 +8,7 @@ import { tokenizeFrenchText } from "@/lib/utils";
 
 const WHITESPACE_REGEX = /\s+/u;
 const WORD_BOUNDARY_REGEX =
-  /^([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)(.*?)([^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)$/u;
+  /^(?<prefix>[^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)(?<core>.*?)(?<suffix>[^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)$/u;
 const SENTENCE_END_PUNCTUATION_REGEX = /[.!?]$/u;
 const CLAUSE_PAUSE_PUNCTUATION_REGEX = /[,;:]$/u;
 
@@ -229,7 +229,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           <span
             className={
               idx % 2 === 0
-                ? "font-semibold text-primary-900"
+                ? "text-primary-900 font-semibold"
                 : "font-bold text-rose-600"
             }
             key={idx}
@@ -418,7 +418,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
         <button
           className={`relative inline-block cursor-pointer transition-colors ${styleClass} ${
             isCurrentlyPlayingAudio
-              ? "z-10 bg-primary-100 font-bold ring-2 ring-primary-600"
+              ? "bg-primary-100 ring-primary-600 z-10 font-bold ring-2"
               : isInspected
                 ? "ring-2 ring-stone-900"
                 : ""
@@ -437,7 +437,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
     return (
       <button
-        className={`inline-block cursor-pointer transition-colors hover:text-primary-600 ${
+        className={`hover:text-primary-600 inline-block cursor-pointer transition-colors ${
           isCurrent ? "rounded bg-amber-200 px-1 text-amber-950" : ""
         }`}
         key={item.tokenIndex ?? wIdx}
@@ -451,23 +451,23 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
   return (
     <div
-      className={`rounded-2xl border border-stone-200 bg-paper p-5 shadow-2xs sm:p-8 ${
+      className={`bg-paper rounded-2xl border border-stone-200 p-5 shadow-2xs sm:p-8 ${
         dyslexicMode ? "dys-mode" : ""
       }`}
     >
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-stone-100 border-b pb-3 text-xs">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3 text-xs">
         {showResults ? (
           <div className="flex flex-wrap items-center gap-3 text-stone-600">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-xs border-emerald-500 border-b-2 bg-emerald-100" />
+              <span className="inline-block h-2.5 w-2.5 rounded-xs border-b-2 border-emerald-500 bg-emerald-100" />
               <span>Lu</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-xs border-rose-500 border-b-2 bg-rose-100" />
+              <span className="inline-block h-2.5 w-2.5 rounded-xs border-b-2 border-rose-500 bg-rose-100" />
               <span>Erreur</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-xs border-amber-500 border-b-2 bg-amber-100" />
+              <span className="inline-block h-2.5 w-2.5 rounded-xs border-b-2 border-amber-500 bg-amber-100" />
               <span>Hésitation</span>
             </span>
             <span className="hidden text-stone-600 sm:inline">
@@ -485,7 +485,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           className={`flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1 font-semibold transition-colors ${
             bicolorSyllables
               ? "border-primary-200 bg-primary-50 text-primary-900"
-              : "border-stone-200 bg-cream/60 text-stone-700 hover:bg-cream"
+              : "bg-cream/60 hover:bg-cream border-stone-200 text-stone-700"
           }`}
           onClick={() => setBicolorSyllables(!bicolorSyllables)}
           title="Colorer les syllabes en alternance"
@@ -507,10 +507,10 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
           return (
             <div
-              className="flex items-baseline justify-between gap-4 border-stone-100 border-b border-dashed pb-2 last:border-b-0"
+              className="flex items-baseline justify-between gap-4 border-b border-dashed border-stone-100 pb-2 last:border-b-0"
               key={lineIdx}
             >
-              <div className="reading-text-flow flex flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-1.5 font-medium text-lg text-stone-900 sm:text-xl">
+              <div className="reading-text-flow flex flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-1.5 text-lg font-medium text-stone-900 sm:text-xl">
                 {line.words.length <= 2 || !secondToLastWord || !lastWord ? (
                   line.words.map((item, wIdx) => renderWord(item, wIdx))
                 ) : (
@@ -526,7 +526,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 )}
               </div>
 
-              <div className="w-10 shrink-0 select-none text-right font-mono text-stone-600 text-xs">
+              <div className="w-10 shrink-0 text-right font-mono text-xs text-stone-600 select-none">
                 {line.cumulativeCount}
               </div>
             </div>
@@ -539,8 +539,8 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           aria-label={`Correction du mot ${inspectedWord.expectedWord}`}
           className={
             isMobile
-              ? "fade-in slide-in-from-bottom-4 fixed inset-x-3 bottom-4 z-50 mx-auto max-w-md animate-in rounded-xl border border-stone-700 bg-stone-900 p-3.5 text-white shadow-xl duration-150"
-              : "fade-in zoom-in-95 fixed z-50 w-76 animate-in rounded-xl border border-stone-700 bg-stone-900 p-3.5 text-white shadow-xl duration-150"
+              ? "fade-in slide-in-from-bottom-4 animate-in fixed inset-x-3 bottom-4 z-50 mx-auto max-w-md rounded-xl border border-stone-700 bg-stone-900 p-3.5 text-white shadow-xl duration-150"
+              : "fade-in zoom-in-95 animate-in fixed z-50 w-76 rounded-xl border border-stone-700 bg-stone-900 p-3.5 text-white shadow-xl duration-150"
           }
           ref={popoverRef}
           role="dialog"
@@ -564,13 +564,13 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
             />
           )}
 
-          <div className="flex items-center justify-between gap-2 border-stone-800 border-b pb-2">
+          <div className="flex items-center justify-between gap-2 border-b border-stone-800 pb-2">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate font-bold text-sm text-white">
+              <span className="truncate text-sm font-bold text-white">
                 « {inspectedWord.expectedWord} »
               </span>
               <span
-                className={`shrink-0 rounded px-1.5 py-0.5 font-semibold text-[11px] ${
+                className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold ${
                   inspectedWord.status === "correct"
                     ? "bg-emerald-500/20 text-emerald-300"
                     : inspectedWord.status === "error"
@@ -600,7 +600,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
 
           {(inspectedWord.spokenWord ||
             inspectedWord.timestampMs !== undefined) && (
-            <div className="my-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-stone-300 text-xs">
+            <div className="my-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-300">
               {inspectedWord.spokenWord && (
                 <span>
                   Entendu :{" "}
@@ -620,7 +620,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
           <div className="mt-2.5 flex items-center gap-2">
             {inspectedWord.timestampMs !== undefined && onSeekAudioMs && (
               <button
-                className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-stone-800 px-2.5 py-1.5 font-semibold text-primary-300 text-xs transition-colors hover:bg-stone-700"
+                className="text-primary-300 flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-stone-800 px-2.5 py-1.5 text-xs font-semibold transition-colors hover:bg-stone-700"
                 onClick={() => {
                   if (inspectedWord.timestampMs !== undefined) {
                     onSeekAudioMs(
@@ -639,7 +639,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
             {onOverrideWordStatus &&
               (inspectedWord.status === "correct" ? (
                 <button
-                  className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-1.5 font-bold text-white text-xs hover:bg-rose-500"
+                  className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500"
                   onClick={() => {
                     overrideInspectedWord("error");
                     setInspectedWord({
@@ -655,7 +655,7 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
                 </button>
               ) : (
                 <button
-                  className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 font-bold text-white text-xs hover:bg-emerald-500"
+                  className="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500"
                   onClick={() => {
                     overrideInspectedWord("correct");
                     setInspectedWord({ ...inspectedWord, status: "correct" });

@@ -81,12 +81,12 @@ export const CircularTimer: React.FC<CircularTimerProps> = ({
       {/* Texte au centre */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className={`font-black font-fun text-2xl tabular-nums leading-none ${textColor}`}
+          className={`font-fun text-2xl leading-none font-black tabular-nums ${textColor}`}
         >
           {timeLeft}
         </span>
         <span
-          className={`mt-0.5 font-bold text-[10px] uppercase tracking-tighter ${unitColor}`}
+          className={`mt-0.5 text-[10px] font-bold tracking-tighter uppercase ${unitColor}`}
         >
           sec
         </span>

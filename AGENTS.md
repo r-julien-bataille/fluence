@@ -6,7 +6,7 @@
 
 Each training session follows a 3-step pedagogical workflow managed by `src/components/SessionRunner.tsx`:
 
-1. **Étape 1 (`Step1Reading.tsx`)**: 60-second timed first reading with audio recording (`useAudioRecorder.ts`), multimodal transcription via Gemini (`src/lib/gemini/transcribe.ts`), and Levenshtein alignment (`src/lib/alignment.ts`) to compute **MCLM** (_Mots Correctement Lus par Minute_).
+1. **Étape 1 (`Step1Reading.tsx`)**: 60-second timed first reading with audio recording (`src/lib/audio/recorder.ts`), multimodal transcription via Gemini (`src/lib/gemini/transcribe.ts`), and Levenshtein alignment (`src/lib/alignment.ts`) to compute **MCLM** (_Mots Correctement Lus par Minute_).
 2. **Étape 2 (`Step2Remediation.tsx`)**: Untimed remediation focused on misread/hesitated words with Web Speech API synthesis (`fr-FR`).
 3. **Étape 3 (`Step3Challenge.tsx`)**: 60-second "Défi Record" second reading to measure progress and celebrate improvements (`StepSummary.tsx`).
 
@@ -18,16 +18,16 @@ Each training session follows a 3-step pedagogical workflow managed by `src/comp
   - Uses solution-style project references (`tsconfig.json` → `tsconfig.app.json` + `tsconfig.node.json`).
   - Do **not** use options removed in TypeScript 7 (`baseUrl`, `target: "es5"`, `moduleResolution: "node10"`). Path aliases in `tsconfig.app.json` must use relative prefixes (`"@/*": ["./src/*"]`), and `rootDir` / `types` must be declared explicitly.
   - Delete stale `.tsbuildinfo` files (`node_modules/.tmp/*.tsbuildinfo`) if switching compiler versions.
-- **Vite 8 (`^8.3.4`, Rolldown + Oxc)**:
+- **Vite 8 (`^8.3.5`, Rolldown + Oxc)**:
   - Uses **Rolldown** for bundling and **Oxc** for TypeScript/JSX transformation and minification (`@vitejs/plugin-react` v6).
   - In `vite.config.ts`, use `import.meta.dirname` (not `__dirname`) and `build.rolldownOptions.output.codeSplitting.groups` (do **not** use the removed `rollupOptions.output.manualChunks` object syntax).
 - **UI & Styling**:
-  - **React 19** (`^19.3.0`), **Tailwind CSS v4** (`@tailwindcss/vite`), **Lucide React** icons.
+  - **React 19** (`^19.3.1`), **Tailwind CSS v4** (`@tailwindcss/vite`), **Lucide React** icons.
 - **Local Storage & Database**:
   - **Dexie.js v4** (IndexedDB) in `src/db/db.ts` stores custom texts (`texts`) and completed reading sessions (`sessions`).
-  - **BYOK (Bring Your Own Key)**: The user's Google Gemini API key is stored in `localStorage` (`fluence_gemini_api_key`) for serverless local execution.
+  - **BYOK (Bring Your Own Key)**: The user's Google Gemini API key is stored in `localStorage` (`GOOGLE_AI_KEY`) for serverless local execution.
 - **Google Gemini SDK (`@google/genai`)**:
-  - Uses `gemini-3-flash-preview` in `src/lib/gemini/transcribe.ts` (audio transcription) and `src/lib/gemini/generator.ts` (custom story generation with structured JSON schema).
+  - Uses `gemini-3.5-transcribe` in `src/lib/gemini/transcribe.ts` (audio transcription) and `gemini-3.8-flash` in `src/lib/gemini/generator.ts` (custom story generation with structured JSON schema).
   - Always import `@google/genai` **dynamically** via `getGenAIClient()` in `src/lib/gemini/client.ts` (`await import('@google/genai')`) so the SDK chunk is loaded on demand and never blocks initial rendering.
 
 ---
@@ -142,10 +142,11 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Use early returns to reduce nesting
 - Prefer simple conditionals over nested ternary operators
 - Group related code together and separate concerns
+- Avoid import cycles; move shared code into a module both sides import
 
 ### Security
 
-- Add `rel="noopener"` when using `target="_blank"` on links
+- Add `rel="noopener noreferrer"` when using `target="_blank"` on links
 - Avoid `dangerouslySetInnerHTML` unless absolutely necessary
 - Don't use `eval()` or assign directly to `document.cookie`
 - Validate and sanitize user input

@@ -18,10 +18,10 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       return (
         <button
           aria-pressed={isSelected}
-          className={`flex cursor-pointer items-center justify-between gap-2.5 rounded-xl border p-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${
+          className={`focus-visible:ring-primary-500 flex cursor-pointer items-center justify-between gap-2.5 rounded-xl border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:outline-hidden ${
             isSelected
               ? "border-primary-500 bg-primary-50/70"
-              : "border-stone-200 bg-paper hover:bg-cream"
+              : "bg-paper hover:bg-cream border-stone-200"
           }`}
           key={theme.id}
           onClick={() => onSelectTheme(theme.id)}
@@ -35,7 +35,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
                 backgroundColor: theme.primaryHex,
               }}
             />
-            <span className="font-semibold text-stone-900 text-xs">
+            <span className="text-xs font-semibold text-stone-900">
               {theme.name}
             </span>
           </div>
@@ -43,7 +43,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           {isSelected && (
             <Check
               aria-hidden="true"
-              className="h-4 w-4 shrink-0 text-primary-600"
+              className="text-primary-600 h-4 w-4 shrink-0"
             />
           )}
         </button>
