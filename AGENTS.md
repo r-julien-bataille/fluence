@@ -41,7 +41,9 @@ pnpm typecheck      # Runs `tsc -b` (TypeScript 7 native Go typechecker)
 pnpm build          # Runs `tsc -b && vite build` (Rolldown production bundle)
 pnpm dev            # Starts local Vite dev server
 pnpm preview        # Serves the production build from dist/
-pnpm version:bump   # Increments patch SemVer in package.json
+pnpm version:patch  # Increments patch SemVer (X.Y.Z+1) in package.json
+pnpm version:minor  # Increments minor SemVer (X.Y+1.0) in package.json
+pnpm version:major  # Increments major SemVer (X+1.0.0) in package.json
 ```
 
 ---
@@ -49,9 +51,14 @@ pnpm version:bump   # Increments patch SemVer in package.json
 ## Versioning & Release Contract (SemVer)
 
 - The application's SemVer version lives in `package.json` (`"version"`) and is injected at build time via `import.meta.env.VITE_APP_VERSION` (`src/lib/version.ts`), displayed in `Header.tsx`, `SettingsModal.tsx`, and `SourcesFooter.tsx`.
-- **Every push to `main` MUST increment the SemVer version** in `package.json`.
-- Tracked Git hooks in `.githooks/` (`core.hooksPath = .githooks`) automatically bump the patch version (`node scripts/bump-version.mjs --if-needed`) when committing, merging, or pushing on `main` if `package.json`'s version has not yet been incremented relative to `origin/main`.
-- For minor or major releases, manually update `"version"` in `package.json` before committing.
+- **Every push to `main` MUST increment the SemVer version** in `package.json` according to **Semantic Versioning (SemVer 2.0.0)** rules based on the nature of the changes:
+  - **MAJOR (`X+1.0.0` — `pnpm version:major` / commit with `!: ` or `BREAKING CHANGE`)**: Incompatible changes (e.g., breaking IndexedDB schema or export format changes without backward compatibility).
+  - **MINOR (`X.Y+1.0` — `pnpm version:minor` / commit starting with `feat:` or `feat(...):`)**: Any new user-facing feature, UI option, setting, or pedagogical capability added in a backward-compatible manner. When a release combines new features (`feat`) and bug fixes (`fix`), **MINOR** always takes precedence over PATCH.
+  - **PATCH (`X.Y.Z+1` — `pnpm version:patch` / commit starting with `fix:`, `perf:`, `refactor:`, `chore:`, `docs:`)**: Backward-compatible bug fixes, data/threshold corrections, styling tweaks, or internal refactors with no new user-facing feature.
+- **Automated Hook Enforcement (`.githooks/` + `scripts/bump-version.mjs`)**:
+  - Always use **Conventional Commits** prefixes (`feat:`, `fix:`, `refactor:`, `chore:`, `docs:`).
+  - Tracked Git hooks (`pre-commit`, `post-commit`, `post-merge`, `pre-push`) run `node scripts/bump-version.mjs --if-needed`, which inspects commit messages between `origin/main` and `HEAD` and automatically bumps `package.json` to the required SemVer level (`major` on `!:`/`BREAKING CHANGE`, `minor` on `feat:`, or `patch` otherwise).
+  - Before committing, explicitly evaluate whether the change is `patch`, `minor`, or `major` and run `pnpm version:patch`, `pnpm version:minor`, or `pnpm version:major` (or use the matching Conventional Commit prefix).
 
 ---
 
