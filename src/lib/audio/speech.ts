@@ -2,18 +2,18 @@
  * Découpage heuristique élémentaire de mots français en syllabes pour faciliter la remédiation
  */
 export function syllabifyFrenchWord(word: string): string[] {
-  const clean = word.toLowerCase().trim();
+  const clean = word.trim();
   if (clean.length <= 3) {
     return [clean];
   }
 
-  const vowels = "[aeiouyàâäéèêëîïôöùûü]";
+  const vowels = "[aeiouyàâäéèêëîïôöùûüœæ]";
   const consonants = "[bcçdfghjklmnpqrstvwxz]";
 
-  // Séparer les doubles consonnes identiques (ex: ap-pel, vil-le)
+  // Séparer les doubles consonnes identiques (ex: ap-pel, vil-le) en conservant la casse
   let syll = clean.replaceAll(
     /(?<char>[bcdfghjklmnpqrstvwxz])\k<char>/giu,
-    "$<char>-$<char>"
+    (match) => `${match[0]}-${match[1]}`
   );
 
   // Séparer consonne + consonne sauf liquides
@@ -61,85 +61,150 @@ let _activeUtterance: SpeechSynthesisUtterance | null = null;
 let keepAliveTimer: number | null = null;
 let cachedFrenchVoice: SpeechSynthesisVoice | null = null;
 
+const SPEECH_VOICE_STORAGE_KEY = "FLUENCE_SPEECH_VOICE";
+
+const PREFERRED_VOICE_NAMES = [
+  "natural",
+  "google français",
+  "google francais",
+  "amélie",
+  "amelie",
+  "thomas",
+  "audrey",
+  "aurélie",
+  "aurelie",
+  "virginie",
+  "sébastien",
+  "sebastien",
+  "nicolas",
+  "julie",
+  "hortense",
+  "fr-fr",
+] as const;
+
+export function getStoredVoiceURI(): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  return localStorage.getItem(SPEECH_VOICE_STORAGE_KEY) ?? "";
+}
+
+export function setStoredVoiceURI(voiceURI: string): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  const trimmed = voiceURI.trim();
+  if (trimmed) {
+    localStorage.setItem(SPEECH_VOICE_STORAGE_KEY, trimmed);
+  } else {
+    localStorage.removeItem(SPEECH_VOICE_STORAGE_KEY);
+  }
+  cachedFrenchVoice = null;
+}
+
+export function isFrenchVoice(voice: SpeechSynthesisVoice): boolean {
+  const l = (voice.lang || "").toLowerCase().replace("_", "-");
+  const n = (voice.name || "").toLowerCase();
+  return (
+    l.startsWith("fr") ||
+    l === "fra" ||
+    l === "fre" ||
+    n.includes("french") ||
+    n.includes("français")
+  );
+}
+
+export function getAvailableFrenchVoices(): SpeechSynthesisVoice[] {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    return [];
+  }
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+  const frenchVoices: SpeechSynthesisVoice[] = [];
+  for (const voice of voices) {
+    if (isFrenchVoice(voice) && !seen.has(voice.voiceURI)) {
+      seen.add(voice.voiceURI);
+      frenchVoices.push(voice);
+    }
+  }
+
+  return frenchVoices.sort((a, b) => {
+    const aFrFR = a.lang.toLowerCase().replace("_", "-") === "fr-fr";
+    const bFrFR = b.lang.toLowerCase().replace("_", "-") === "fr-fr";
+    if (aFrFR !== bFrFR) {
+      return aFrFR ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name, "fr");
+  });
+}
+
+function selectBestFrenchVoice(
+  frenchVoices: SpeechSynthesisVoice[],
+  preferredVoiceURI?: string
+): SpeechSynthesisVoice | null {
+  if (frenchVoices.length === 0) {
+    return null;
+  }
+
+  const targetURI = (preferredVoiceURI ?? getStoredVoiceURI()).trim();
+  if (targetURI) {
+    const chosen = frenchVoices.find(
+      (v) => v.voiceURI === targetURI || v.name === targetURI
+    );
+    if (chosen) {
+      return chosen;
+    }
+  }
+
+  // Préférer une voix naturelle de haute qualité (Thomas, Amélie, Audrey, Google Français, etc.)
+  for (const pref of PREFERRED_VOICE_NAMES) {
+    const match = frenchVoices.find((v) => v.name.toLowerCase().includes(pref));
+    if (match) {
+      return match;
+    }
+  }
+
+  // À défaut, toute voix française de France (fr-FR)
+  const frFR = frenchVoices.find(
+    (v) => v.lang.toLowerCase().replace("_", "-") === "fr-fr"
+  );
+  if (frFR) {
+    return frFR;
+  }
+
+  // À défaut, n'importe quelle voix française
+  return frenchVoices[0];
+}
+
 /**
  * Recherche et garantit la sélection d'une voix FRANÇAISE stricte
  */
-export function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
-  if (cachedFrenchVoice) {
+export function getFrenchVoice(
+  preferredVoiceURI?: string
+): Promise<SpeechSynthesisVoice | null> {
+  const effectiveURI = (preferredVoiceURI ?? getStoredVoiceURI()).trim();
+  if (!effectiveURI && cachedFrenchVoice) {
     return Promise.resolve(cachedFrenchVoice);
   }
 
-  if (!("speechSynthesis" in window)) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
     return Promise.resolve(null);
   }
 
   const findVoice = (): SpeechSynthesisVoice | null => {
-    const voices = window.speechSynthesis.getVoices();
-    if (!voices || voices.length === 0) {
-      return null;
-    }
-
-    // 1. Filtrer strictement toutes les voix françaises
-    const frenchVoices = voices.filter((v) => {
-      const l = (v.lang || "").toLowerCase().replace("_", "-");
-      const n = (v.name || "").toLowerCase();
-      return (
-        l.startsWith("fr") ||
-        l === "fra" ||
-        l === "fre" ||
-        n.includes("french") ||
-        n.includes("français")
-      );
-    });
-
-    if (frenchVoices.length === 0) {
-      return null;
-    }
-
-    // 2. Préférer une voix naturelle de haute qualité (Thomas, Amélie, Audrey, Google Français, etc.)
-    const preferredNames = [
-      "natural",
-      "google français",
-      "google francais",
-      "amélie",
-      "amelie",
-      "thomas",
-      "audrey",
-      "aurélie",
-      "aurelie",
-      "virginie",
-      "sébastien",
-      "sebastien",
-      "nicolas",
-      "julie",
-      "hortense",
-      "fr-fr",
-    ];
-
-    for (const pref of preferredNames) {
-      const match = frenchVoices.find((v) =>
-        v.name.toLowerCase().includes(pref)
-      );
-      if (match) {
-        return match;
-      }
-    }
-
-    // 3. À défaut, toute voix française de France (fr-FR)
-    const frFR = frenchVoices.find(
-      (v) => v.lang.toLowerCase().replace("_", "-") === "fr-fr"
-    );
-    if (frFR) {
-      return frFR;
-    }
-
-    // 4. À défaut, n'importe quelle voix française
-    return frenchVoices[0];
+    const frenchVoices = getAvailableFrenchVoices();
+    return selectBestFrenchVoice(frenchVoices, effectiveURI);
   };
 
   const immediate = findVoice();
   if (immediate) {
-    cachedFrenchVoice = immediate;
+    if (!effectiveURI) {
+      cachedFrenchVoice = immediate;
+    }
     return Promise.resolve(immediate);
   }
 
@@ -154,7 +219,9 @@ export function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
       const v = findVoice();
       if (v) {
         resolved = true;
-        cachedFrenchVoice = v;
+        if (!effectiveURI) {
+          cachedFrenchVoice = v;
+        }
         window.speechSynthesis.removeEventListener(
           "voiceschanged",
           onVoicesChanged
@@ -174,7 +241,9 @@ export function getFrenchVoice(): Promise<SpeechSynthesisVoice | null> {
           onVoicesChanged
         );
         const fallback = findVoice();
-        cachedFrenchVoice = fallback;
+        if (!effectiveURI) {
+          cachedFrenchVoice = fallback;
+        }
         resolve(fallback);
       }
     }, 600);
@@ -194,6 +263,7 @@ export interface SpeakOptions {
   onError?: () => void;
   pitch?: number;
   rate?: number;
+  voiceURI?: string;
 }
 
 /**
@@ -216,7 +286,7 @@ export async function speakFrenchText(
   // Arrêter toute lecture précédente
   stopFrenchSpeech();
 
-  const frenchVoice = await getFrenchVoice();
+  const frenchVoice = await getFrenchVoice(opts.voiceURI);
 
   return new Promise((resolve) => {
     const utterance = new SpeechSynthesisUtterance(text);

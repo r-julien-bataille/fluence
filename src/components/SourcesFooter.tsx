@@ -8,8 +8,8 @@ const SOURCES = [
     label: "Protocole ELFE (Cogni-Sciences)",
   },
   {
-    href: "https://eduscol.education.gouv.fr/",
-    label: "Repères Éduscol",
+    href: "https://eduscol.education.gouv.fr/sites/default/files/document/ev19c3francaisfluence-comprehension1308814pdf-90417.pdf",
+    label: "Attendus Éduscol (Fluence)",
   },
 ] as const;
 

@@ -8,7 +8,7 @@ import { tokenizeFrenchText } from "@/lib/utils";
 
 const WHITESPACE_REGEX = /\s+/u;
 const WORD_BOUNDARY_REGEX =
-  /^(?<prefix>[^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)(?<core>.*?)(?<suffix>[^a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]*)$/u;
+  /^(?<prefix>[^\p{L}]*)(?<core>.*?)(?<suffix>[^\p{L}]*)$/u;
 const SENTENCE_END_PUNCTUATION_REGEX = /[.!?]$/u;
 const CLAUSE_PAUSE_PUNCTUATION_REGEX = /[,;:]$/u;
 

@@ -61,11 +61,13 @@ export const tokenizeFrenchText = (
 };
 
 /**
- * Repères attendus ELFE / Éduscol en Mots Correctement Lus par Minute (MCLM)
+ * Attendus de fin d'année Éduscol en Mots Correctement Lus par Minute (MCLM)
+ * Réf. : Éduscol — « Travailler la fluence pour améliorer la compréhension en lecture »
+ * (Fin CP : 50 | Fin CE1 : 70 | Fin CE2 : 90 | Fin CM1 : 110 | Fin CM2 : 120 | Fin 6e : 130)
  */
 export const FLUENCY_NORMS = {
   CE1: { label: "CE1 (50 - 70 MCLM)", min: 50, target: 70 },
-  CE2: { label: "CE2 (75 - 90 MCLM)", min: 75, target: 90 },
+  CE2: { label: "CE2 (70 - 90 MCLM)", min: 70, target: 90 },
   CM1: { label: "CM1 (90 - 110 MCLM)", min: 90, target: 110 },
-  CM2: { label: "CM2 (110 - 130 MCLM)", min: 110, target: 130 },
+  CM2: { label: "CM2 (110 - 120 MCLM)", min: 110, target: 120 },
 } as const;

@@ -20,7 +20,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
     id: "cm2-texte-1",
     isCustom: false,
     level: "CM2",
-    targetMclm: 115,
+    targetMclm: 120,
     theme: "Mystère & Détectives",
     title: "L'énigme du phare abandonné",
     tokens: [],
@@ -44,7 +44,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
     id: "cm2-texte-2",
     isCustom: false,
     level: "CM2",
-    targetMclm: 115,
+    targetMclm: 120,
     theme: "Nature & Expédition",
     title: "Le secret de la forêt boréale",
     tokens: [],
@@ -62,7 +62,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
     id: "cm1-texte-1",
     isCustom: false,
     level: "CM1",
-    targetMclm: 100,
+    targetMclm: 110,
     theme: "Science-fiction",
     title: "Le robot de l'espace",
     tokens: [],
@@ -80,7 +80,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
     id: "ce2-texte-1",
     isCustom: false,
     level: "CE2",
-    targetMclm: 85,
+    targetMclm: 90,
     theme: "Animaux",
     title: "Le trésor de l'écureuil",
     tokens: [],
@@ -99,7 +99,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
     id: "ce1-texte-1",
     isCustom: false,
     level: "CE1",
-    targetMclm: 60,
+    targetMclm: 70,
     theme: "Contes",
     title: "Le dragon frileux",
     tokens: [],
@@ -116,10 +116,7 @@ for (const text of INITIAL_TEXTS) {
 
 export const seedDatabaseIfEmpty = async () => {
   try {
-    const count = await db.texts.count();
-    if (count === 0) {
-      await db.texts.bulkPut(INITIAL_TEXTS);
-    }
+    await db.texts.bulkPut(INITIAL_TEXTS);
   } catch (error) {
     console.warn(
       "Échec vérification initiale Dexie, tentative de réconciliation :",
