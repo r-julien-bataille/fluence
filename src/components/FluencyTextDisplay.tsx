@@ -3,7 +3,7 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { AlignedToken } from "@/lib/alignment";
-import { speakFrenchText, syllabifyFrenchWord } from "@/lib/audio/speech";
+import { getWordSyllableTokens, speakFrenchText } from "@/lib/audio/speech";
 import { tokenizeFrenchText } from "@/lib/utils";
 
 const WHITESPACE_REGEX = /\s+/u;
@@ -215,28 +215,42 @@ export const FluencyTextDisplay: React.FC<FluencyTextDisplayProps> = ({
       return word;
     }
     const [, prefix = "", core = "", suffix = ""] = match;
-    if (core.length <= 3) {
+    if (core.length <= 3 && !core.includes("-")) {
       return word;
     }
-    const syllables = syllabifyFrenchWord(core);
-    if (syllables.length <= 1) {
+    const tokens = getWordSyllableTokens(core);
+    const syllableCount = tokens.filter((t) => !t.isHyphen).length;
+    if (syllableCount <= 1) {
       return word;
     }
+
+    let syllableIdx = 0;
     return (
       <span className="inline-flex items-baseline">
         {prefix}
-        {syllables.map((s, idx) => (
-          <span
-            className={
-              idx % 2 === 0
-                ? "text-primary-900 font-semibold"
-                : "font-bold text-rose-600"
-            }
-            key={idx}
-          >
-            {s}
-          </span>
-        ))}
+        {tokens.map((token, idx) => {
+          if (token.isHyphen) {
+            return (
+              <span className="font-semibold text-stone-700" key={idx}>
+                {token.text}
+              </span>
+            );
+          }
+          const isEven = syllableIdx % 2 === 0;
+          syllableIdx += 1;
+          return (
+            <span
+              className={
+                isEven
+                  ? "text-primary-900 font-semibold"
+                  : "font-bold text-rose-600"
+              }
+              key={idx}
+            >
+              {token.text}
+            </span>
+          );
+        })}
         {suffix}
       </span>
     );

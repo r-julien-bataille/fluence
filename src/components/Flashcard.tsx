@@ -2,7 +2,7 @@ import { Check, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { Fragment, useState } from "react";
 
-import { speakFrenchText, syllabifyFrenchWord } from "@/lib/audio/speech";
+import { getWordSyllableTokens, speakFrenchText } from "@/lib/audio/speech";
 
 interface FlashcardProps {
   isMastered?: boolean;
@@ -17,7 +17,8 @@ export const Flashcard: React.FC<FlashcardProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const syllables = syllabifyFrenchWord(word);
+  const tokens = getWordSyllableTokens(word);
+  const syllableCount = tokens.filter((t) => !t.isHyphen).length;
 
   const handleSpeak = async (slow = false) => {
     setIsPlaying(true);
@@ -38,22 +39,35 @@ export const Flashcard: React.FC<FlashcardProps> = ({
           {word}
         </div>
 
-        {syllables.length > 1 && (
+        {syllableCount > 1 && (
           <div className="bg-cream inline-flex items-center gap-1 rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-semibold text-stone-800">
-            {syllables.map((s, idx) => (
-              <Fragment key={idx}>
-                <span
-                  className={
-                    idx % 2 === 0 ? "text-primary-800" : "text-rose-700"
-                  }
-                >
-                  {s}
-                </span>
-                {idx < syllables.length - 1 && (
-                  <span className="text-stone-400">·</span>
-                )}
-              </Fragment>
-            ))}
+            {(() => {
+              let syllableIdx = 0;
+              return tokens.map((token, idx) => {
+                if (token.isHyphen) {
+                  return (
+                    <span className="font-bold text-stone-600" key={idx}>
+                      {token.text}
+                    </span>
+                  );
+                }
+                const isEven = syllableIdx % 2 === 0;
+                syllableIdx += 1;
+                const nextToken = tokens[idx + 1];
+                const showDot =
+                  idx < tokens.length - 1 && nextToken && !nextToken.isHyphen;
+                return (
+                  <Fragment key={idx}>
+                    <span
+                      className={isEven ? "text-primary-800" : "text-rose-700"}
+                    >
+                      {token.text}
+                    </span>
+                    {showDot && <span className="text-stone-400">·</span>}
+                  </Fragment>
+                );
+              });
+            })()}
           </div>
         )}
       </div>

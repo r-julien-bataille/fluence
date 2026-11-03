@@ -1,3 +1,42 @@
+export interface SyllableToken {
+  isHyphen: boolean;
+  text: string;
+}
+
+const HYPHEN_REGEX = /(?<hyphen>[-\u2011\u2013])/u;
+
+/**
+ * Découpe un mot ou un mot composé en tokens de syllabes et de tirets.
+ * Préserve intégralement les tirets d'origine (ex: "matin-là" -> ["ma", "tin", "-", "là"]).
+ */
+export function getWordSyllableTokens(word: string): SyllableToken[] {
+  const clean = word.trim();
+  if (!clean) {
+    return [];
+  }
+
+  const segments = clean.split(HYPHEN_REGEX);
+  const tokens: SyllableToken[] = [];
+
+  for (const seg of segments) {
+    if (!seg) {
+      continue;
+    }
+    if (HYPHEN_REGEX.test(seg)) {
+      tokens.push({ isHyphen: true, text: seg });
+    } else if (seg.length > 3) {
+      const syls = syllabifyFrenchWord(seg);
+      for (const s of syls) {
+        tokens.push({ isHyphen: false, text: s });
+      }
+    } else {
+      tokens.push({ isHyphen: false, text: seg });
+    }
+  }
+
+  return tokens;
+}
+
 /**
  * Découpage heuristique élémentaire de mots français en syllabes pour faciliter la remédiation
  */
@@ -5,6 +44,11 @@ export function syllabifyFrenchWord(word: string): string[] {
   const clean = word.trim();
   if (clean.length <= 3) {
     return [clean];
+  }
+
+  if (clean.includes("-")) {
+    const parts = clean.split("-").filter(Boolean);
+    return parts.flatMap((part) => syllabifyFrenchWord(part));
   }
 
   const vowels = "[aeiouyàâäéèêëîïôöùûüœæ]";

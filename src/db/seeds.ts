@@ -15,7 +15,7 @@ export const INITIAL_TEXTS: ExerciseText[] = [
         question: "Qui était réellement la silhouette dans le phare ?",
       },
     ],
-    content: `Au sommet de la falaise battue par les vagues, le vieux phare ne s'allumait plus depuis des années. Pourtant, hier soir, Lucas et sa sœur Juliette ont aperçu une lueur mystérieuse tournoyant dans l'obscurité. Munis de leurs lampes de poche et d'un carnet d'enquêteur, les deux enfants ont gravi le sentier rocailleux. Le vent soufflait fort en faisant claquer les volets rouillés de la bâtisse. À l'intérieur, une silhouette sombre examinait une ancienne carte marine posée sur une table en bois massif. Juliette retint son souffle tandis que Lucas actionna discrètement l'interrupteur. La lumière dévoila un ornithologue passionné qui observait les oiseaux nocturnes nichant dans la vieille tour. Rassurés et fascinés, les jeunes détectives ont écouté avec attention les récits de ce savant bienveillant.`,
+    content: `Au sommet de la falaise, le vieux phare ne s'allumait plus depuis des années. Pourtant, hier soir, Lucas et Juliette ont aperçu une lueur mystérieuse dans l'obscurité. Munis de leurs lampes de poche et d'un carnet d'enquêteur, ils ont gravi le sentier rocailleux. Le vent soufflait fort en faisant claquer les volets de la bâtisse. À l'intérieur, une silhouette sombre examinait une ancienne carte marine posée sur une table. Juliette retint son souffle tandis que Lucas actionna l'interrupteur. La lumière dévoila un ornithologue passionné qui observait les oiseaux nocturnes nichant dans la tour. Rassurés, les jeunes détectives ont écouté avec attention les récits de ce savant.`,
     createdAt: 1_710_000_000_000,
     id: "cm2-texte-1",
     isCustom: false,
