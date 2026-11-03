@@ -7,8 +7,8 @@ Application web SPA 100 % client-side dédiée à l'évaluation et l'entraîneme
 
 ### Prérequis
 
-- Node.js $\ge 22.12$ (requis par Vite 8)
-- **pnpm** 11 (`corepack enable`)
+- Node.js $\ge 24$ (ou $\ge 22.18$)
+- **pnpm** $\ge 11$ (`corepack enable`)
 - Clé API Google AI Studio (gratuite sur [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ### Installation et lancement
@@ -66,16 +66,16 @@ $$\text{MCLM} = \text{Mots Correctement Lus en 60 secondes} = \text{Mots Totaux 
 - **Persistance locale :** **IndexedDB** via **Dexie.js** avec hooks réactifs (`dexie-react-hooks`) et typage TypeScript complet.
 - **Modèle BYOK (Bring Your Own Key) :** La clé Google AI Studio est stockée localement dans le `localStorage` de l'utilisateur sous la clé `GOOGLE_AI_KEY`.
 - **Stack UI & Build :**
-  - Framework : **React 19**.
-  - Langage : **TypeScript 7**.
-  - Bundler : **Vite 8** (Rolldown + Oxc), **Lucide React**.
+  - Framework : **React 19** (`^19.3.1`) et **Tailwind CSS v4** (`@tailwindcss/vite`).
+  - Langage : **TypeScript 7** (compilateur natif Go).
+  - Bundler : **Vite 8** (Rolldown + Oxc), **PWA** (`vite-plugin-pwa`), **Lucide React**.
   - Typographie : **Lexend** (recherche scientifique sur la fluence) et mode **Dys-confort**.
   - Confettis : **canvas-confetti**.
-  - Qualité de code : **Ultracite** (Biome) pour le lint et le formatage.
+  - Qualité de code : **Ultracite v8** (**Biome 2.6** avec règles `type-aware`) pour le lint et le formatage.
   - Gestionnaire de paquets : **pnpm**.
 - **Intégration IA Google GenAI :**
-  - SDK officiel : `@google/genai`
-  - **STT :** `gemini-3.5-transcribe` configuré en mode `verbatim`, avec `languageCodes: ["fr-FR"]`, `timestamps: ["word"]` et injection du vocabulaire attendu dans `customVocabulary` (avec fallback multimodal fluide via `gemini-3.8-flash`).
+  - SDK officiel : `@google/genai` (chargé dynamiquement à la demande et pré-initialisé pendant l'enregistrement).
+  - **STT :** `gemini-3.5-transcribe` configuré en mode `verbatim` avec `languageCodes: ["fr-FR"]`, `wordTimestamp: true` et `diarization: false` (flux audio optimisé en mono 16 kHz / 32 kbps).
   - **Génération & Compréhension :** `gemini-3.8-flash` avec JSON structuré pour générer des histoires adaptées au niveau (CE1, CE2, CM1, CM2) et des questions de compréhension.
 - **Alignement phonétique & temporel :** Algorithme par programmation dynamique (Needleman-Wunsch pondéré avec distance de Levenshtein) borné à $T \le 60\,000\text{ ms}$.
 
