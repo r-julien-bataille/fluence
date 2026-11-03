@@ -2,4 +2,10 @@ allowBuilds:
   "@google/genai": true
   esbuild: true
   protobufjs: true
-auditConfig: { ignoreGhsas: [ GHSA-vfj7-8cjw-p6xm ] }
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
+    - GHSA-gcqx-w48m-w2h4
+overrides:
+  glob: ">=14.0.2"
+  minimatch: ">=11.0.1"

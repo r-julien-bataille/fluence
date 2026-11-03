@@ -1,6 +1,6 @@
 {
   "name": "fluence",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -42,5 +42,5 @@
     "vite-plugin-pwa": "^2.0.0",
     "workbox-window": "^7.4.1"
   },
-  "packageManager": "pnpm@11.1.2"
+  "packageManager": "pnpm@12.16.1"
 }
